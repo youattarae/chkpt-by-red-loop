@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -62,10 +63,11 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
       });
 
       const data = await res.json();
+      if (!res.ok || typeof data.text !== 'string' || !Array.isArray(data.groundedPlaces)) throw new Error('Recherche indisponible');
       setGroundingResult(data);
     } catch {
       setGroundingResult({
-        text: 'Les recommandations pour Cocody sont basées sur le référentiel certifié RED LOOP.',
+        text: 'La recherche externe est indisponible. Les sélections fictives ci-dessous restent accessibles.',
         groundedPlaces: [],
       });
     } finally {
@@ -90,7 +92,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
           L'Agenda & Les Bonnes Adresses
         </h2>
         <p className="text-xs text-slate-300 mt-1">
-          Sélections éditoriales certifiées et repères authentiques de la jeunesse abidjanaise.
+          Une sélection fictive pour imaginer vos prochaines sorties à Cocody.
         </p>
       </div>
 
@@ -175,7 +177,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-sm flex flex-col sm:flex-row"
             >
               <div className="sm:w-40 aspect-video sm:aspect-auto bg-slate-950 shrink-0">
-                <img
+                <SafeImage
                   src={evt.coverImage}
                   alt={evt.title}
                   className="w-full h-full object-cover"
@@ -185,7 +187,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               <div className="p-3.5 sm:p-4 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between text-[11px] text-rose-400 font-semibold mb-1">
-                    <span>{evt.dateLabel}</span>
+                    <span>{new Date(evt.utcDate).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Africa/Abidjan' })} · {evt.timeLabel}</span>
                     <span className="text-slate-400 font-normal">{evt.priceLabel}</span>
                   </div>
 
@@ -201,7 +203,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-2">
+                <div className="flex flex-wrap gap-3 items-center justify-between pt-3 border-t border-slate-800/80 mt-2">
                   <span className="text-[10px] text-slate-400 font-medium">
                     {evt.goingCount} participants · {evt.interestedCount} intéressés
                   </span>
@@ -209,6 +211,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                   <div className="flex gap-1.5">
                     <button
                       onClick={() => toggleEventIntent(evt.id, 'interested')}
+                      aria-pressed={evt.userIntent === 'interested'}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                         evt.userIntent === 'interested'
                           ? 'bg-blue-950 text-blue-300 border border-blue-800'
@@ -219,6 +222,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                     </button>
                     <button
                       onClick={() => toggleEventIntent(evt.id, 'going')}
+                      aria-pressed={evt.userIntent === 'going'}
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                         evt.userIntent === 'going'
                           ? 'bg-rose-950 text-rose-300 border border-rose-800'
@@ -253,7 +257,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
             >
               <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
-                <img
+                <SafeImage
                   src={place.coverImage}
                   alt={place.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -290,7 +294,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
             >
               <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
-                <img
+                <SafeImage
                   src={place.coverImage}
                   alt={place.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

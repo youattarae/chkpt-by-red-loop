@@ -1,6 +1,6 @@
 # Parcours de présentation CHKPT — environ 3 minutes
 
-Ce document est **le scénario que Codex doit rendre fluide**. Tous les noms, avis, visites, statistiques et points de ce mode sont fictifs tant que non vérifiés.
+Ce parcours est maintenant vérifié par la recette navigateur. Le [guide opératoire](GUIDE_PRESENTATION.md) donne les gestes exacts et le pitch prêt à lire. Le [support de secours autonome](DEMO_SECOURS.html) contient les captures du prototype. Tous les noms, avis, visites, statistiques et points de ce mode sont fictifs tant que non vérifiés.
 
 ## Pitch FrancoTech (Ingrid)
 
@@ -26,7 +26,7 @@ Expliquer d'abord le problème (difficulté à découvrir et choisir une sortie)
 - [ ] Accéder à l'application avec le compte **démo autorisé**.
 - [ ] Vérifier l'accès réseau et les photos du scénario, ou la disponibilité des images locales.
 - [ ] Réinitialiser le scénario via le mécanisme protégé.
-- [ ] Confirmer le maquis exact pour lequel le GPS simulé sera accepté.
+- [ ] Choisir Démarrer la démo, puis le Maquis L’Étoile d’Abidjan, Saint-Jean.
 - [ ] Vérifier que le badge attendu n'a pas déjà été débloqué avant l'essai.
 - [ ] Créer une publication test puis revenir au profil.
 - [ ] Montrer l'indication « mode démonstration / données fictives ».

@@ -19,7 +19,7 @@ export const CURRENT_USER: UserProfile = {
   id: 'usr_01',
   username: 'koffi_urbex',
   displayName: 'Koffi Kouamé',
-  avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+  avatarUrl: '/illustrations/koffi.svg',
   bio: "Explorateur urbain d'Abidjan · Foodie & rooftops chill · Spécialiste Cocody",
   homeZone: 'Cocody, Abidjan',
   level: 4,
@@ -52,10 +52,10 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '7 000 – 18 000 FCFA',
     openingHours: 'Tous les jours : 17h00 - 02h00',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/rooftop.svg',
     galleryImages: [
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1578474846511-04ba529f0b88?w=800&auto=format&fit=crop&q=80'
+      '/illustrations/rooftop.svg',
+      '/illustrations/cafe.svg'
     ],
     tags: ['Rooftop', 'Vue Lagune', 'Cocktails', 'Sunset', 'Classy Street'],
     totalCheckins: 142,
@@ -80,10 +80,10 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '3 500 – 9 000 FCFA',
     openingHours: 'Mardi au Dimanche : 11h30 - 01h00',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     galleryImages: [
-      'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
-      'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80'
+      '/illustrations/maquis.svg',
+      '/illustrations/maquis.svg'
     ],
     tags: ['Poisson braisé', 'Alloco', 'Attiéké', 'Convivial', 'Musique live'],
     totalCheckins: 289,
@@ -108,9 +108,9 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '2 500 – 6 500 FCFA',
     openingHours: 'Tous les jours : 07h00 - 20h00',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/cafe.svg',
     galleryImages: [
-      'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80'
+      '/illustrations/cafe.svg'
     ],
     tags: ['Spécialité Café', 'Brunch', 'Pâtisseries', 'Coworking calme'],
     totalCheckins: 94,
@@ -135,9 +135,9 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '1 000 – 3 000 FCFA',
     openingHours: 'Mercredi au Dimanche : 10h00 - 19h00',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/art.svg',
     galleryImages: [
-      'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80'
+      '/illustrations/art.svg'
     ],
     tags: ['Exposition', 'Art Contemporain', 'Design', 'Vernissage'],
     totalCheckins: 56,
@@ -162,7 +162,7 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '4 000 – 12 000 FCFA',
     openingHours: 'Tous les soirs : 18h00 - 04h00',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     galleryImages: [],
     tags: ['Plein air', 'Ambiance Nuit', 'Lieu Historique', 'Grillades'],
     totalCheckins: 320,
@@ -187,7 +187,7 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '15 000 – 35 000 FCFA',
     openingHours: 'Lundi au Samedi : 12h00 - 23h30',
     isCurrentlyOpen: true,
-    coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     galleryImages: [],
     tags: ['Bistronomie', 'Vue Pont', 'Dîner Romantique', 'Cave à vin'],
     totalCheckins: 110,
@@ -203,10 +203,10 @@ export const INITIAL_POSTS: Post[] = [
     authorId: 'usr_sarah',
     authorName: 'Sarah Diallo',
     authorUsername: 'sarah_dlo',
-    authorAvatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&auto=format&fit=crop&q=80',
+    authorAvatar: '/illustrations/sarah.svg',
     createdAt: 'Il y a 32 min',
     text: 'Coucher de soleil magique sur la lagune Ébrié depuis le Lagon Bleu ! Les brochettes d\'escargots braisés et le cocktail kinkeliba sont tout simplement parfaits.',
-    mediaUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
+    mediaUrl: '/illustrations/rooftop.svg',
     mediaType: 'image',
     linkedPlaceId: 'plc_cocody_lounge',
     linkedPlaceName: 'Lagon Bleu Rooftop Lounge',
@@ -220,7 +220,7 @@ export const INITIAL_POSTS: Post[] = [
         id: 'cmt_1',
         authorId: 'usr_01',
         authorName: 'Koffi Kouamé',
-        authorAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+        authorAvatar: '/illustrations/koffi.svg',
         text: 'La vue au crépuscule reste imbattable à Cocody Danga !',
         createdAt: 'Il y a 15 min'
       }
@@ -231,10 +231,10 @@ export const INITIAL_POSTS: Post[] = [
     authorId: 'usr_02',
     authorName: 'Amara Koné',
     authorUsername: 'amara_sound',
-    authorAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+    authorAvatar: '/illustrations/admin.svg',
     createdAt: 'Il y a 2h',
     text: 'Ambiance live acoustique ce soir aux Deux-Plateaux Vallons. Des toiles magnifiques et un accueil chaleureux.',
-    mediaUrl: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80',
+    mediaUrl: '/illustrations/art.svg',
     mediaType: 'image',
     linkedPlaceId: 'plc_galerie_ceci',
     linkedPlaceName: "Centre d'Art Urbain & Céramique Babi",
@@ -247,34 +247,41 @@ export const INITIAL_POSTS: Post[] = [
   }
 ];
 
+const upcomingDate = (days: number, hour: number) => {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  date.setUTCHours(hour, 0, 0, 0);
+  return date.toISOString();
+};
+
 export const INITIAL_EVENTS: EventItem[] = [
   {
     id: 'evt_01',
     title: 'Nuit Urbaine Abidjan & Live Beats',
-    dateLabel: 'Ce soir, 19h00',
+    dateLabel: 'Demain · 19h00',
     timeLabel: '19h00 - 02h00',
-    utcDate: '2026-10-26T19:00:00Z',
+    utcDate: upcomingDate(1, 19),
     locationName: 'Lagon Bleu Rooftop Lounge',
     commune: 'Cocody',
     description: 'Session DJ set afro-house, percussions traditionnelles en live et dégustation de cocktails signatures.',
-    coverImage: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/night.svg',
     priceLabel: 'Entrée libre (Conso requise)',
     organizerName: 'Collectif Babi Groove',
     category: 'Musique & Nuit',
     interestedCount: 88,
     goingCount: 34,
-    userIntent: 'going'
+    userIntent: null
   },
   {
     id: 'evt_02',
     title: 'Vernissage & Céramique Contemporaine',
-    dateLabel: 'Vendredi 30 Octobre',
+    dateLabel: 'Dans 4 jours · 18h00',
     timeLabel: '18h30 - 21h30',
-    utcDate: '2026-10-30T18:30:00Z',
+    utcDate: upcomingDate(4, 18),
     locationName: "Centre d'Art Urbain Babi",
     commune: 'Cocody',
     description: 'Rencontre avec 6 jeunes plasticiens ivoiriens explorant la terre cuite et les textures de Grand-Bassam.',
-    coverImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/art.svg',
     priceLabel: 'Accès gratuit sur inscription',
     organizerName: 'Fondation Babi Arts',
     category: 'Culture & Art',
@@ -389,21 +396,21 @@ export const INITIAL_BADGES: Badge[] = [
 export const INITIAL_AD_CAMPAIGNS: AdCampaign[] = [
   {
     id: 'ad_01',
-    advertiserName: 'Orange Bank Africa & Wave CI',
-    bannerTitle: 'Réglez vos sorties à Cocody sans contact',
-    bannerSubtitle: 'Découvrez les avantages partenaires exclusifs dans vos spots favoris.',
-    imageUrl: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=800&auto=format&fit=crop&q=80',
-    ctaText: 'Partenaire Officiel RED LOOP',
+    advertiserName: 'Votre enseigne ici · exemple fictif',
+    bannerTitle: 'Les bonnes adresses méritent de se faire connaître',
+    bannerSubtitle: 'Emplacement publicitaire de démonstration, sans annonceur réel.',
+    imageUrl: '/illustrations/rooftop.svg',
+    ctaText: 'Campagne fictive · non cliquable',
     isNonClickableNotice: true,
     targetCommune: 'Cocody'
   },
   {
     id: 'ad_02',
-    advertiserName: 'Chai & Épices Danga',
+    advertiserName: 'Café de démonstration',
     bannerTitle: 'Nouvelle carte des thés et infusions ivoiriennes',
-    bannerSubtitle: 'À découvrir chez nos torréfacteurs indépendants certifiés.',
-    imageUrl: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
-    ctaText: 'Régie Partenaire',
+    bannerSubtitle: 'Exemple de campagne locale fictive, sans partenariat réel.',
+    imageUrl: '/illustrations/cafe.svg',
+    ctaText: 'Exemple de campagne',
     isNonClickableNotice: true,
     targetCommune: 'Cocody'
   }

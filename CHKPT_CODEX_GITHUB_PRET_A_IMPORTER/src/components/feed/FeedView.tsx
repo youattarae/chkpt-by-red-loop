@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -27,7 +28,8 @@ interface FeedViewProps {
 
 export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin }) => {
   const { 
-    currentUser, 
+    currentUser,
+    followingIds,
     posts, 
     places, 
     likePost, 
@@ -95,9 +97,8 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
   // Filter posts based on feed type and selected categories
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
-      if (feedFilter === 'friends' && post.authorId === currentUser.id && posts.length > 1) {
-        // Keep friends feed relevant
-      }
+      if (post.audience !== 'public' && post.authorId !== currentUser.id) return false;
+      if (feedFilter === 'friends' && !followingIds.includes(post.authorId)) return false;
 
       if (selectedCategories.length === 0) return true;
 
@@ -106,7 +107,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
       return false;
     });
-  }, [posts, feedFilter, selectedCategories, currentUser.id, places]);
+  }, [posts, feedFilter, selectedCategories, currentUser.id, places, followingIds]);
 
   // Post counts per category for the filter chips
   const categoryPostCounts = useMemo(() => {
@@ -143,6 +144,18 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
   return (
     <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-4 pb-24">
       
+      <section className="discovery-hero" aria-label="Découvrir Cocody">
+        <SafeImage src="/illustrations/maquis.svg" alt="Illustration d'une terrasse de maquis à la tombée du jour" className="discovery-hero__art" />
+        <div className="discovery-hero__shade" />
+        <div className="discovery-hero__content">
+          <span className="eyebrow">COCODY, À VOTRE RYTHME</span>
+          <h1>Sors.<br /><span>Check.</span> Partage.</h1>
+          <p>Les meilleures découvertes<br />commencent près de vous.</p>
+          <button onClick={() => onSelectPlace('plc_maquis_etoile')} className="hero-cta">Découvrir le spot du jour <span aria-hidden="true">↗</span></button>
+          <span className="hero-caption">Lieu fictif · illustration de présentation</span>
+        </div>
+      </section>
+      <div className="flex items-end justify-between pt-2"><div><span className="eyebrow text-blue-300">LA VILLE SE RACONTE</span><h2 className="text-xl font-bold mt-1">Dans la boucle</h2></div><span className="text-xs text-slate-400">Cocody · Abidjan</span></div>
       {/* Feed Tabs: Pour toi / Amis */}
       <div className="flex border-b border-slate-900 gap-4">
         <button
@@ -184,7 +197,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
       {/* Create Post Card */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-3 sm:p-4 shadow-sm">
         <div className="flex items-center gap-3">
-          <img
+          <SafeImage
             src={currentUser.avatarUrl}
             alt={currentUser.displayName}
             className="w-9 h-9 rounded-xl object-cover shrink-0 border border-slate-700"
@@ -231,7 +244,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                 disabled={!newPostText.trim()}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
-                Publier (+20 XP)
+                Publier
               </button>
             </div>
           </form>
@@ -246,7 +259,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
             <span className="text-slate-400">Non cliquable</span>
           </div>
           <div className="flex items-center gap-3">
-            <img
+            <SafeImage
               src={activeAd.imageUrl}
               alt={activeAd.advertiserName}
               className="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-800"
@@ -304,7 +317,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                 {/* Post Header */}
                 <div className="p-3.5 sm:p-4 flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <img
+                    <SafeImage
                       src={post.authorAvatar}
                       alt={post.authorName}
                       className="w-9 h-9 rounded-xl object-cover border border-slate-700 shrink-0"
@@ -321,7 +334,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                   {post.isVerifiedVisit && (
                     <span className="px-2 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-[10px] font-bold flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3 text-emerald-400" />
-                      <span>Visite vérifiée</span>
+                      <span>{post.isSimulated ? 'Visite simulée · démo' : 'Visite vérifiée'}</span>
                     </span>
                   )}
                 </div>
@@ -349,7 +362,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                 {/* Media */}
                 {post.mediaUrl && (
                   <div className="aspect-video w-full bg-slate-950 overflow-hidden">
-                    <img
+                    <SafeImage
                       src={post.mediaUrl}
                       alt=""
                       className="w-full h-full object-cover"
@@ -398,7 +411,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                       <div className="space-y-2">
                         {post.comments.map((c) => (
                           <div key={c.id} className="text-xs text-slate-300 flex items-start gap-2">
-                            <img src={c.authorAvatar} alt="" className="w-5 h-5 rounded-md object-cover mt-0.5" />
+                            <SafeImage src={c.authorAvatar} alt="" className="w-5 h-5 rounded-md object-cover mt-0.5" />
                             <div>
                               <span className="font-bold text-white mr-1.5">{c.authorName}:</span>
                               <span>{c.text}</span>

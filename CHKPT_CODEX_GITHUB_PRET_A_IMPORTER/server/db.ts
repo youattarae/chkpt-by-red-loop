@@ -9,6 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { demoAdminPassword, privateDemoEnabled, seedUserIds } from './demoConfig';
 
 function hashSeedPassword(pwd: string, salt: string): string {
   return crypto.scryptSync(pwd, salt, 64).toString('hex');
@@ -67,6 +68,7 @@ export interface PlaceEntity {
 }
 
 export interface CheckInEntity {
+  isSimulated?: boolean;
   id: string;
   userId: string;
   userName: string;
@@ -158,7 +160,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€€',
     priceDescription: '7 000 – 18 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/rooftop.svg',
     tags: ['Rooftop', 'Vue Lagune', 'Cocktails', 'Sunset', 'Classy Street'],
     isCertified: true,
   },
@@ -177,7 +179,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '3 500 – 9 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Poisson braisé', 'Alloco', 'Attiéké', 'Convivial', 'Musique live'],
     isCertified: true,
   },
@@ -196,7 +198,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '2 500 – 6 500 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/cafe.svg',
     tags: ['Spécialité Café', 'Brunch', 'Pâtisseries', 'Coworking calme'],
     isCertified: true,
   },
@@ -215,7 +217,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€',
     priceDescription: '1 000 – 3 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/art.svg',
     tags: ['Exposition', 'Art Contemporain', 'Design', 'Vernissage'],
     isCertified: true,
   },
@@ -234,7 +236,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '4 000 – 12 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Plein air', 'Ambiance Nuit', 'Lieu Historique', 'Grillades'],
     isCertified: false,
   },
@@ -253,7 +255,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€€',
     priceDescription: '15 000 – 35 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Bistronomie', 'Vue Pont', 'Dîner Romantique', 'Cave à vin'],
     isCertified: true,
   }
@@ -279,13 +281,13 @@ class Database {
           id: 'usr_01',
           username: 'koffi_urbex',
           displayName: 'Koffi Kouamé',
-          passwordHash: hashSeedPassword('koffi123', 'chkpt_salt_koffi_demo'),
+          passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_koffi_demo'),
           salt: 'chkpt_salt_koffi_demo',
           age: 24,
           visibility: 'public',
           role: 'user',
           homeZone: 'Cocody, Abidjan',
-          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/koffi.svg',
           bio: 'Explorateur d\'Abidjan · Foodie & rooftop chill · Cocody en priorité',
           followersCount: 389,
           followingCount: 142,
@@ -298,13 +300,13 @@ class Database {
           id: 'usr_sarah',
           username: 'sarah_dlo',
           displayName: 'Sarah Diallo',
-          passwordHash: hashSeedPassword('sarah123', 'chkpt_salt_sarah_demo'),
+          passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_sarah_demo'),
           salt: 'chkpt_salt_sarah_demo',
           age: 23,
           visibility: 'public',
           role: 'user',
           homeZone: 'Cocody, Abidjan',
-          avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/sarah.svg',
           bio: 'Foodie & sorties branchées entre Cocody et le Plateau.',
           followersCount: 512,
           followingCount: 220,
@@ -317,13 +319,13 @@ class Database {
           id: 'usr_admin',
           username: 'redloop_admin',
           displayName: 'Superviseur RED LOOP',
-          passwordHash: hashSeedPassword('admin123', 'chkpt_salt_admin_demo'),
+          passwordHash: hashSeedPassword(privateDemoEnabled ? demoAdminPassword! : crypto.randomBytes(32).toString('hex'), 'chkpt_salt_admin_demo'),
           salt: 'chkpt_salt_admin_demo',
           age: 35,
           visibility: 'private',
           role: 'admin',
           homeZone: 'Abidjan Siège',
-          avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/admin.svg',
           bio: 'Compte administrateur RED LOOP pour la gestion opérationnelle et modération.',
           followersCount: 0,
           followingCount: 0,
@@ -333,33 +335,14 @@ class Database {
           createdAt: new Date(Date.now() - 90 * 86400000).toISOString(),
         },
       ],
-      sessions: [
-        {
-          token: 'demo_session_koffi_token_12345',
-          userId: 'usr_01',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-        {
-          token: 'demo_session_sarah_token_99999',
-          userId: 'usr_sarah',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-        {
-          token: 'demo_session_admin_token_67890',
-          userId: 'usr_admin',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-      ],
+      sessions: [],
       places: CANONICAL_PLACES,
       checkins: [
         {
           id: 'chk_demo_initial',
           userId: 'usr_01',
           userName: 'Koffi Kouamé',
-          userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          userAvatar: '/illustrations/koffi.svg',
           placeId: 'plc_cocody_lounge',
           placeName: 'Lagon Bleu Rooftop Lounge',
           placeCategory: 'bars_lounges',
@@ -416,14 +399,22 @@ class Database {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
+        const tables = ['users', 'sessions', 'places', 'checkins', 'checkin_proofs', 'points_ledger', 'follows', 'reports'];
+        if (!tables.every(table => Array.isArray(parsed[table]))) throw new Error('Invalid database tables');
         parsed.places = CANONICAL_PLACES;
-        const adminUser = parsed.users?.find((u: any) => u.username === 'redloop_admin');
-        if (adminUser) {
-          adminUser.passwordHash = hashSeedPassword('admin123', adminUser.salt);
+        // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
+        for (const user of parsed.users) {
+          if (!seedUserIds.has(user.id)) continue;
+          user.salt = crypto.randomBytes(16).toString('hex');
+          const password = privateDemoEnabled && user.id === 'usr_admin'
+            ? demoAdminPassword! : crypto.randomBytes(32).toString('hex');
+          user.passwordHash = hashSeedPassword(password, user.salt);
         }
+        parsed.sessions = parsed.sessions.filter((session: SessionEntity) => !seedUserIds.has(session.userId));
+        this.save(parsed);
         return parsed;
       } catch (e) {
-        console.warn('DB file corrupt or outdated, re-initializing fresh database:', e);
+        throw new Error('Base locale illisible : démarrage interrompu pour préserver le fichier existant.', { cause: e });
       }
     }
 
@@ -485,7 +476,8 @@ class Database {
   public findSession(token: string): SessionEntity | undefined {
     const s = this.data.sessions.find(session => session.token === token);
     if (!s) return undefined;
-    if (new Date(s.expiresAt).getTime() < Date.now()) {
+    const expiry = new Date(s.expiresAt).getTime();
+    if (!Number.isFinite(expiry) || expiry <= Date.now()) {
       this.deleteSession(token);
       return undefined;
     }
@@ -550,6 +542,10 @@ class Database {
     return this.data.follows
       .filter(f => f.followedId === userId)
       .map(f => f.followerId);
+  }
+
+  public getFollowing(userId: string): string[] {
+    return this.data.follows.filter(f => f.followerId === userId).map(f => f.followedId);
   }
 
   public isFollower(followerId: string, followedId: string): boolean {

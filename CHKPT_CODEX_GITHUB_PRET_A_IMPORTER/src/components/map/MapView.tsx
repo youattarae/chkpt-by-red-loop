@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -69,8 +70,9 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHe
   }, [places]);
 
   return (
-    <div className="relative w-full h-[calc(100vh-120px)] bg-slate-950 overflow-hidden flex flex-col">
+    <div className="relative w-full h-[calc(100dvh-145px)] min-h-[560px] bg-slate-950 overflow-hidden flex flex-col">
       
+      <span className="absolute bottom-28 left-4 z-10 text-[10px] text-slate-400 bg-slate-950/80 rounded-lg px-2 py-1">Carte illustrée · positions de démonstration</span>
       {/* Floating Chip-Based Category Filter Bar */}
       <div className="absolute top-3 left-3 right-3 z-20">
         <CategoryFilterBar
@@ -194,6 +196,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHe
               >
                 <button
                   onClick={() => setSelectedPlaceId(place.id)}
+                  aria-label={`Choisir ${place.name}`}
                   className={`relative flex flex-col items-center group cursor-pointer transition-transform ${
                     isSelected ? 'scale-125 z-30' : 'hover:scale-110 z-10'
                   }`}
@@ -229,7 +232,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHe
       {activePlace && (
         <div className="absolute bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-lg mx-auto z-30">
           <div className="bg-slate-900/95 border border-slate-800 rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 animate-in slide-in-from-bottom-3 duration-200">
-            <img
+            <SafeImage
               src={activePlace.coverImage}
               alt={activePlace.name}
               className="w-16 h-16 rounded-2xl object-cover shrink-0 border border-slate-800"

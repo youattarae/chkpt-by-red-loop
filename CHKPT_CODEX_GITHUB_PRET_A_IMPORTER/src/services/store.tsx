@@ -4,7 +4,7 @@
  * CHKPT & RED LOOP State Store (React Context + Server State + Dynamic Gamification)
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { 
   Place, 
   CheckIn, 
@@ -45,6 +45,7 @@ import {
 interface StoreContextType {
   currentUser: UserProfile;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserProfile>>;
+  followingIds: string[];
   authSessionToken: string;
   setAuthSessionToken: (token: string) => void;
   appEnvironment: 'demo' | 'production';
@@ -91,7 +92,7 @@ interface StoreContextType {
   toggleSavePlace: (placeId: string) => void;
   toggleEventIntent: (eventId: string, intent: 'interested' | 'going') => void;
   submitPlaceProposal: (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => void;
-  resetDemoPitchState: () => Promise<void>;
+  resetDemoPitchState: (start?: boolean) => Promise<void>;
   // Notifications
   notifications: AppNotification[];
   notificationPreferences: NotificationPreferences;
@@ -117,9 +118,11 @@ const STORAGE_PREFIX = 'chkpt_abidjan_v1_';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authSessionToken, setAuthSessionTokenState] = useState<string>(() => {
-    return localStorage.getItem('chkpt_session_token') || 'demo_session_koffi_token_12345';
+    return localStorage.getItem('chkpt_session_token') || '';
   });
 
+  const statsRevision = useRef(0);
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
 
   const setAuthSessionToken = (token: string) => {
@@ -163,11 +166,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
+    const requestedStatsRevision = statsRevision.current;
     fetch('/api/auth/me', {
+      signal: controller.signal,
       headers: { Authorization: `Bearer ${authSessionToken}` },
     })
       .then((res) => res.json())
       .then((data) => {
+        if (controller.signal.aborted) return;
+        setFollowingIds(Array.isArray(data.followingIds) ? data.followingIds : []);
         if (data.authenticated && data.user) {
           setCurrentUser((prev) => ({
             ...prev,
@@ -177,14 +185,22 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             role: data.user.role,
             age: data.user.age,
             visibility: data.user.visibility,
-            xpPoints: data.user.xpPoints,
-            checkinsCount: data.user.checkinsCount,
-            level: data.user.level,
+            xpPoints: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.xpPoints : data.user.xpPoints,
+            checkinsCount: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.checkinsCount : data.user.checkinsCount,
+            level: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.level : data.user.level,
             homeZone: data.user.homeZone,
+            avatarUrl: data.user.avatarUrl,
+            bio: data.user.bio,
+            followersCount: data.user.followersCount,
+            followingCount: data.user.followingCount,
           }));
+        } else {
+          setCurrentUser(CURRENT_USER);
+          setIsOperatorView(false);
         }
       })
-      .catch((err) => console.warn('Sync /api/auth/me error:', err));
+      .catch((err) => { if (err.name !== 'AbortError') console.warn('Sync /api/auth/me error:', err); });
+    return () => controller.abort();
   }, [authSessionToken]);
 
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>(() => {
@@ -280,7 +296,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         targetId: 'plc_cocody_lounge',
         isRead: false,
         createdAt: 'Il y a 12 min',
-        avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100',
+        avatarUrl: '/illustrations/sarah.svg',
       },
       {
         id: 'notif_02',
@@ -292,7 +308,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         targetId: 'evt_01',
         isRead: true,
         createdAt: 'Il y a 3h',
-        avatarUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100',
+        avatarUrl: '/illustrations/night.svg',
       }
     ];
   });
@@ -312,6 +328,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [isOperatorView, setIsOperatorView] = useState<boolean>(false);
 
   // Sync to localStorage
+  useEffect(() => {
+    localStorage.setItem(`${STORAGE_PREFIX}ledger`, JSON.stringify(pointsLedger));
+  }, [pointsLedger]);
   useEffect(() => {
     localStorage.setItem(`${STORAGE_PREFIX}user`, JSON.stringify(currentUser));
   }, [currentUser]);
@@ -358,21 +377,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Request browser GPS if mode is active
   useEffect(() => {
-    if (activeLocationMode === 'browser_gps' && navigator.geolocation) {
+    let cancelled = false;
+    if (activeLocationMode !== 'browser_gps') return;
+    setBrowserCoordinates(null);
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          if (cancelled) return;
           setBrowserCoordinates({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
         },
         (err) => {
+          if (cancelled) return;
           console.warn('Geolocation permission error, falling back to simulated spot:', err.message);
           setActiveLocationMode('simulation');
         },
         { enableHighAccuracy: true, timeout: 8000 }
       );
-    }
+    } else { setActiveLocationMode('simulation'); }
+    return () => { cancelled = true; };
   }, [activeLocationMode]);
 
   const userCurrentCoordinates: Coordinates = 
@@ -384,11 +409,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    * Reset the entire Pitch Demo Scenario:
    * Restores pristine state on server and local client storage
    */
-  const resetDemoPitchState = async () => {
+  const resetDemoPitchState = async (start = false) => {
+    let started: any;
     try {
-      await fetch('/api/demo/reset', { method: 'POST' });
+      const response = await fetch(start ? '/api/demo/start' : '/api/demo/reset', {
+        method: 'POST', headers: { Authorization: `Bearer ${authSessionToken}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Réinitialisation refusée.');
+      started = data;
     } catch (e) {
       console.warn('Server reset failed:', e);
+      throw e;
     }
 
     // Clear local storage keys
@@ -399,8 +431,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     // Reset in-memory states
-    setAuthSessionToken('demo_session_koffi_token_12345');
-    setCurrentUser(CURRENT_USER);
+    statsRevision.current += 1;
+    setAuthSessionToken(started.token || '');
+    setCurrentUser(started.user || CURRENT_USER);
+    setPointsLedger([]);
+    setNotifications([]);
+    setPlaceProposals(INITIAL_PLACE_PROPOSALS);
+    setModerationCases(INITIAL_MODERATION_CASES);
     setPlaces(INITIAL_PLACES);
     setCheckins([]);
     setPosts(INITIAL_POSTS);
@@ -439,6 +476,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     earnedXp?: number;
     unlockedBadgeName?: string;
   }> => {
+    if (activeLocationMode === 'browser_gps' && !browserCoordinates) {
+      return { success: false, message: 'Position GPS en cours de recherche. Patientez ou choisissez explicitement le simulateur.', distanceMeters: 0 };
+    }
     const place = places.find(p => p.id === placeId);
     if (!place) {
       return { success: false, message: 'Lieu introuvable dans le référentiel.', distanceMeters: 0 };
@@ -496,7 +536,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const serverCheckin = serverData.checkIn;
       const earnedXp = serverData.awardedXp || 50;
 
+      // An older profile response must not roll back this confirmed server award.
+      statsRevision.current += 1;
       const newCheckIn: CheckIn = {
+        isSimulated: serverCheckin.isSimulated,
         id: serverCheckin.id,
         userId: currentUser.id,
         userName: currentUser.displayName,
@@ -520,8 +563,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Dynamic Gamification Engine: Evaluate and Unlock Badges
       let newlyUnlockedBadgeName: string | undefined;
 
-      setBadges((prevBadges) => {
-        return prevBadges.map((badge) => {
+      const nextBadges = badges.map((badge) => {
           let updatedCount = badge.currentCount;
 
           if (badge.family === 'Explorateur' && !badge.isUnlocked) {
@@ -549,8 +591,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             isUnlocked: badge.isUnlocked || shouldUnlock,
             unlockedAt: shouldUnlock ? new Date().toISOString() : badge.unlockedAt,
           };
-        });
       });
+      setBadges(nextBadges);
 
       // Synchronize user XP directly with server award
       setCurrentUser(prev => ({
@@ -612,6 +654,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const linkedPlace = data.linkedPlaceId ? places.find(p => p.id === data.linkedPlaceId) : undefined;
     
     const newPost: Post = {
+      isSimulated: checkins.find(c => c.id === data.linkedCheckinId)?.isSimulated,
       id: `pst_${Date.now()}`,
       authorId: currentUser.id,
       authorName: currentUser.displayName,
@@ -625,7 +668,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       linkedPlaceName: linkedPlace?.name,
       linkedCheckinId: data.linkedCheckinId,
       isVerifiedVisit: data.isVerifiedVisit,
-      audience: 'public',
+      audience: currentUser.visibility === 'private' ? 'private' : 'public',
       likesCount: 0,
       isLikedByCurrentUser: false,
       commentsCount: 0,
@@ -633,7 +676,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setPosts(prev => [newPost, ...prev]);
-    setCurrentUser(prev => ({ ...prev, xpPoints: prev.xpPoints + 20 }));
+    // Publishing is optional and does not award visit XP.
   };
 
   const likePost = (postId: string) => {
@@ -744,7 +787,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       openingHours: 'Tous les jours : 10h00 - 23h00',
       isCurrentlyOpen: true,
       tags: ['Nouveau', 'Validé RED LOOP'],
-      coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+      coverImage: '/illustrations/maquis.svg',
       galleryImages: [],
       totalCheckins: 0,
       reviewCount: 0
@@ -837,7 +880,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       body: 'Sarah Diallo vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
       targetType: 'place',
       targetId: 'plc_cocody_lounge',
-      avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100',
+      avatarUrl: '/illustrations/sarah.svg',
       dedupeKey: `friend_checkin_${Date.now()}`,
     });
   };
@@ -850,7 +893,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       body: 'Nuit Urbaine Abidjan & Live Beats a lieu à 250m de votre position aux Vallons !',
       targetType: 'event',
       targetId: 'evt_01',
-      avatarUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100',
+      avatarUrl: '/illustrations/night.svg',
       dedupeKey: `nearby_event_${Date.now()}`,
     });
   };
@@ -859,6 +902,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <StoreContext.Provider value={{
       currentUser,
       setCurrentUser,
+      followingIds,
       authSessionToken,
       setAuthSessionToken,
       appEnvironment,

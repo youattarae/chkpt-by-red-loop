@@ -19,6 +19,7 @@ import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
+import { privateDemoEnabled, requirePrivateDemo, seedUserIds } from './server/demoConfig';
 import { db, UserEntity } from './server/db';
 import {
   authenticateUser,
@@ -122,7 +123,7 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
       visibility,
       role: 'user',
       homeZone: homeZone || 'Cocody, Abidjan',
-      avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+      avatarUrl: `/illustrations/avatar.svg`,
       bio: 'Nouveau membre sur CHKPT Abidjan.',
       followersCount: 0,
       followingCount: 0,
@@ -169,7 +170,7 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
     }
 
     const user = db.findUserByUsername(username.trim());
-    if (!user) {
+    if (!user || (!privateDemoEnabled && seedUserIds.has(user.id))) {
       res.status(401).json({ error: 'invalid_credentials', message: 'Identifiant ou mot de passe incorrect.' });
       return;
     }
@@ -203,22 +204,23 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
 });
 
 /**
- * Switch persona for demo/pitch evaluation (Blocked in strict production mode)
+ * Switch persona only on an explicitly enabled private demo, after operator authentication
  */
-app.post('/api/auth/switch-demo', (req: Request, res: Response) => {
-  const { username, environment } = req.body;
+app.post('/api/auth/switch-demo', requirePrivateDemo, requireOperator, (req: Request, res: Response) => {
+  const { username } = req.body;
 
-  if (environment === 'production' && process.env.NODE_ENV === 'production') {
-    res.status(403).json({
-      error: 'demo_forbidden_in_production',
-      message: 'Le changement direct de persona est strictement interdit en environnement de production.',
-    });
+  if (typeof username !== 'string') {
+    res.status(400).json({ error: 'invalid_username' });
+    return;
+  }
+  const user = db.findUserByUsername(username);
+  if (!user || !seedUserIds.has(user.id)) {
+    res.status(404).json({ error: 'user_not_found', message: 'Profil démo introuvable.' });
     return;
   }
 
-  const user = db.findUserByUsername(username);
-  if (!user) {
-    res.status(404).json({ error: 'user_not_found', message: 'Profil démo introuvable.' });
+  if (['admin', 'superadmin'].includes(user.role) && !['admin', 'superadmin'].includes(req.user!.role)) {
+    res.status(403).json({ error: 'forbidden_demo_elevation' });
     return;
   }
 
@@ -259,7 +261,7 @@ app.get('/api/auth/me', (req: Request, res: Response) => {
     return;
   }
   const { passwordHash: _, salt: __, ...safeUser } = req.user;
-  res.json({ authenticated: true, user: safeUser });
+  res.json({ authenticated: true, user: safeUser, followingIds: db.getFollowing(req.user.id) });
 });
 
 // ==========================================
@@ -338,7 +340,10 @@ app.get('/api/checkins/history', requireAuth, (req: Request, res: Response) => {
     return;
   }
 
-  const checkins = db.getCheckins(targetUserId);
+  const checkins = db.getCheckins(targetUserId).filter(checkin =>
+    targetUserId === req.user!.id || checkin.audience === 'public' ||
+    (checkin.audience === 'followers' && db.isFollower(req.user!.id, targetUserId))
+  );
   res.json({ checkins });
 });
 
@@ -349,9 +354,20 @@ app.get('/api/checkins/history', requireAuth, (req: Request, res: Response) => {
 /**
  * Resets database state for pitch and live evaluations
  */
-app.post('/api/demo/reset', (_req: Request, res: Response) => {
+app.post(['/api/demo/reset', '/api/demo/start'], requirePrivateDemo, requireOperator, (req: Request, res: Response) => {
   try {
     const freshDb = db.resetPitchDemoState();
+    mediaRegistry.clear();
+    if (req.path === '/api/demo/start') {
+      const user = db.findUserById('usr_01')!;
+      const token = generateSessionToken();
+      db.createSession({ token, userId: user.id, createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 86400000).toISOString() });
+      const { passwordHash: _, salt: __, ...safeUser } = user;
+      res.json({ success: true, token, user: safeUser });
+      return;
+    }
+
     res.json({
       success: true,
       message: 'Scénario de démonstration réinitialisé avec succès.',
@@ -404,7 +420,8 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
     const effectiveOwnerUsername = req.user!.username;
 
     const validAudiences = ['private', 'followers', 'public'];
-    const chosenAudience = validAudiences.includes(audience) ? audience : 'private';
+    const chosenAudience = req.user!.age < 18 ? 'private'
+      : validAudiences.includes(audience) ? audience : 'private';
 
     const assetId = `med_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const token = crypto.randomBytes(16).toString('hex');
@@ -574,7 +591,7 @@ app.post('/api/places/grounding', async (req: Request, res: Response) => {
 
     if (!process.env.GEMINI_API_KEY) {
       res.json({
-        text: 'Les recommandations locales pour Abidjan Cocody sont basées sur le référentiel certifié RED LOOP.',
+        text: 'Les lieux affichés sont une sélection fictive pour la démonstration à Cocody.',
         groundedPlaces: [],
         note: 'GEMINI_API_KEY non configurée pour le grounding direct.',
       });
@@ -645,8 +662,10 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, '0.0.0.0', () => {
-    console.log(`CHKPT Fullstack Server running at http://0.0.0.0:${PORT}`);
+  const httpServer = app.listen(PORT, process.env.HOST || '127.0.0.1', () => {
+    const address = httpServer.address();
+    const boundPort = typeof address === 'object' && address ? address.port : PORT;
+    console.log(`CHKPT Fullstack Server running at http://${process.env.HOST || '127.0.0.1'}:${boundPort}`);
   });
 }
 

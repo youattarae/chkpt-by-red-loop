@@ -1,3 +1,4 @@
+import { SafeImage } from './SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -115,7 +116,7 @@ export const NotificationCenterModal: React.FC<NotificationCenterModalProps> = (
                   >
                     <div className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 overflow-hidden shrink-0 flex items-center justify-center">
                       {notif.avatarUrl ? (
-                        <img src={notif.avatarUrl} alt="" className="w-full h-full object-cover" />
+                        <SafeImage src={notif.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <Bell className="w-4 h-4 text-rose-400" />
                       )}

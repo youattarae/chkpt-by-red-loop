@@ -1,3 +1,4 @@
+import { SafeImage } from './SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -59,7 +60,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications, onOpenAuth 
                 CHKPT
               </span>
               <span className="text-[9px] font-semibold tracking-wider text-rose-500 uppercase">
-                by Red Loop
+                by RED LOOP
               </span>
             </div>
           </div>
@@ -215,7 +216,7 @@ export const Header: React.FC<HeaderProps> = ({ onOpenNotifications, onOpenAuth 
             className="flex items-center gap-1.5 p-1 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-slate-700 transition-colors cursor-pointer"
             title="Profil & Compte Démo"
           >
-            <img
+            <SafeImage
               src={currentUser.avatarUrl}
               alt={currentUser.displayName}
               className="w-6 h-6 rounded-lg object-cover"

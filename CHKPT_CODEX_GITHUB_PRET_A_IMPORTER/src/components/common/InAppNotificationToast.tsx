@@ -1,3 +1,4 @@
+import { SafeImage } from './SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -33,7 +34,7 @@ export const InAppNotificationToast: React.FC = () => {
         {/* Avatar or Icon */}
         <div className="w-9 h-9 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center shrink-0 overflow-hidden">
           {activeToastNotification.avatarUrl ? (
-            <img
+            <SafeImage
               src={activeToastNotification.avatarUrl}
               alt=""
               className="w-full h-full object-cover"
@@ -59,6 +60,7 @@ export const InAppNotificationToast: React.FC = () => {
         {/* Dismiss Button */}
         <button
           onClick={dismissToastNotification}
+          aria-label="Fermer la notification"
           className="p-1 text-slate-400 hover:text-white rounded-lg transition-colors cursor-pointer shrink-0"
         >
           <X className="w-4 h-4" />

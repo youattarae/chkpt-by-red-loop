@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -34,12 +35,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     currentUser, 
     setCurrentUser, 
     setAuthSessionToken,
-    appEnvironment,
-    setAppEnvironment,
+    authSessionToken,
     resetDemoPitchState,
   } = useStore();
 
-  const [tab, setTab] = useState<'switch_demo' | 'login' | 'register'>('switch_demo');
+  const [tab, setTab] = useState<'switch_demo' | 'login' | 'register'>('login');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
@@ -128,10 +128,9 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     try {
       const res = await fetch('/api/auth/switch-demo', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authSessionToken}` },
         body: JSON.stringify({ 
           username: targetUsername,
-          environment: appEnvironment,
         }),
       });
 
@@ -153,11 +152,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleStartPitch = async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      await resetDemoPitchState(true);
+      onClose();
+    } catch (err: any) { setErrorMsg(err.message); }
+    finally { setIsLoading(false); }
+  };
+
   const handleResetPitch = async () => {
     setIsResetting(true);
     try {
       await resetDemoPitchState();
-      setSuccessMsg('Scénario de pitch réinitialisé à zéro avec succès !');
+      setSuccessMsg('Scénario réinitialisé. Reconnectez-vous pour commencer la démo.');
       setTimeout(() => {
         onClose();
       }, 900);
@@ -173,7 +182,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden flex flex-col">
+      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl max-h-[90dvh] overflow-y-auto flex flex-col">
         
         {/* Header */}
         <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
@@ -195,26 +204,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
-        {/* Environment Banner */}
-        <div className="bg-slate-950/80 border-b border-slate-800/80 px-4 py-2.5 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2">
-            <span className="text-slate-400 font-medium">Mode :</span>
-            <span className={`px-2 py-0.5 rounded-md font-bold text-[10px] tracking-wider uppercase border ${
-              appEnvironment === 'production'
-                ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                : 'bg-amber-950 text-amber-300 border-amber-800'
-            }`}>
-              {appEnvironment === 'production' ? '● Production (Vérification stricte)' : '▲ Démonstration / Pitch'}
-            </span>
-          </div>
-
-          <button
-            onClick={() => setAppEnvironment(appEnvironment === 'production' ? 'demo' : 'production')}
-            className="text-[11px] text-blue-400 hover:text-blue-300 underline font-medium cursor-pointer"
-          >
-            Bascule mode
-          </button>
+        <div className="bg-slate-950/80 border-b border-slate-800/80 px-4 py-2.5 text-xs text-amber-300">
+          Prototype de démonstration — données fictives
         </div>
+        <p className="px-4 pt-2 text-[11px] text-slate-400">
+          Les profils et la réinitialisation nécessitent une démo privée activée sur le serveur
+          et une connexion opérateur.
+        </p>
 
         {/* Tab Switcher */}
         <div className="flex border-b border-slate-800 bg-slate-950/40 px-4 pt-2 gap-2 text-xs font-semibold">
@@ -224,7 +220,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               tab === 'switch_demo' ? 'border-rose-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
             }`}
           >
-            Profils Démo (Audit)
+            Profils Démo (opérateur)
           </button>
           <button
             onClick={() => { setTab('login'); setErrorMsg(null); }}
@@ -276,8 +272,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               }`}
             >
               <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                <SafeImage
+                  src="/illustrations/koffi.svg"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-slate-700"
                 />
@@ -306,8 +302,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               }`}
             >
               <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&auto=format&fit=crop&q=80"
+                <SafeImage
+                  src="/illustrations/sarah.svg"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-slate-700"
                 />
@@ -354,6 +350,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               )}
             </button>
 
+            {['admin', 'superadmin', 'moderator'].includes(currentUser.role) && (
+              <button onClick={handleStartPitch} disabled={isLoading}
+                className="w-full py-3 bg-blue-500 text-slate-950 rounded-xl font-bold text-sm">
+                Démarrer la démo
+              </button>
+            )}
             {/* Reset Pitch Button */}
             <div className="pt-3 border-t border-slate-800">
               <button

@@ -1,3 +1,4 @@
+import { SafeImage } from './SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -21,7 +22,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   onMediaCleared,
   label = 'Photo (EXIF GPS purgé automatiquement)',
 }) => {
-  const { authSessionToken } = useStore();
+  const { authSessionToken, currentUser } = useStore();
   const [previewUrl, setPreviewUrl] = useState<string>(initialMediaUrl || '');
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -83,7 +84,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
           body: JSON.stringify({
             dataBase64: sanitizedBase64,
             mimeType: 'image/jpeg',
-            audience: 'public',
+            audience: currentUser.visibility === 'private' ? 'private' : 'public',
           }),
         })
           .then((res) => res.json())
@@ -138,7 +139,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
       {previewUrl ? (
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 group aspect-video max-h-48">
-          <img src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
+          <SafeImage src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={handleClear}

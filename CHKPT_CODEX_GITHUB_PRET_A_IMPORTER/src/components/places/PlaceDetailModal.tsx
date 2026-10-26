@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -43,7 +44,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
         
         {/* Cover Image & Close */}
         <div className="relative aspect-video max-h-56 w-full bg-slate-950 overflow-hidden">
-          <img
+          <SafeImage
             src={place.coverImage}
             alt={place.name}
             className="w-full h-full object-cover"
@@ -85,7 +86,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
               {place.verificationStatus === 'verified' && (
                 <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" />
-                  <span>Vérifié</span>
+                  <span>Référencé · démo</span>
                 </span>
               )}
             </div>

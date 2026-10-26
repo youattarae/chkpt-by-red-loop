@@ -60,7 +60,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
             aria-label="Valider ma présence physique"
           >
             <Crosshair className="w-6 h-6 group-hover:rotate-45 transition-transform" />
-            <span className="text-[8px] font-extrabold uppercase tracking-tighter mt-0.5">Check</span>
+            <span className="text-[8px] font-extrabold uppercase tracking-tighter mt-0.5">Check-in</span>
           </button>
         </div>
 

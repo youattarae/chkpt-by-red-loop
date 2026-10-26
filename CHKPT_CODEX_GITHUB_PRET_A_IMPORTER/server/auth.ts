@@ -6,6 +6,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import crypto from 'crypto';
+import { privateDemoEnabled, seedUserIds } from './demoConfig';
 import { db, UserEntity } from './db';
 
 // Extend Express Request interface with authenticated user and token
@@ -56,7 +57,7 @@ export function authenticateUser(req: Request, _res: Response, next: NextFunctio
   }
 
   const user = db.findUserById(session.userId);
-  if (user) {
+  if (user && (privateDemoEnabled || !seedUserIds.has(user.id))) {
     req.user = user;
     req.sessionToken = token;
   }
