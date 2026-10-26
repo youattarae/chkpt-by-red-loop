@@ -1,0 +1,76 @@
+# DECISIONS_TECHNIQUES — Architecture & Arbitrages RED LOOP / CHKPT
+
+**Dernière mise à jour :** 26 octobre 2026  
+**Environnement actuel :** Web React SPA Fullstack (React 19 + TypeScript + Vite + Tailwind CSS v4 + Motion + Node Express)  
+**Cible future :** React Native / Expo pour builds mobiles natifs Android/iOS + API backend modulaire Node.js / PostgreSQL (PostGIS)
+
+---
+
+## 1. Séparation des identités et des responsabilités
+- **RED LOOP :** Structure mère propriétaire, régie publicitaire, back-office d'exploitation (surfaces M01 à M14), gouvernance des données et relations professionnelles.
+- **CHKPT (« Checkpoint ») :** Marque et expérience de l'application grand public mobile (« Sors. Check. Partage. »).
+- **Conséquence technique :** L'interface utilisateur applique la charte CHKPT (bleu nuit, bleu clair lumineux, bordeaux, monochrome, zéro-pill, typographie élégante *classy street*). Les outils d'exploitation opérateur sont intégrés dans une vue d'administration séparée sous la marque RED LOOP, protégée par le rôle `admin` et le middleware `requireOperator`.
+
+## 2. Géolocalisation & Vérification de Check-in (Moteur anti-fraude côté serveur)
+- **Arbitrage :** Le check-in nécessite une preuve calculée sur le serveur, pas un simple tap sur le client.
+- **Implémentation :**
+  - Utilise l'API Geolocation native du navigateur (`navigator.geolocation`) lorsque la permission est accordée.
+  - Comprend un **simulateur de position contextuel d'Abidjan** (Cocody Saint-Jean, Plateau, Riviera Palmeraie, Marcory Zone 4) pour permettre les tests et la recette fonctionnelle même si l'évaluateur ou le développeur se trouve hors d'Abidjan.
+  - Calcul de distance géodésique côté serveur (formule de Haversine via `POST /api/checkins`).
+  - Rayon de validation : seuil standard strict de 250 mètres autour du lieu (tolérance urbaine d'Abidjan).
+  - Fraîcheur de signal : timestamp GPS vérifié.
+  - Clé d'idempotence journalière (`idempotencyKey = userId + placeId + dateString`) interdisant le double-comptage et le farming d'XP.
+  - Pas de publication forcée : après validation, une modale facultative propose de partager une photo ou un avis, avec un bouton « Plus tard ».
+  - Enregistrement des preuves isolées dans la table `checkin_proofs` inaccessible publiquement.
+
+## 3. Unification Canonique des Lieux (Front-end & Back-end)
+- **Arbitrage :** Les identifiants, catégories et coordonnées géographiques doivent être strictement identiques entre le serveur (`server/db.ts`), le client (`src/data/mockData.ts`), la carte (`MapView.tsx`) et la modale de check-in (`CheckinModal.tsx`).
+- **Lieux certifiés de référence :**
+  1. `plc_cocody_lounge` : Lagon Bleu Rooftop Lounge (Cocody Danga)
+  2. `plc_maquis_etoile` : Maquis L'Étoile d'Abidjan (Cocody Saint-Jean)
+  3. `plc_cafe_atelier` : L'Atelier Café & Bakery (Cocody Riviera 3)
+  4. `plc_galerie_ceci` : Centre d'Art Urbain & Céramique Babi (Cocody Vallons)
+  5. `plc_chez_ambroise` : Chez Ambroise Maquis VIP (Marcory Zone 4)
+  6. `plc_toit_plateau` : Le Toit des Affaires (Plateau)
+- Synchronisation dynamique : le client interroge `GET /api/places` au montage pour hydrater les données certifiées du serveur tout en préservant les compteurs temps réel.
+
+## 4. Gamification Dynamique & Déblocage des Badges en Temps Réel
+- **Arbitrage :** Un check-in vérifié doit avoir un impact visible immédiat sur la progression et le déblocage des badges dans le cadre du pitch de démonstration.
+- **Implémentation :**
+  - L'action `submitCheckIn` évalue immédiatement les familles concernées :
+    - *Maquis Master* (incrémenté sur la catégorie `maquis`, seuil 5/5 atteint au Maquis L'Étoile).
+    - *Foodie* (incrémenté sur `restaurants` et `cafes_boulangeries`).
+    - *Explorateur* (incrémenté sur tout check-in vérifié).
+    - *Culture Hunter* (incrémenté sur `culture_art`).
+  - Déclenchement automatique d'un toast d'accomplissement avec icône trophée et notification in-app (`progression`).
+  - Mise à jour atomique du journal `PointsLedger` et de la jauge de niveau (1 niveau tous les 300 XP).
+
+## 5. Réinitialisation Instantanée du Scénario Pitch (`/api/demo/reset`)
+- **Problématique résolue :** La protection d'idempotence journalière bloquait toute répétition du scénario de démonstration dans la même journée.
+- **Implémentation :**
+  - Route backend `POST /api/demo/reset` remettant les entités `checkins`, `checkin_proofs` et `points_ledger` dans leur état de départ certifié.
+  - Fonction client `resetDemoPitchState()` purgeant le `localStorage` et réinjectant l'utilisateur de départ (`koffi_urbex`).
+  - Bouton accessible dans l'écran de profil/compte permettant au présentateur de repartir d'une démo vierge en un clic avant chaque passage devant un jury.
+
+## 6. Confidentialité, Protection des Mineurs & Permissions
+- Tout compte déclaré entre 13 et 17 ans a son profil basculé en mode `privé` (`visibility: 'private'`) dès l'inscription.
+- L'historique des check-ins d'un utilisateur possède son propre sélecteur d'audience (`Moi uniquement`, `Abonnés autorisés`, `Public`).
+- Les coordonnées GPS brutes de preuve ne sont jamais exposées publiquement dans l'API ni dans les DTO partagés.
+- La console d'exploitation RED LOOP est réservée aux utilisateurs porteurs d'un rôle `admin`, `superadmin` ou `moderator` et filtrée par `requireOperator`.
+
+## 7. Cadence & Règles Publicitaires (Régie RED LOOP)
+- Conformément à la section 11 du document maître :
+  - **Accueil :** Bannière initiale + 1 bannière toutes les 10 publications organiques.
+  - **Sortir :** Bannière initiale + 1 bannière toutes les 3 rubriques ; dans le détail rubrique, 1 bannière toutes les 3 cartes.
+  - **Carte, Check-in, Profil :** AUCUNE publicité.
+  - **Comportement :** Bannières strictement **non cliquables**, mention discrète « Publicité » obligatoire.
+
+## 8. Traitement Médias Asynchrone, Purge EXIF GPS & Sécurité
+- Image décodée en mémoire et projetée sur `HTML5 Canvas 2D` pour éradiquer tous les en-têtes binaires EXIF (tags GPSLatitude, GPSLongitude, modèle d'appareil).
+- Compression lossy HD (1920px max, qualité 0.82) réduisant de 75 % à 90 % le poids des photographies.
+- Déduction du propriétaire du média **exclusivement depuis le token de session** côté serveur (`POST /api/media/upload`).
+- Route de lecture `GET /api/media/:assetId` appliquant un contrôle d'accès strict selon l'audience : 403 Forbidden immédiat pour les tiers sur un média `private`, et vérification de la table `follows` pour l'audience `followers`.
+
+## 9. Grounding Google Maps Côté Serveur (Gemini 3.8 Flash)
+- Route `POST /api/places/grounding` orchestrant les requêtes géolocalisées via `@google/genai` (modèle `gemini-3.8-flash` avec l'outil natif `googleMaps` et coordonnées d'Abidjan).
+- Restitution obligatoire des URLs Google Maps (`groundingChunks.maps.uri`) avec liens ouvrables.

@@ -1,0 +1,54 @@
+# Quels fichiers sont dans ce carton ?
+
+- `.env.example`
+- `.github/workflows/verification.yml`
+- `.gitignore`
+- `.nvmrc`
+- `AGENTS.md`
+- `DECISIONS_TECHNIQUES.md`
+- `GUIDE_GITHUB_ET_CODEX_PAS_A_PAS.md`
+- `IMPLEMENTATION_STATUS.md`
+- `README.md`
+- `docs/ETAT_CODE_ET_RISQUES.md`
+- `docs/FEUILLE_DE_ROUTE_CODEX.md`
+- `docs/PASSATION_V3_SOURCE.md`
+- `docs/PITCH_FRANCOTECH_ET_FINANCEURS.md`
+- `docs/PRODUIT_ET_DECISIONS.md`
+- `docs/PROMPT_01_CODEX.md`
+- `docs/PROMPT_02_CODEX.md`
+- `index.html`
+- `metadata.json`
+- `package.json`
+- `server.ts`
+- `server/auth.ts`
+- `server/checkinEngine.ts`
+- `server/db.ts`
+- `src/App.tsx`
+- `src/components/auth/AuthModal.tsx`
+- `src/components/badges/BadgesView.tsx`
+- `src/components/checkin/CheckinModal.tsx`
+- `src/components/common/BottomNav.tsx`
+- `src/components/common/CategoryFilterBar.tsx`
+- `src/components/common/Header.tsx`
+- `src/components/common/InAppNotificationToast.tsx`
+- `src/components/common/MediaUploader.tsx`
+- `src/components/common/NotificationCenterModal.tsx`
+- `src/components/feed/FeedView.tsx`
+- `src/components/map/MapView.tsx`
+- `src/components/operator/OperatorConsole.tsx`
+- `src/components/places/PlaceDetailModal.tsx`
+- `src/components/profile/ProfileView.tsx`
+- `src/components/sortir/SortirView.tsx`
+- `src/data/categories.ts`
+- `src/data/mockData.ts`
+- `src/index.css`
+- `src/main.tsx`
+- `src/services/geoService.ts`
+- `src/services/notificationService.ts`
+- `src/services/store.tsx`
+- `src/types/index.ts`
+- `tests/security_and_checkin.test.ts`
+- `tsconfig.json`
+- `vite.config.ts`
+
+Fichiers volontairement **absents** : `.data/chkpt_db.json` (sessions), `.env` (secrets), le ZIP imbriqué `chkpt_by_red_loop.zip`, `node_modules/`.

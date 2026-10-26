@@ -1,0 +1,10 @@
+{
+  "name": "CHKPT by RED LOOP",
+  "description": "Application sociale géolocalisée et moteur de preuve de présence physique à Abidjan (Cocody). Sors. Check. Partage.",
+  "requestFramePermissions": [
+    "geolocation"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
