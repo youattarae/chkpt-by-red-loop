@@ -1,3 +1,15 @@
+# Décisions des lots B, C et D
+
+- `/api/demo/start` reprend les protections de reset (démo privée + opérateur). Il réinitialise les données fictives
+  et ouvre une session aléatoire Koffi. Une session ordinaire ne peut pas relancer ou administrer la démo.
+- Le déblocage du badge est calculé avant la mise à jour d'état React, sans effet de bord dans un updater.
+- Une publication n'accorde pas de XP de visite. Les points affichés après rechargement correspondent au serveur.
+- Publication et intention d'événement persistent localement, sans promesse de réseau social multiutilisateur synchronisé.
+- Le profil présente les publications ; les visites simulées conservent leur étiquette de démonstration.
+- Les dates d'événements de départ sont relatives au jour du chargement, affichées à l'heure d'Abidjan.
+- Illustrations SVG originales et police embarquées ; images importées conservées avec secours local si indisponibles.
+- Le support de secours est un HTML autonome avec captures de la recette. Aucune vidéo ni application autonome hors ligne n'est annoncée.
+
 # Décisions du Lot A — 26 octobre 2026
 
 Ces décisions remplacent les affirmations historiques incompatibles ci-dessous :

@@ -70,3 +70,7 @@ Le workflow GitHub fourni reprend ces commandes avec Node 22. Son résultat dist
 - Gemini et l'ensemble du scénario des lots suivants ne sont pas validés par ce lot.
 - Un redémarrage révoque les sessions des personas de seed et applique le mot de passe configuré.
   Les comptes ordinaires, leurs données et leurs sessions valides sont conservés.
+
+## Suite des travaux
+
+Les lots B–D sont documentés dans [GUIDE_PRESENTATION.md](GUIDE_PRESENTATION.md). Le bouton protégé Démarrer la démo simplifie désormais le démarrage et la répétition.

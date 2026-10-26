@@ -188,8 +188,10 @@ try {
     await check('Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu', () => checkBrowser(demo.url));
     const { checkPresentation } = await import('./presentation_browser');
     await check('Présentation complète et répétition après reset autorisé', () => checkPresentation(demo.url, password));
+    const { checkSupport } = await import('./support_browser');
+    await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }
-  console.log(`Lot A : ${checks}/${checks} contrôles réussis (+ 11 tests historiques).`);
+  console.log(`Prototype CHKPT : ${checks}/${checks} contrôles réussis (+ 11 tests historiques).`);
 } finally {
   await Promise.all([...processes].map(stop));
   await rm(runtime, { recursive: true, force: true });
