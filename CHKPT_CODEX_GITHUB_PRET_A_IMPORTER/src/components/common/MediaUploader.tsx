@@ -1,3 +1,4 @@
+import { SafeImage } from './SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -138,7 +139,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
       {previewUrl ? (
         <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 group aspect-video max-h-48">
-          <img src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
+          <SafeImage src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
           <button
             type="button"
             onClick={handleClear}

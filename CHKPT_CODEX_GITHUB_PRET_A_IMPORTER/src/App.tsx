@@ -21,7 +21,7 @@ import { BadgesView } from './components/badges/BadgesView';
 import { OperatorConsole } from './components/operator/OperatorConsole';
 
 const AppContent: React.FC = () => {
-  const { isOperatorView, places } = useStore();
+  const { isOperatorView, places, dismissToastNotification } = useStore();
 
   const [activeTab, setActiveTab] = useState<MainTab>('feed');
   const [isCheckinOpen, setIsCheckinOpen] = useState(false);
@@ -41,6 +41,7 @@ const AppContent: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-rose-900 selection:text-white">
       
+      <div className="demo-ribbon"><span className="demo-dot" /> Mode démonstration · données fictives</div>
       {/* Contractual Header */}
       <Header
         onOpenNotifications={() => setIsNotificationsOpen(true)}
@@ -97,6 +98,7 @@ const AppContent: React.FC = () => {
         <BottomNav
           activeTab={activeTab}
           onSelectTab={(tab) => {
+            dismissToastNotification();
             setActiveTab(tab);
             setIsBadgesViewOpen(false);
           }}
@@ -116,7 +118,7 @@ const AppContent: React.FC = () => {
           setPreselectedPlaceIdForCheckin(null);
         }}
         preselectedPlaceId={preselectedPlaceIdForCheckin}
-        onPostPublishedSuccess={() => setActiveTab('feed')}
+        onPostPublishedSuccess={() => { dismissToastNotification(); setActiveTab('feed'); }}
       />}
 
       <PlaceDetailModal

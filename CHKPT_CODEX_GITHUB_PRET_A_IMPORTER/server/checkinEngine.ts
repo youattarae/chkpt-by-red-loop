@@ -127,6 +127,7 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   const nowIso = new Date().toISOString();
 
   const newCheckin: CheckInEntity = {
+    isSimulated,
     id: checkinId,
     userId: user.id,
     userName: user.displayName,

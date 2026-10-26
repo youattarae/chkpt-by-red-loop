@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
+import { mkdir } from 'node:fs/promises';
+import path from 'node:path';
 
 export async function checkPresentation(url: string, password: string) {
   const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH || undefined });
@@ -7,11 +9,23 @@ export async function checkPresentation(url: string, password: string) {
     for (const width of [390, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       await context.route('https://**/*', route => route.abort());
+      await context.route('**/illustrations/rooftop.svg', route => route.abort());
       const page = await context.newPage();
       page.setDefaultTimeout(10000);
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
+      async function capture(name: string) {
+        await page.evaluate(() => document.fonts.ready);
+        await page.waitForFunction(() => [...document.images].every(image => image.complete));
+        const broken = await page.locator('img').evaluateAll(images => images.filter(image => image instanceof HTMLImageElement && (!image.complete || image.naturalWidth === 0)).length);
+        assert.equal(broken, 0, 'Toutes les illustrations doivent charger sans réseau externe');
+        if (process.env.CHKPT_CAPTURE_DIR) {
+          await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
+          await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `${name}-${width}.png`) });
+        }
+      }
+      await capture('accueil');
       async function start() {
         await page.getByTitle('Profil & Compte Démo').click();
         await page.getByRole('button', { name: 'Connexion', exact: true }).click();
@@ -35,6 +49,7 @@ export async function checkPresentation(url: string, password: string) {
       }
       await start();
       await visit();
+      await capture('checkin');
       await page.getByRole('button', { name: 'Créer une publication' }).click();
       const message = `Une soirée à Cocody — recette ${width}`;
       await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
@@ -43,11 +58,14 @@ export async function checkPresentation(url: string, password: string) {
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
       await page.getByRole('region', { name: 'Mes publications' }).getByText(message, { exact: true }).waitFor();
       await page.getByText(/1315 XP au total/).waitFor();
+      await capture('profil');
       await page.getByRole('button', { name: 'Sortir', exact: true }).click();
       const going = page.getByRole('button', { name: "J'y serai", exact: true }).first();
       assert.equal(await going.getAttribute('aria-pressed'), 'false');
       await going.click();
       assert.equal(await going.getAttribute('aria-pressed'), 'true');
+      await capture('sortir');
+      assert.ok(await page.locator('img[data-fallback=true]').count() > 0, 'Une image indisponible doit avoir un secours local');
       await page.reload();
       await page.getByRole('button', { name: 'Sortir', exact: true }).click();
       assert.equal(await page.getByRole('button', { name: "J'y serai", exact: true }).first().getAttribute('aria-pressed'), 'true');

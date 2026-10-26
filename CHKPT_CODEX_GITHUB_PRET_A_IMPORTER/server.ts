@@ -123,7 +123,7 @@ app.post('/api/auth/register', (req: Request, res: Response) => {
       visibility,
       role: 'user',
       homeZone: homeZone || 'Cocody, Abidjan',
-      avatarUrl: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80`,
+      avatarUrl: `/illustrations/avatar.svg`,
       bio: 'Nouveau membre sur CHKPT Abidjan.',
       followersCount: 0,
       followingCount: 0,
@@ -590,7 +590,7 @@ app.post('/api/places/grounding', async (req: Request, res: Response) => {
 
     if (!process.env.GEMINI_API_KEY) {
       res.json({
-        text: 'Les recommandations locales pour Abidjan Cocody sont basées sur le référentiel certifié RED LOOP.',
+        text: 'Les lieux affichés sont une sélection fictive pour la démonstration à Cocody.',
         groundedPlaces: [],
         note: 'GEMINI_API_KEY non configurée pour le grounding direct.',
       });

@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -118,7 +119,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     if (!verificationResult?.checkIn || !currentPlace) return;
 
     createPost({
-      text: postText.trim() || `Je suis à ${currentPlace.name} (${currentPlace.commune}) ! Check-in vérifié validé. ✨`,
+      text: postText.trim() || `Découverte de ${currentPlace.name} (${currentPlace.commune}) — ${verificationResult.checkIn.isSimulated ? 'visite simulée de démonstration' : 'check-in validé'}. ✨`,
       linkedPlaceId: currentPlace.id,
       linkedCheckinId: verificationResult.checkIn.id,
       isVerifiedVisit: true,
@@ -218,7 +219,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                       }`}
                     >
                       <div className="flex items-center gap-3">
-                        <img
+                        <SafeImage
                           src={place.coverImage}
                           alt={place.name}
                           className="w-12 h-12 rounded-xl object-cover shrink-0"
@@ -339,7 +340,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
             <div>
               <h3 className="text-base font-bold text-white">Vérification de présence en cours</h3>
               <p className="text-xs text-slate-400 max-w-xs mx-auto mt-1">
-                Contrôle géodésique Haversine côté serveur, seuil de 250m et enregistrement d'idempotence.
+                Nous vérifions le lieu choisi. Une seule visite est comptée par jour et par lieu.
               </p>
             </div>
           </div>
@@ -435,14 +436,14 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
         {step === 'optional_post' && currentPlace && (
           <form onSubmit={handlePublishFollowupPost} className="pt-4 space-y-4">
             <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-3">
-              <img
+              <SafeImage
                 src={currentPlace.coverImage}
                 alt={currentPlace.name}
                 className="w-12 h-12 rounded-xl object-cover shrink-0"
               />
               <div>
                 <span className="text-xs font-bold text-white block">{currentPlace.name}</span>
-                <span className="text-[11px] text-emerald-400 font-medium">✓ Visite vérifiée attachée</span>
+                <span className="text-[11px] text-emerald-400 font-medium">{verificationResult?.checkIn?.isSimulated ? 'Visite simulée attachée · démo' : '✓ Visite vérifiée attachée'}</span>
               </div>
             </div>
 

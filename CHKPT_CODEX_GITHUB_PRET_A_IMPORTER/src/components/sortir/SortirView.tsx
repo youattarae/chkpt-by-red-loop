@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -62,10 +63,11 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
       });
 
       const data = await res.json();
+      if (!res.ok || typeof data.text !== 'string' || !Array.isArray(data.groundedPlaces)) throw new Error('Recherche indisponible');
       setGroundingResult(data);
     } catch {
       setGroundingResult({
-        text: 'Les recommandations pour Cocody sont basées sur le référentiel certifié RED LOOP.',
+        text: 'La recherche externe est indisponible. Les sélections fictives ci-dessous restent accessibles.',
         groundedPlaces: [],
       });
     } finally {
@@ -175,7 +177,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-sm flex flex-col sm:flex-row"
             >
               <div className="sm:w-40 aspect-video sm:aspect-auto bg-slate-950 shrink-0">
-                <img
+                <SafeImage
                   src={evt.coverImage}
                   alt={evt.title}
                   className="w-full h-full object-cover"
@@ -201,7 +203,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                   </p>
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-slate-800/80 mt-2">
+                <div className="flex flex-wrap gap-3 items-center justify-between pt-3 border-t border-slate-800/80 mt-2">
                   <span className="text-[10px] text-slate-400 font-medium">
                     {evt.goingCount} participants · {evt.interestedCount} intéressés
                   </span>
@@ -255,7 +257,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
             >
               <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
-                <img
+                <SafeImage
                   src={place.coverImage}
                   alt={place.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -292,7 +294,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
               className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
             >
               <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
-                <img
+                <SafeImage
                   src={place.coverImage}
                   alt={place.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

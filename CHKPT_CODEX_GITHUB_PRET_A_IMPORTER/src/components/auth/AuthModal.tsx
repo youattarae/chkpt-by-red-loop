@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -271,8 +272,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               }`}
             >
               <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
+                <SafeImage
+                  src="/illustrations/koffi.svg"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-slate-700"
                 />
@@ -301,8 +302,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               }`}
             >
               <div className="flex items-center gap-3">
-                <img
-                  src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&auto=format&fit=crop&q=80"
+                <SafeImage
+                  src="/illustrations/sarah.svg"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-slate-700"
                 />

@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -251,7 +252,7 @@ export const OperatorConsole: React.FC = () => {
               className="p-3 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between text-xs"
             >
               <div className="flex items-center gap-3">
-                <img src={place.coverImage} alt="" className="w-10 h-10 rounded-xl object-cover" />
+                <SafeImage src={place.coverImage} alt="" className="w-10 h-10 rounded-xl object-cover" />
                 <div>
                   <h4 className="font-bold text-white">{place.name}</h4>
                   <span className="text-[10px] text-slate-400">{place.commune} · {place.totalCheckins} check-ins</span>

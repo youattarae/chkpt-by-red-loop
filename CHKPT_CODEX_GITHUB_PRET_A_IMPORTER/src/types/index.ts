@@ -73,6 +73,7 @@ export type CheckInStatus = 'verified' | 'pending_validation' | 'rejected';
 export type CheckInAudience = 'private' | 'followers' | 'public';
 
 export interface CheckIn {
+  isSimulated?: boolean;
   id: string;
   userId: string;
   userName: string;
@@ -103,6 +104,7 @@ export interface PostComment {
 }
 
 export interface Post {
+  isSimulated?: boolean;
   id: string;
   authorId: string;
   authorName: string;

@@ -280,7 +280,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         targetId: 'plc_cocody_lounge',
         isRead: false,
         createdAt: 'Il y a 12 min',
-        avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100',
+        avatarUrl: '/illustrations/sarah.svg',
       },
       {
         id: 'notif_02',
@@ -292,7 +292,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         targetId: 'evt_01',
         isRead: true,
         createdAt: 'Il y a 3h',
-        avatarUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100',
+        avatarUrl: '/illustrations/night.svg',
       }
     ];
   });
@@ -511,6 +511,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const earnedXp = serverData.awardedXp || 50;
 
       const newCheckIn: CheckIn = {
+        isSimulated: serverCheckin.isSimulated,
         id: serverCheckin.id,
         userId: currentUser.id,
         userName: currentUser.displayName,
@@ -625,6 +626,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const linkedPlace = data.linkedPlaceId ? places.find(p => p.id === data.linkedPlaceId) : undefined;
     
     const newPost: Post = {
+      isSimulated: checkins.find(c => c.id === data.linkedCheckinId)?.isSimulated,
       id: `pst_${Date.now()}`,
       authorId: currentUser.id,
       authorName: currentUser.displayName,
@@ -757,7 +759,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       openingHours: 'Tous les jours : 10h00 - 23h00',
       isCurrentlyOpen: true,
       tags: ['Nouveau', 'Validé RED LOOP'],
-      coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+      coverImage: '/illustrations/maquis.svg',
       galleryImages: [],
       totalCheckins: 0,
       reviewCount: 0
@@ -850,7 +852,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       body: 'Sarah Diallo vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
       targetType: 'place',
       targetId: 'plc_cocody_lounge',
-      avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100',
+      avatarUrl: '/illustrations/sarah.svg',
       dedupeKey: `friend_checkin_${Date.now()}`,
     });
   };
@@ -863,7 +865,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       body: 'Nuit Urbaine Abidjan & Live Beats a lieu à 250m de votre position aux Vallons !',
       targetType: 'event',
       targetId: 'evt_01',
-      avatarUrl: 'https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=100',
+      avatarUrl: '/illustrations/night.svg',
       dedupeKey: `nearby_event_${Date.now()}`,
     });
   };

@@ -1,3 +1,10 @@
+## Lot C — visuels et lisibilité vérifiés
+
+Accueil éditorial illustré, palette bleu nuit/bleu clair/bordeaux, police embarquée, neuf illustrations SVG originales locales,
+secours automatique des images, zoom et réduction des animations respectés. Les captures réelles se trouvent dans `docs/captures`.
+Les visites simulées restent identifiées dans le fil/profil. Aucun logo officiel inventé ni partenaire commercial réel annoncé.
+Les tests à 390/1280 pixels passent avec tout accès externe bloqué et une illustration volontairement indisponible.
+
 ## Lot B — scénario vérifié
 
 Le parcours complet est passé à 390 et 1280 pixels, y compris connexion opérateur, démarrage protégé,

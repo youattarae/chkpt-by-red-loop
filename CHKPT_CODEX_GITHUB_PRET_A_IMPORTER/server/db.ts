@@ -68,6 +68,7 @@ export interface PlaceEntity {
 }
 
 export interface CheckInEntity {
+  isSimulated?: boolean;
   id: string;
   userId: string;
   userName: string;
@@ -159,7 +160,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€€',
     priceDescription: '7 000 – 18 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/rooftop.svg',
     tags: ['Rooftop', 'Vue Lagune', 'Cocktails', 'Sunset', 'Classy Street'],
     isCertified: true,
   },
@@ -178,7 +179,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '3 500 – 9 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Poisson braisé', 'Alloco', 'Attiéké', 'Convivial', 'Musique live'],
     isCertified: true,
   },
@@ -197,7 +198,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '2 500 – 6 500 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/cafe.svg',
     tags: ['Spécialité Café', 'Brunch', 'Pâtisseries', 'Coworking calme'],
     isCertified: true,
   },
@@ -216,7 +217,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€',
     priceDescription: '1 000 – 3 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/art.svg',
     tags: ['Exposition', 'Art Contemporain', 'Design', 'Vernissage'],
     isCertified: true,
   },
@@ -235,7 +236,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€',
     priceDescription: '4 000 – 12 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Plein air', 'Ambiance Nuit', 'Lieu Historique', 'Grillades'],
     isCertified: false,
   },
@@ -254,7 +255,7 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
     exploitationStatus: 'open',
     priceLevel: '€€€',
     priceDescription: '15 000 – 35 000 FCFA',
-    coverImage: 'https://images.unsplash.com/photo-1544025162-d76694265947?w=800&auto=format&fit=crop&q=80',
+    coverImage: '/illustrations/maquis.svg',
     tags: ['Bistronomie', 'Vue Pont', 'Dîner Romantique', 'Cave à vin'],
     isCertified: true,
   }
@@ -286,7 +287,7 @@ class Database {
           visibility: 'public',
           role: 'user',
           homeZone: 'Cocody, Abidjan',
-          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/koffi.svg',
           bio: 'Explorateur d\'Abidjan · Foodie & rooftop chill · Cocody en priorité',
           followersCount: 389,
           followingCount: 142,
@@ -305,7 +306,7 @@ class Database {
           visibility: 'public',
           role: 'user',
           homeZone: 'Cocody, Abidjan',
-          avatarUrl: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/sarah.svg',
           bio: 'Foodie & sorties branchées entre Cocody et le Plateau.',
           followersCount: 512,
           followingCount: 220,
@@ -324,7 +325,7 @@ class Database {
           visibility: 'private',
           role: 'admin',
           homeZone: 'Abidjan Siège',
-          avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
+          avatarUrl: '/illustrations/admin.svg',
           bio: 'Compte administrateur RED LOOP pour la gestion opérationnelle et modération.',
           followersCount: 0,
           followingCount: 0,
@@ -341,7 +342,7 @@ class Database {
           id: 'chk_demo_initial',
           userId: 'usr_01',
           userName: 'Koffi Kouamé',
-          userAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+          userAvatar: '/illustrations/koffi.svg',
           placeId: 'plc_cocody_lounge',
           placeName: 'Lagon Bleu Rooftop Lounge',
           placeCategory: 'bars_lounges',

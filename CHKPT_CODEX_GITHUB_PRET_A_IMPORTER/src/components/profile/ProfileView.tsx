@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -61,7 +62,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       {/* Profile Header Card */}
       <div className="bg-slate-900 border border-slate-800 rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
         <div className="flex items-center gap-3.5">
-          <img
+          <SafeImage
             src={currentUser.avatarUrl}
             alt={currentUser.displayName}
             className="w-16 h-16 rounded-2xl object-cover border-2 border-slate-700 shadow-md shrink-0"
@@ -153,7 +154,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
         {posts.filter(p => p.authorId === currentUser.id).map(post => (
           <article key={post.id} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
-            {post.mediaUrl && <img src={post.mediaUrl} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[16/9] object-cover" />}
+            {post.mediaUrl && <SafeImage src={post.mediaUrl} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[16/9] object-cover" />}
             <div className="p-4 space-y-2"><p className="text-sm">{post.text}</p>
             <p className="text-xs text-blue-300">{post.linkedPlaceName} · {post.audience === 'private' ? 'Moi uniquement' : 'Public'} · Démonstration</p></div>
           </article>
@@ -228,7 +229,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                       ? 'bg-emerald-950 text-emerald-300'
                       : 'bg-rose-950 text-rose-300'
                   }`}>
-                    {chk.status === 'verified' ? 'Vérifié ✓' : 'Refusé'}
+                    {chk.status === 'verified' ? (chk.isSimulated ? 'Simulé · démo' : 'Vérifié ✓') : 'Refusé'}
                   </span>
                   <span className="text-[9px] text-slate-400 block mt-0.5">
                     {chk.audience === 'private' ? 'Moi seul' : chk.audience === 'followers' ? 'Abonnés' : 'Public'}
@@ -255,7 +256,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                 className="p-3 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between hover:border-slate-700 transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3">
-                  <img
+                  <SafeImage
                     src={place.coverImage}
                     alt={place.name}
                     className="w-12 h-12 rounded-xl object-cover shrink-0"
@@ -278,7 +279,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
       {/* Content 3: Points Ledger Audit Trail */}
       {activeTab === 'ledger' && (
         <div className="space-y-2">
-          {pointsLedger.map((entry) => (
+          {pointsLedger.filter(entry => entry.userId === currentUser.id).map((entry) => (
             <div
               key={entry.id}
               className="p-3 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between text-xs"

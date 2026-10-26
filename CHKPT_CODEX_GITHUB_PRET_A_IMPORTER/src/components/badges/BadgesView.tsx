@@ -1,3 +1,4 @@
+import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -175,7 +176,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
           <div className="p-2.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="w-5 text-center font-bold text-amber-400">#1</span>
-              <img src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=100" alt="" className="w-7 h-7 rounded-lg object-cover" />
+              <SafeImage src="/illustrations/sarah.svg" alt="" className="w-7 h-7 rounded-lg object-cover" />
               <div>
                 <span className="font-bold text-white block">Sarah Diallo</span>
                 <span className="text-[10px] text-slate-400">Cocody · 26 visites</span>
@@ -187,7 +188,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
           <div className="p-2.5 rounded-2xl bg-rose-950/40 border border-rose-800/80 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="w-5 text-center font-bold text-white">#2</span>
-              <img src={currentUser.avatarUrl} alt="" className="w-7 h-7 rounded-lg object-cover" />
+              <SafeImage src={currentUser.avatarUrl} alt="" className="w-7 h-7 rounded-lg object-cover" />
               <div>
                 <span className="font-bold text-white block">{currentUser.displayName} (Vous)</span>
                 <span className="text-[10px] text-slate-400">Cocody · {currentUser.checkinsCount} visites</span>
@@ -199,7 +200,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
           <div className="p-2.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <span className="w-5 text-center font-bold text-slate-400">#3</span>
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" alt="" className="w-7 h-7 rounded-lg object-cover" />
+              <SafeImage src="/illustrations/admin.svg" alt="" className="w-7 h-7 rounded-lg object-cover" />
               <div>
                 <span className="font-bold text-white block">Amara Koné</span>
                 <span className="text-[10px] text-slate-400">Plateau · 14 visites</span>
