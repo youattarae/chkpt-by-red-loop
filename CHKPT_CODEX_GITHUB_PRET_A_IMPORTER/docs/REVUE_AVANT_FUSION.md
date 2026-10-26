@@ -8,6 +8,8 @@ La première recette était passée sur son parcours principal. Une seconde lect
 
 - **Connexion lente :** annulation et rejet des réponses d'une session précédente, pour éviter qu'un ancien profil remplace le nouveau.
   Test avec une réponse administrateur volontairement retenue pendant la bascule vers Sarah.
+- **Points après connexion lente :** une réponse de profil antérieure à un check-in ne peut plus effacer le nouveau gain.
+  Le test retient un profil à 1240 XP, valide la visite, puis libère cette réponse et vérifie que 1315 XP restent affichés.
 - **GPS en attente :** aucun envoi de coordonnées simulées comme si elles venaient du téléphone. Le message demande d'attendre
   ou de choisir explicitement le simulateur. Test de position volontairement non fournie, sans appel de check-in au serveur.
 - **Petit écran :** panneau de compte défilant, boutons accessibles à 320 × 568 pixels.

@@ -4,7 +4,7 @@
  * CHKPT & RED LOOP State Store (React Context + Server State + Dynamic Gamification)
  */
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { 
   Place, 
   CheckIn, 
@@ -121,6 +121,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return localStorage.getItem('chkpt_session_token') || '';
   });
 
+  const statsRevision = useRef(0);
   const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
 
@@ -166,6 +167,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const controller = new AbortController();
+    const requestedStatsRevision = statsRevision.current;
     fetch('/api/auth/me', {
       signal: controller.signal,
       headers: { Authorization: `Bearer ${authSessionToken}` },
@@ -183,9 +185,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             role: data.user.role,
             age: data.user.age,
             visibility: data.user.visibility,
-            xpPoints: data.user.xpPoints,
-            checkinsCount: data.user.checkinsCount,
-            level: data.user.level,
+            xpPoints: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.xpPoints : data.user.xpPoints,
+            checkinsCount: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.checkinsCount : data.user.checkinsCount,
+            level: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.level : data.user.level,
             homeZone: data.user.homeZone,
             avatarUrl: data.user.avatarUrl,
             bio: data.user.bio,
@@ -429,6 +431,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     // Reset in-memory states
+    statsRevision.current += 1;
     setAuthSessionToken(started.token || '');
     setCurrentUser(started.user || CURRENT_USER);
     setPointsLedger([]);
@@ -533,6 +536,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const serverCheckin = serverData.checkIn;
       const earnedXp = serverData.awardedXp || 50;
 
+      // An older profile response must not roll back this confirmed server award.
+      statsRevision.current += 1;
       const newCheckIn: CheckIn = {
         isSimulated: serverCheckin.isSimulated,
         id: serverCheckin.id,
