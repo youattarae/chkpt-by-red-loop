@@ -39,10 +39,11 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
     places, 
     savedPlaceIds, 
     badges, 
-    pointsLedger 
+    pointsLedger,
+    posts 
   } = useStore();
 
-  const [activeTab, setActiveTab] = useState<'checkins' | 'saved' | 'ledger'>('checkins');
+  const [activeTab, setActiveTab] = useState<'posts' | 'checkins' | 'saved' | 'ledger'>('posts');
 
   const unlockedBadges = badges.filter(b => b.isUnlocked);
   const userCheckins = checkins.filter(c => c.userId === currentUser.id);
@@ -144,6 +145,20 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </button>
 
       </div>
+
+      <section aria-label="Mes publications" className="space-y-3">
+        <div className="flex justify-between items-center">
+          <h3 className="text-base font-bold">Mes publications</h3>
+          <span className="text-xs text-slate-400">{posts.filter(p => p.authorId === currentUser.id).length} souvenirs</span>
+        </div>
+        {posts.filter(p => p.authorId === currentUser.id).map(post => (
+          <article key={post.id} className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden">
+            {post.mediaUrl && <img src={post.mediaUrl} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[16/9] object-cover" />}
+            <div className="p-4 space-y-2"><p className="text-sm">{post.text}</p>
+            <p className="text-xs text-blue-300">{post.linkedPlaceName} · {post.audience === 'private' ? 'Moi uniquement' : 'Public'} · Démonstration</p></div>
+          </article>
+        ))}
+      </section>
 
       {/* Tabs Filter: Mes Check-ins / Lieux Enregistrés / Journal XP */}
       <div className="flex border-b border-slate-800 gap-4 text-xs font-bold">

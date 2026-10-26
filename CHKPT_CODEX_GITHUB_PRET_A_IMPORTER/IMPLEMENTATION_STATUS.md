@@ -1,3 +1,11 @@
+## Lot B — scénario vérifié
+
+Le parcours complet est passé à 390 et 1280 pixels, y compris connexion opérateur, démarrage protégé,
+badge Maquis Master, publication sur Accueil/Profil, XP après rechargement, intention événement et répétition.
+Le badge est calculé sans effet de bord dans un updater React. Le profil affiche les publications.
+La publication seule ne donne plus de XP de visite. Le journal est persisté ; le reset purge les états du scénario.
+Le lancement reste volontairement privé et soumis à l'opérateur. Les publications/intentions sont locales au navigateur.
+
 # Vérification Lot A — 26 octobre 2026
 
 Le périmètre vérifié et les résultats actuels sont dans [docs/LOT_A_VERIFICATION.md](docs/LOT_A_VERIFICATION.md).

@@ -151,6 +151,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleStartPitch = async () => {
+    setIsLoading(true);
+    setErrorMsg(null);
+    try {
+      await resetDemoPitchState(true);
+      onClose();
+    } catch (err: any) { setErrorMsg(err.message); }
+    finally { setIsLoading(false); }
+  };
+
   const handleResetPitch = async () => {
     setIsResetting(true);
     try {
@@ -339,6 +349,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               )}
             </button>
 
+            {['admin', 'superadmin', 'moderator'].includes(currentUser.role) && (
+              <button onClick={handleStartPitch} disabled={isLoading}
+                className="w-full py-3 bg-blue-500 text-slate-950 rounded-xl font-bold text-sm">
+                Démarrer la démo
+              </button>
+            )}
             {/* Reset Pitch Button */}
             <div className="pt-3 border-t border-slate-800">
               <button

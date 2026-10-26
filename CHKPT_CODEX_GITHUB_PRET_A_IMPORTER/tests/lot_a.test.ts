@@ -70,12 +70,12 @@ try {
     isSimulated: true, audience: 'private', environment: 'demo' };
 
   await check('Outils démo fermés par défaut, même avec un mode envoyé par le client', async () => {
-    for (const route of ['/api/auth/switch-demo', '/api/demo/reset']) {
+    for (const route of ['/api/auth/switch-demo', '/api/demo/reset', '/api/demo/start']) {
       assert.equal((await request(safe.url, route, { username: 'redloop_admin', environment: 'demo' }, publicUser.token)).status, 403);
     }
   });
   await check('Démo privée : refus anonyme et refus du compte ordinaire pour bascule et reset', async () => {
-    for (const route of ['/api/auth/switch-demo', '/api/demo/reset']) {
+    for (const route of ['/api/auth/switch-demo', '/api/demo/reset', '/api/demo/start']) {
       assert.equal((await request(demo.url, route, { username: 'redloop_admin' })).status, 401);
       assert.equal((await request(demo.url, route, { username: 'redloop_admin' }, user.token)).status, 403);
     }
@@ -186,6 +186,8 @@ try {
     await symlink(path.join(project, 'dist'), path.join(demo.cwd, 'dist'));
     const { checkBrowser } = await import('./lot_a_browser');
     await check('Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu', () => checkBrowser(demo.url));
+    const { checkPresentation } = await import('./presentation_browser');
+    await check('Présentation complète et répétition après reset autorisé', () => checkPresentation(demo.url, password));
   }
   console.log(`Lot A : ${checks}/${checks} contrôles réussis (+ 11 tests historiques).`);
 } finally {

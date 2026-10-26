@@ -91,7 +91,7 @@ interface StoreContextType {
   toggleSavePlace: (placeId: string) => void;
   toggleEventIntent: (eventId: string, intent: 'interested' | 'going') => void;
   submitPlaceProposal: (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => void;
-  resetDemoPitchState: () => Promise<void>;
+  resetDemoPitchState: (start?: boolean) => Promise<void>;
   // Notifications
   notifications: AppNotification[];
   notificationPreferences: NotificationPreferences;
@@ -313,6 +313,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Sync to localStorage
   useEffect(() => {
+    localStorage.setItem(`${STORAGE_PREFIX}ledger`, JSON.stringify(pointsLedger));
+  }, [pointsLedger]);
+  useEffect(() => {
     localStorage.setItem(`${STORAGE_PREFIX}user`, JSON.stringify(currentUser));
   }, [currentUser]);
 
@@ -384,13 +387,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    * Reset the entire Pitch Demo Scenario:
    * Restores pristine state on server and local client storage
    */
-  const resetDemoPitchState = async () => {
+  const resetDemoPitchState = async (start = false) => {
+    let started: any;
     try {
-      const response = await fetch('/api/demo/reset', {
+      const response = await fetch(start ? '/api/demo/start' : '/api/demo/reset', {
         method: 'POST', headers: { Authorization: `Bearer ${authSessionToken}` },
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || 'Réinitialisation refusée.');
+      started = data;
     } catch (e) {
       console.warn('Server reset failed:', e);
       throw e;
@@ -404,8 +409,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     // Reset in-memory states
-    setAuthSessionToken('');
-    setCurrentUser(CURRENT_USER);
+    setAuthSessionToken(started.token || '');
+    setCurrentUser(started.user || CURRENT_USER);
+    setPointsLedger([]);
+    setNotifications([]);
+    setPlaceProposals(INITIAL_PLACE_PROPOSALS);
+    setModerationCases(INITIAL_MODERATION_CASES);
     setPlaces(INITIAL_PLACES);
     setCheckins([]);
     setPosts(INITIAL_POSTS);
@@ -525,8 +534,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       // Dynamic Gamification Engine: Evaluate and Unlock Badges
       let newlyUnlockedBadgeName: string | undefined;
 
-      setBadges((prevBadges) => {
-        return prevBadges.map((badge) => {
+      const nextBadges = badges.map((badge) => {
           let updatedCount = badge.currentCount;
 
           if (badge.family === 'Explorateur' && !badge.isUnlocked) {
@@ -554,8 +562,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             isUnlocked: badge.isUnlocked || shouldUnlock,
             unlockedAt: shouldUnlock ? new Date().toISOString() : badge.unlockedAt,
           };
-        });
       });
+      setBadges(nextBadges);
 
       // Synchronize user XP directly with server award
       setCurrentUser(prev => ({
@@ -630,7 +638,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       linkedPlaceName: linkedPlace?.name,
       linkedCheckinId: data.linkedCheckinId,
       isVerifiedVisit: data.isVerifiedVisit,
-      audience: 'public',
+      audience: currentUser.visibility === 'private' ? 'private' : 'public',
       likesCount: 0,
       isLikedByCurrentUser: false,
       commentsCount: 0,
@@ -638,7 +646,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setPosts(prev => [newPost, ...prev]);
-    setCurrentUser(prev => ({ ...prev, xpPoints: prev.xpPoints + 20 }));
+    // Publishing is optional and does not award visit XP.
   };
 
   const likePost = (postId: string) => {

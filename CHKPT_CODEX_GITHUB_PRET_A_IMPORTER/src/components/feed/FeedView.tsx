@@ -95,6 +95,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
   // Filter posts based on feed type and selected categories
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
+      if (post.audience !== 'public' && post.authorId !== currentUser.id) return false;
       if (feedFilter === 'friends' && post.authorId === currentUser.id && posts.length > 1) {
         // Keep friends feed relevant
       }
@@ -231,7 +232,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                 disabled={!newPostText.trim()}
                 className="px-4 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
-                Publier (+20 XP)
+                Publier
               </button>
             </div>
           </form>

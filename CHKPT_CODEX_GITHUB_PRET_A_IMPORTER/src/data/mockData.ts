@@ -247,13 +247,20 @@ export const INITIAL_POSTS: Post[] = [
   }
 ];
 
+const upcomingDate = (days: number, hour: number) => {
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate() + days);
+  date.setUTCHours(hour, 0, 0, 0);
+  return date.toISOString();
+};
+
 export const INITIAL_EVENTS: EventItem[] = [
   {
     id: 'evt_01',
     title: 'Nuit Urbaine Abidjan & Live Beats',
-    dateLabel: 'Ce soir, 19h00',
+    dateLabel: 'Demain · 19h00',
     timeLabel: '19h00 - 02h00',
-    utcDate: '2026-10-26T19:00:00Z',
+    utcDate: upcomingDate(1, 19),
     locationName: 'Lagon Bleu Rooftop Lounge',
     commune: 'Cocody',
     description: 'Session DJ set afro-house, percussions traditionnelles en live et dégustation de cocktails signatures.',
@@ -263,14 +270,14 @@ export const INITIAL_EVENTS: EventItem[] = [
     category: 'Musique & Nuit',
     interestedCount: 88,
     goingCount: 34,
-    userIntent: 'going'
+    userIntent: null
   },
   {
     id: 'evt_02',
     title: 'Vernissage & Céramique Contemporaine',
-    dateLabel: 'Vendredi 30 Octobre',
+    dateLabel: 'Dans 4 jours · 18h00',
     timeLabel: '18h30 - 21h30',
-    utcDate: '2026-10-30T18:30:00Z',
+    utcDate: upcomingDate(4, 18),
     locationName: "Centre d'Art Urbain Babi",
     commune: 'Cocody',
     description: 'Rencontre avec 6 jeunes plasticiens ivoiriens explorant la terre cuite et les textures de Grand-Bassam.',

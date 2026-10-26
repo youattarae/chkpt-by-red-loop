@@ -354,10 +354,20 @@ app.get('/api/checkins/history', requireAuth, (req: Request, res: Response) => {
 /**
  * Resets database state for pitch and live evaluations
  */
-app.post('/api/demo/reset', requirePrivateDemo, requireOperator, (_req: Request, res: Response) => {
+app.post(['/api/demo/reset', '/api/demo/start'], requirePrivateDemo, requireOperator, (req: Request, res: Response) => {
   try {
     const freshDb = db.resetPitchDemoState();
     mediaRegistry.clear();
+    if (req.path === '/api/demo/start') {
+      const user = db.findUserById('usr_01')!;
+      const token = generateSessionToken();
+      db.createSession({ token, userId: user.id, createdAt: new Date().toISOString(),
+        expiresAt: new Date(Date.now() + 86400000).toISOString() });
+      const { passwordHash: _, salt: __, ...safeUser } = user;
+      res.json({ success: true, token, user: safeUser });
+      return;
+    }
+
     res.json({
       success: true,
       message: 'Scénario de démonstration réinitialisé avec succès.',
