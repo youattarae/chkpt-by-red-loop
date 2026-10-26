@@ -1,3 +1,5 @@
+> **Mise à jour Lot A :** les points 1–4 ont été traités et testés dans cette branche. Voir [LOT_A_VERIFICATION.md](LOT_A_VERIFICATION.md) pour les commandes, résultats et limites. Le texte ci-dessous décrit l’état initial de l’export. Les autres lots restent hors périmètre.
+
 # État de départ : source exporté de Google AI Studio le 26 octobre 2026
 
 **Ceci est un état observé dans le code, pas une certification de fonctionnement.**

@@ -7,6 +7,7 @@
  */
 
 import crypto from 'crypto';
+import { privateDemoEnabled } from './demoConfig';
 import { db, UserEntity, PlaceEntity, CheckInEntity, CheckInProofEntity, Coordinates } from './db';
 
 export const CHECKIN_RADIUS_METERS = 250;
@@ -49,7 +50,14 @@ export interface CheckinProcessResult {
 }
 
 export function processCheckinSubmission(params: CheckinSubmissionParams): CheckinProcessResult {
-  const { user, placeId, latitude, longitude, accuracyMeters = 15, isSimulated = false, audience = 'private', environment = 'demo' } = params;
+  const { user, placeId, latitude, longitude, accuracyMeters = 15, isSimulated = false, audience = 'private' } = params;
+
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
+      Math.abs(latitude) > 90 || Math.abs(longitude) > 180 ||
+      !Number.isFinite(accuracyMeters) || accuracyMeters < 0) {
+    return { success: false, status: 'rejected', message: 'Coordonnées GPS invalides.',
+      distanceMeters: 0, awardedXp: 0, rejectionReason: 'invalid_coordinates' };
+  }
 
   // 1. Verify that place exists in certified repository
   const place = db.findPlaceById(placeId);
@@ -68,8 +76,8 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   const reportedCoords: Coordinates = { lat: latitude, lng: longitude };
   const distance = calculateDistanceMeters(reportedCoords, place.coordinates);
 
-  // 3. Strict production anti-fraud: simulated positions are rejected in production mode
-  if (environment === 'production' && isSimulated) {
+  // 3. Server policy: only an explicitly enabled private demo accepts declared simulation.
+  if (!privateDemoEnabled && isSimulated) {
     return {
       success: false,
       status: 'rejected',
@@ -154,7 +162,9 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   return {
     success: true,
     status: 'verified',
-    message: isFirstVisit 
+    message: isSimulated
+      ? `Visite simulée à ${place.name} — données fictives (+${awardedXp} XP).`
+      : isFirstVisit
       ? `Présence physique confirmée ! Première découverte de ${place.name} (+${awardedXp} XP).` 
       : `Présence physique confirmée à ${place.name} (+${awardedXp} XP).`,
     distanceMeters: distance,

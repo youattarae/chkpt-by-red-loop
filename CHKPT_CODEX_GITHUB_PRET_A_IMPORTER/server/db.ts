@@ -9,6 +9,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { demoAdminPassword, privateDemoEnabled, seedUserIds } from './demoConfig';
 
 function hashSeedPassword(pwd: string, salt: string): string {
   return crypto.scryptSync(pwd, salt, 64).toString('hex');
@@ -279,7 +280,7 @@ class Database {
           id: 'usr_01',
           username: 'koffi_urbex',
           displayName: 'Koffi Kouamé',
-          passwordHash: hashSeedPassword('koffi123', 'chkpt_salt_koffi_demo'),
+          passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_koffi_demo'),
           salt: 'chkpt_salt_koffi_demo',
           age: 24,
           visibility: 'public',
@@ -298,7 +299,7 @@ class Database {
           id: 'usr_sarah',
           username: 'sarah_dlo',
           displayName: 'Sarah Diallo',
-          passwordHash: hashSeedPassword('sarah123', 'chkpt_salt_sarah_demo'),
+          passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_sarah_demo'),
           salt: 'chkpt_salt_sarah_demo',
           age: 23,
           visibility: 'public',
@@ -317,7 +318,7 @@ class Database {
           id: 'usr_admin',
           username: 'redloop_admin',
           displayName: 'Superviseur RED LOOP',
-          passwordHash: hashSeedPassword('admin123', 'chkpt_salt_admin_demo'),
+          passwordHash: hashSeedPassword(privateDemoEnabled ? demoAdminPassword! : crypto.randomBytes(32).toString('hex'), 'chkpt_salt_admin_demo'),
           salt: 'chkpt_salt_admin_demo',
           age: 35,
           visibility: 'private',
@@ -333,26 +334,7 @@ class Database {
           createdAt: new Date(Date.now() - 90 * 86400000).toISOString(),
         },
       ],
-      sessions: [
-        {
-          token: 'demo_session_koffi_token_12345',
-          userId: 'usr_01',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-        {
-          token: 'demo_session_sarah_token_99999',
-          userId: 'usr_sarah',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-        {
-          token: 'demo_session_admin_token_67890',
-          userId: 'usr_admin',
-          createdAt: new Date().toISOString(),
-          expiresAt: new Date(Date.now() + 30 * 86400000).toISOString(),
-        },
-      ],
+      sessions: [],
       places: CANONICAL_PLACES,
       checkins: [
         {
@@ -417,10 +399,16 @@ class Database {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
         parsed.places = CANONICAL_PLACES;
-        const adminUser = parsed.users?.find((u: any) => u.username === 'redloop_admin');
-        if (adminUser) {
-          adminUser.passwordHash = hashSeedPassword('admin123', adminUser.salt);
+        // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
+        for (const user of parsed.users) {
+          if (!seedUserIds.has(user.id)) continue;
+          user.salt = crypto.randomBytes(16).toString('hex');
+          const password = privateDemoEnabled && user.id === 'usr_admin'
+            ? demoAdminPassword! : crypto.randomBytes(32).toString('hex');
+          user.passwordHash = hashSeedPassword(password, user.salt);
         }
+        parsed.sessions = parsed.sessions.filter((session: SessionEntity) => !seedUserIds.has(session.userId));
+        this.save(parsed);
         return parsed;
       } catch (e) {
         console.warn('DB file corrupt or outdated, re-initializing fresh database:', e);

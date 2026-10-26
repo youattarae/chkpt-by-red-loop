@@ -117,7 +117,7 @@ const STORAGE_PREFIX = 'chkpt_abidjan_v1_';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authSessionToken, setAuthSessionTokenState] = useState<string>(() => {
-    return localStorage.getItem('chkpt_session_token') || 'demo_session_koffi_token_12345';
+    return localStorage.getItem('chkpt_session_token') || '';
   });
 
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
@@ -386,9 +386,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    */
   const resetDemoPitchState = async () => {
     try {
-      await fetch('/api/demo/reset', { method: 'POST' });
+      const response = await fetch('/api/demo/reset', {
+        method: 'POST', headers: { Authorization: `Bearer ${authSessionToken}` },
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || 'Réinitialisation refusée.');
     } catch (e) {
       console.warn('Server reset failed:', e);
+      throw e;
     }
 
     // Clear local storage keys
@@ -399,7 +404,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     });
 
     // Reset in-memory states
-    setAuthSessionToken('demo_session_koffi_token_12345');
+    setAuthSessionToken('');
     setCurrentUser(CURRENT_USER);
     setPlaces(INITIAL_PLACES);
     setCheckins([]);

@@ -108,7 +108,8 @@ const AppContent: React.FC = () => {
       )}
 
       {/* Modals & Dialogs */}
-      <CheckinModal
+      {isCheckinOpen && <CheckinModal
+        key={preselectedPlaceIdForCheckin || "nearby"}
         isOpen={isCheckinOpen}
         onClose={() => {
           setIsCheckinOpen(false);
@@ -116,7 +117,7 @@ const AppContent: React.FC = () => {
         }}
         preselectedPlaceId={preselectedPlaceIdForCheckin}
         onPostPublishedSuccess={() => setActiveTab('feed')}
-      />
+      />}
 
       <PlaceDetailModal
         place={selectedPlace}

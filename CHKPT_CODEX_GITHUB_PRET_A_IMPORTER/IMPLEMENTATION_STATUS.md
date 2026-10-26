@@ -1,3 +1,13 @@
+# Vérification Lot A — 26 octobre 2026
+
+Le périmètre vérifié et les résultats actuels sont dans [docs/LOT_A_VERIFICATION.md](docs/LOT_A_VERIFICATION.md).
+Les outils de démo exigent désormais une activation serveur et un opérateur authentifié.
+Les mots de passe et sessions fixes ont été neutralisés, y compris pour une ancienne base.
+Le check-in repart du lieu demandé à chaque ouverture. Les bases de tests sont temporaires.
+
+Les tableaux ci-dessous sont **historiques, issus de l’export**, et ne constituent pas une certification
+de tous les parcours ni des fonctions Gemini. Les lots B, C et D n’ont pas été réalisés.
+
 # IMPLEMENTATION_STATUS — CHKPT & RED LOOP
 
 **Dernière mise à jour :** 26 octobre 2026  

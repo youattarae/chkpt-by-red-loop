@@ -194,6 +194,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHe
               >
                 <button
                   onClick={() => setSelectedPlaceId(place.id)}
+                  aria-label={`Choisir ${place.name}`}
                   className={`relative flex flex-col items-center group cursor-pointer transition-transform ${
                     isSelected ? 'scale-125 z-30' : 'hover:scale-110 z-10'
                   }`}

@@ -269,7 +269,7 @@ async function main() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         username: 'redloop_admin',
-        password: 'admin123',
+        password: process.env.CHKPT_DEMO_ADMIN_PASSWORD,
       }),
     });
 
@@ -326,6 +326,7 @@ async function main() {
   await runTest('11. Réinitialisation instantanée du scénario pitch via POST /api/demo/reset', async () => {
     const res = await fetch(`${BASE_URL}/api/demo/reset`, {
       method: 'POST',
+      headers: { Authorization: `Bearer ${adminToken}` },
     });
 
     if (res.status !== 200) {

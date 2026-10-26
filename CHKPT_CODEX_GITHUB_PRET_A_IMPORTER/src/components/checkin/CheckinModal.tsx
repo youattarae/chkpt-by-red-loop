@@ -89,7 +89,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentPlace = places.find(p => p.id === selectedPlaceId) || sortedPlaces[0];
+  const currentPlace = places.find(p => p.id === selectedPlaceId) ||
+    (preselectedPlaceId ? undefined : sortedPlaces[0]);
 
   const handleExecuteCheckIn = async () => {
     if (!currentPlace) return;
@@ -145,7 +146,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+    <div role="dialog" aria-label="Check-in"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[92vh] overflow-y-auto no-scrollbar">
         
         {/* Header */}
@@ -169,9 +171,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
           </div>
 
           <button
-            onClick={onClose}
+            onClick={onClose} aria-label="Fermer le check-in"
             className="p-2 text-slate-400 hover:text-white rounded-full bg-slate-800/60 cursor-pointer"
-            aria-label="Fermer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -209,6 +210,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                     <button
                       key={place.id}
                       onClick={() => setSelectedPlaceId(place.id)}
+                      aria-pressed={isSelected}
                       className={`w-full p-3 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
                           ? 'bg-rose-950/50 border-rose-700/80 shadow-md ring-1 ring-rose-500'
@@ -316,7 +318,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
             <div className="pt-2">
               <button
                 onClick={handleExecuteCheckIn}
-                disabled={!selectedPlaceId && sortedPlaces.length === 0}
+                disabled={!currentPlace || isVerifying}
                 className="w-full py-3.5 bg-gradient-to-r from-rose-900 via-rose-800 to-blue-700 hover:from-rose-800 hover:to-blue-600 disabled:opacity-40 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Crosshair className="w-4 h-4" />
@@ -353,7 +355,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-white tracking-tight">
-                    Visite vérifiée avec succès !
+                    {activeLocationMode === 'simulation' ? 'Visite simulée enregistrée !' : 'Visite vérifiée avec succès !'}
                   </h3>
                   <p className="text-xs text-emerald-300 font-medium mt-1">
                     {verificationResult.message}
@@ -375,7 +377,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 </div>
 
                 <div className="p-3 bg-slate-950/80 border border-slate-800 rounded-xl text-left text-xs text-slate-300 space-y-1">
-                  <p className="font-semibold text-white">Votre visite est officiellement comptabilisée.</p>
+                  <p className="font-semibold text-white">{activeLocationMode === 'simulation' ? 'Démonstration — visite fictive comptabilisée.' : 'Votre visite est comptabilisée.'}</p>
                   <p className="text-[11px] text-slate-400">
                     Aucune publication automatique n'est imposée. Souhaitez-vous partager une photo ou votre avis avec vos abonnés ?
                   </p>
@@ -430,7 +432,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
         )}
 
         {/* STEP 4: Optional Follow-up Post Creation */}
-        {step === 'optional_post' && (
+        {step === 'optional_post' && currentPlace && (
           <form onSubmit={handlePublishFollowupPost} className="pt-4 space-y-4">
             <div className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 flex items-center gap-3">
               <img

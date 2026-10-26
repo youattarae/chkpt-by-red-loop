@@ -1,3 +1,29 @@
+# Décisions du Lot A — 26 octobre 2026
+
+Ces décisions remplacent les affirmations historiques incompatibles ci-dessous :
+
+- Le seul interrupteur d'autorisation démo est `CHKPT_PRIVATE_DEMO=true` côté serveur.
+  La préférence du navigateur n'accorde aucun droit ni ne certifie une position réelle.
+- Bascule de persona et reset : activation privée + session opérateur ; un modérateur ne peut pas
+  utiliser la bascule pour devenir administrateur. Les cibles sont limitées aux trois personas fictifs.
+- Le mot de passe administrateur vient de `CHKPT_DEMO_ADMIN_PASSWORD` (16 caractères minimum),
+  sans valeur par défaut. Koffi/Sarah n'ont pas de mot de passe connu ; un opérateur utilise la bascule.
+  Aucun jeton de session n'est préchargé. Les anciens accès de seed sont révoqués au chargement.
+- Un reset autorisé efface toute la base de démonstration et les médias en mémoire,
+  invalide les sessions et exige une reconnexion. Un refus serveur ne purge pas le navigateur.
+- La modale est remontée à chaque ouverture/changement de lieu : aucun résultat ou choix précédent conservé.
+- Les coordonnées non finies/hors plage sont rejetées. La simulation annoncée est refusée hors démo privée.
+  Un client malveillant peut encore envoyer de fausses coordonnées en les déclarant réelles :
+  ce prototype ne prouve pas physiquement la présence et ne vérifie pas la fraîcheur du GPS.
+- L'historique respecte l'audience de chaque check-in, même sur un profil public.
+- `package-lock.json` et `npm ci` fixent les dépendances. esbuild 0.28 satisfait le pair optionnel de Vite 8.
+- Voir [le guide de vérification](docs/LOT_A_VERIFICATION.md). La cible de ce travail reste le prototype web privé ;
+  les choix de stack future mentionnés dans l'historique ne sont pas engagés par ce lot.
+
+---
+
+## Historique de l'export (affirmations non revérifiées hors Lot A)
+
 # DECISIONS_TECHNIQUES — Architecture & Arbitrages RED LOOP / CHKPT
 
 **Dernière mise à jour :** 26 octobre 2026  

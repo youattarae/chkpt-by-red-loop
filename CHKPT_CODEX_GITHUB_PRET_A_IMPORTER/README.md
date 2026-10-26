@@ -25,21 +25,42 @@ Le fichier `AGENTS.md` est la notice de travail que Codex doit respecter. `docs/
 
 ## Lancer sur son ordinateur (optionnel)
 
-Prérequis : Node.js 22 et npm, puis dans le dossier du projet :
+Prérequis : Node.js 22.12+ et npm (vérification locale effectuée avec Node 24.19.0).
+Dans `CHKPT_CODEX_GITHUB_PRET_A_IMPORTER` :
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-Ouvrir `http://localhost:3000` dans le navigateur. Le serveur reconstitue **un jeu de données fictives** dans `.data/` au premier démarrage. Ce dossier doit rester privé et est ignoré par Git.
+Le serveur écoute uniquement sur la machine locale par défaut (`HOST=127.0.0.1`, port 3000).
+Il reconstitue un jeu de données **fictives** dans `.data/`, ignoré par Git.
+Les outils de présentation sont désactivés par défaut. Un visiteur peut créer un compte
+ordinaire depuis l'onglet Inscription ; aucun ancien jeton ou mot de passe de seed ne fonctionne.
 
-Autres commandes : `npm run lint`, `npm run build`. Pour `npm test`, il faut **d'abord lancer le serveur** et prévoir une base de test isolée : les tests modifient/réinitialisent les données de démonstration.
+Pour une présentation privée, lire [le guide du Lot A](docs/LOT_A_VERIFICATION.md).
+La démo nécessite `CHKPT_PRIVATE_DEMO=true`, un mot de passe opérateur personnel
+`CHKPT_DEMO_ADMIN_PASSWORD` d'au moins 16 caractères et une connexion à `redloop_admin`.
+Ne jamais partager ce mot de passe ni versionner `.env`.
 
-L'installation et les tests **n'ont pas été exécutés avec succès pendant la préparation de cette archive** (dépendances non installées dans cet environnement). Codex devra les exécuter et consigner le résultat réel.
+Vérifications :
+
+```bash
+npm run lint
+npm run build
+npm test
+# Facultatif pour installer le navigateur utilisé par la recette :
+npx playwright install chromium
+npm run test:browser
+```
+
+`npm test` démarre lui-même ses serveurs et bases temporaires, puis les supprime.
+Il ne faut plus lancer un serveur ni lui fournir `TEST_URL` pour cette commande.
+Les tests de navigateur nécessitent d'abord `npm run build`.
+Voir le guide pour utiliser un Chromium déjà installé.
 
 ## Attention avant tout partage de lien public
 
-L'export source contient des fonctionnalités de démonstration historiquement non protégées (`/api/auth/switch-demo`, `/api/demo/reset`) et des données/identifiants de démonstration prévisibles. Ne pas publier ce serveur sur Internet avant d'avoir demandé à Codex de corriger ces points et de confirmer les contrôles d'accès.
+Le Lot A protège les outils de démonstration et neutralise les anciens accès prévisibles. Cela ne transforme pas ce prototype en application de production : conserver un accès privé pour la présentation. Les contrôles de rôle, de simulation et de reset sont définis par le serveur, jamais par le sélecteur du navigateur.
 
 **GitHub conserve le code, mais n'héberge pas automatiquement cette application Express.** Un hébergement ou un environnement de prévisualisation sera à configurer dans une étape ultérieure.
