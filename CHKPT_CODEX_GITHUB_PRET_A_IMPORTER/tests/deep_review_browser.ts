@@ -27,9 +27,11 @@ export async function checkDeepReview(url: string, password: string) {
     await page.getByTitle('Profil & Compte Démo').click();
     await page.getByRole('button',{name:'Profils Démo (opérateur)',exact:true}).click();
     const sarah = page.getByRole('button').filter({hasText:'Sarah Diallo'}).last();
-    await sarah.click();
+    await page.evaluate(() => document.fonts.ready);
+    await sarah.scrollIntoViewIfNeeded();
     const box = await sarah.boundingBox();
-    assert.ok(box && box.y >= 0 && box.y+box.height <= 568, 'Le panneau doit défiler sur petit écran');
+    assert.ok(box && box.y >= 0 && box.y+box.height <= 568, `Le bouton doit être accessible avant sélection : ${JSON.stringify(box)}`);
+    await sarah.click();
     await page.waitForFunction(() => JSON.parse(localStorage.getItem('chkpt_abidjan_v1_user')!).username === 'sarah_dlo');
     release();
     await page.waitForTimeout(150);
