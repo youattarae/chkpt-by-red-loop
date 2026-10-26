@@ -19,4 +19,16 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:browser
+      - name: Vérifier le parcours et publier le diagnostic en cas d'échec
+        run: |
+          python3 - <<'PYTHON'
+          import subprocess, sys
+          result = subprocess.run(['npm', 'run', 'test:browser'], text=True, capture_output=True)
+          sys.stdout.write(result.stdout)
+          sys.stderr.write(result.stderr)
+          if result.returncode:
+              detail = (result.stderr or result.stdout)[-3500:]
+              detail = detail.replace('%', '%25').replace('\r', '%0D').replace('\n', '%0A')
+              print('::error::' + detail)
+          sys.exit(result.returncode)
+          PYTHON
