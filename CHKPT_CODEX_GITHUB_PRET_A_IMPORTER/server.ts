@@ -261,7 +261,7 @@ app.get('/api/auth/me', (req: Request, res: Response) => {
     return;
   }
   const { passwordHash: _, salt: __, ...safeUser } = req.user;
-  res.json({ authenticated: true, user: safeUser });
+  res.json({ authenticated: true, user: safeUser, followingIds: db.getFollowing(req.user.id) });
 });
 
 // ==========================================

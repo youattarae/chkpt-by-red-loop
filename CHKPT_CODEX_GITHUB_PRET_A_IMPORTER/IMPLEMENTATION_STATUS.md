@@ -11,7 +11,7 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 16 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 18 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
 Les publications, badges et intentions sont des états de démonstration locaux au navigateur.

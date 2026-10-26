@@ -41,7 +41,9 @@ export async function checkPresentation(url: string, password: string) {
       async function visit() {
         await page.getByRole('button', { name: 'Carte', exact: true }).click();
         await page.getByRole('button', { name: "Choisir Maquis L'Étoile d'Abidjan", exact: true }).click();
+        await capture('carte');
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
+        await capture('fiche');
         await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
         await page.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
         await page.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();
@@ -53,6 +55,7 @@ export async function checkPresentation(url: string, password: string) {
       await page.getByRole('button', { name: 'Créer une publication' }).click();
       const message = `Une soirée à Cocody — recette ${width}`;
       await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
+      await capture('publication');
       await page.getByRole('button', { name: 'Publier le checkpoint' }).click();
       await page.getByText(message, { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Profil', exact: true }).click();

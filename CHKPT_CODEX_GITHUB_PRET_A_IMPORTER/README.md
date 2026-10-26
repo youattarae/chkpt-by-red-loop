@@ -4,6 +4,10 @@
 
 CHKPT est un réseau social de découverte de lieux et sorties, centré sur Cocody/Abidjan pour la démonstration. RED LOOP désigne l'écosystème et le projet porteur. L'objectif immédiat est de présenter le fonctionnement devant un jury FrancoTech et de potentiels financeurs, **pas** de commercialiser une application finie.
 
+## Voir la démonstration sans lire le code
+
+Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.
+
 ## Présentation privée — lots A à D
 
 Le parcours complet, les visuels locaux et le support de présentation sont préparés.

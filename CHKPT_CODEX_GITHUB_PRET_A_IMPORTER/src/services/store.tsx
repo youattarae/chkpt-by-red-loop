@@ -45,6 +45,7 @@ import {
 interface StoreContextType {
   currentUser: UserProfile;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserProfile>>;
+  followingIds: string[];
   authSessionToken: string;
   setAuthSessionToken: (token: string) => void;
   appEnvironment: 'demo' | 'production';
@@ -120,6 +121,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return localStorage.getItem('chkpt_session_token') || '';
   });
 
+  const [followingIds, setFollowingIds] = useState<string[]>([]);
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
 
   const setAuthSessionToken = (token: string) => {
@@ -163,11 +165,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   useEffect(() => {
+    const controller = new AbortController();
     fetch('/api/auth/me', {
+      signal: controller.signal,
       headers: { Authorization: `Bearer ${authSessionToken}` },
     })
       .then((res) => res.json())
       .then((data) => {
+        if (controller.signal.aborted) return;
+        setFollowingIds(Array.isArray(data.followingIds) ? data.followingIds : []);
         if (data.authenticated && data.user) {
           setCurrentUser((prev) => ({
             ...prev,
@@ -181,10 +187,18 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             checkinsCount: data.user.checkinsCount,
             level: data.user.level,
             homeZone: data.user.homeZone,
+            avatarUrl: data.user.avatarUrl,
+            bio: data.user.bio,
+            followersCount: data.user.followersCount,
+            followingCount: data.user.followingCount,
           }));
+        } else {
+          setCurrentUser(CURRENT_USER);
+          setIsOperatorView(false);
         }
       })
-      .catch((err) => console.warn('Sync /api/auth/me error:', err));
+      .catch((err) => { if (err.name !== 'AbortError') console.warn('Sync /api/auth/me error:', err); });
+    return () => controller.abort();
   }, [authSessionToken]);
 
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>(() => {
@@ -361,21 +375,27 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Request browser GPS if mode is active
   useEffect(() => {
-    if (activeLocationMode === 'browser_gps' && navigator.geolocation) {
+    let cancelled = false;
+    if (activeLocationMode !== 'browser_gps') return;
+    setBrowserCoordinates(null);
+    if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          if (cancelled) return;
           setBrowserCoordinates({
             lat: pos.coords.latitude,
             lng: pos.coords.longitude,
           });
         },
         (err) => {
+          if (cancelled) return;
           console.warn('Geolocation permission error, falling back to simulated spot:', err.message);
           setActiveLocationMode('simulation');
         },
         { enableHighAccuracy: true, timeout: 8000 }
       );
-    }
+    } else { setActiveLocationMode('simulation'); }
+    return () => { cancelled = true; };
   }, [activeLocationMode]);
 
   const userCurrentCoordinates: Coordinates = 
@@ -453,6 +473,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     earnedXp?: number;
     unlockedBadgeName?: string;
   }> => {
+    if (activeLocationMode === 'browser_gps' && !browserCoordinates) {
+      return { success: false, message: 'Position GPS en cours de recherche. Patientez ou choisissez explicitement le simulateur.', distanceMeters: 0 };
+    }
     const place = places.find(p => p.id === placeId);
     if (!place) {
       return { success: false, message: 'Lieu introuvable dans le référentiel.', distanceMeters: 0 };
@@ -874,6 +897,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     <StoreContext.Provider value={{
       currentUser,
       setCurrentUser,
+      followingIds,
       authSessionToken,
       setAuthSessionToken,
       appEnvironment,

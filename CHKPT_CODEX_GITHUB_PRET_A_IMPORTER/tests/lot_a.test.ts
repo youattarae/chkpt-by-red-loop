@@ -147,12 +147,14 @@ try {
     const data = JSON.parse(await readFile(file, 'utf8'));
     const legacyAdmin = data.users.find((user: any) => user.id === 'usr_admin');
     legacyAdmin.passwordHash = scryptSync('admin123', legacyAdmin.salt, 64).toString('hex');
+    data.sessions.push({ token: 'invalid-expiry-test', userId: publicUser.user.id, createdAt: new Date().toISOString(), expiresAt: 'invalid-date' });
     data.sessions.push({ token: 'demo_session_admin_token_67890', userId: 'usr_admin',
       createdAt: new Date().toISOString(), expiresAt: new Date(Date.now() + 86400000).toISOString() });
     await writeFile(file, JSON.stringify(data));
     const restarted = await start('safe', false);
     assert.equal((await (await request(restarted.url, '/api/auth/me', undefined, 'demo_session_admin_token_67890')).json()).authenticated, false);
     assert.equal((await (await request(restarted.url, '/api/auth/me', undefined, publicUser.token)).json()).authenticated, true);
+    assert.equal((await (await request(restarted.url, '/api/auth/me', undefined, 'invalid-expiry-test')).json()).authenticated, false);
     assert.equal((await request(restarted.url, '/api/auth/login', { username: 'redloop_admin', password: 'admin123' })).status, 401);
   });
   await check('Migration en démo privée : nouveau secret appliqué et anciennes sessions révoquées', async () => {
@@ -182,12 +184,30 @@ try {
     assert.match(output, /at least 16 characters/);
     processes.delete(child);
   });
+  await check('Base endommagée : refus de démarrer sans modifier les données existantes', async () => {
+    for (const [index, contents] of ['{broken', JSON.stringify({users: []})].entries()) {
+      const cwd = path.join(runtime, `corrupt-${index}`);
+      await mkdir(path.join(cwd, '.data'), {recursive: true});
+      const file = path.join(cwd, '.data/chkpt_db.json');
+      await writeFile(file, contents);
+      const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, 'server.ts')], {
+        cwd, env: {...process.env, CHKPT_PRIVATE_DEMO:'false'}, stdio:['ignore','pipe','pipe']
+      });
+      let output = '';
+      child.stderr!.on('data', chunk => {output += chunk;});
+      assert.notEqual((await once(child, 'exit'))[0], 0);
+      assert.match(output, /préserver le fichier existant/);
+      assert.equal(await readFile(file, 'utf8'), contents);
+    }
+  });
   if (process.argv.includes('--browser')) {
     await symlink(path.join(project, 'dist'), path.join(demo.cwd, 'dist'));
     const { checkBrowser } = await import('./lot_a_browser');
     await check('Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu', () => checkBrowser(demo.url));
     const { checkPresentation } = await import('./presentation_browser');
     await check('Présentation complète et répétition après reset autorisé', () => checkPresentation(demo.url, password));
+    const { checkDeepReview } = await import('./deep_review_browser');
+    await check('Petit écran, ancienne réponse de connexion, filtre Amis et GPS en attente', () => checkDeepReview(demo.url, password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

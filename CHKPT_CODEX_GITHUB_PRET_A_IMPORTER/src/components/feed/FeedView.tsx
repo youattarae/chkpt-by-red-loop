@@ -28,7 +28,8 @@ interface FeedViewProps {
 
 export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin }) => {
   const { 
-    currentUser, 
+    currentUser,
+    followingIds,
     posts, 
     places, 
     likePost, 
@@ -97,9 +98,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
   const filteredPosts = useMemo(() => {
     return posts.filter((post) => {
       if (post.audience !== 'public' && post.authorId !== currentUser.id) return false;
-      if (feedFilter === 'friends' && post.authorId === currentUser.id && posts.length > 1) {
-        // Keep friends feed relevant
-      }
+      if (feedFilter === 'friends' && !followingIds.includes(post.authorId)) return false;
 
       if (selectedCategories.length === 0) return true;
 
@@ -108,7 +107,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
       return false;
     });
-  }, [posts, feedFilter, selectedCategories, currentUser.id, places]);
+  }, [posts, feedFilter, selectedCategories, currentUser.id, places, followingIds]);
 
   // Post counts per category for the filter chips
   const categoryPostCounts = useMemo(() => {

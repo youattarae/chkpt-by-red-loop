@@ -399,6 +399,8 @@ class Database {
       try {
         const raw = fs.readFileSync(DB_FILE, 'utf-8');
         const parsed = JSON.parse(raw);
+        const tables = ['users', 'sessions', 'places', 'checkins', 'checkin_proofs', 'points_ledger', 'follows', 'reports'];
+        if (!tables.every(table => Array.isArray(parsed[table]))) throw new Error('Invalid database tables');
         parsed.places = CANONICAL_PLACES;
         // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
         for (const user of parsed.users) {
@@ -412,7 +414,7 @@ class Database {
         this.save(parsed);
         return parsed;
       } catch (e) {
-        console.warn('DB file corrupt or outdated, re-initializing fresh database:', e);
+        throw new Error('Base locale illisible : démarrage interrompu pour préserver le fichier existant.', { cause: e });
       }
     }
 
@@ -474,7 +476,8 @@ class Database {
   public findSession(token: string): SessionEntity | undefined {
     const s = this.data.sessions.find(session => session.token === token);
     if (!s) return undefined;
-    if (new Date(s.expiresAt).getTime() < Date.now()) {
+    const expiry = new Date(s.expiresAt).getTime();
+    if (!Number.isFinite(expiry) || expiry <= Date.now()) {
       this.deleteSession(token);
       return undefined;
     }
@@ -539,6 +542,10 @@ class Database {
     return this.data.follows
       .filter(f => f.followedId === userId)
       .map(f => f.followerId);
+  }
+
+  public getFollowing(userId: string): string[] {
+    return this.data.follows.filter(f => f.followerId === userId).map(f => f.followedId);
   }
 
   public isFollower(followerId: string, followedId: string): boolean {
