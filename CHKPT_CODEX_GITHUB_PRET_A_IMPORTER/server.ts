@@ -420,7 +420,8 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
     const effectiveOwnerUsername = req.user!.username;
 
     const validAudiences = ['private', 'followers', 'public'];
-    const chosenAudience = validAudiences.includes(audience) ? audience : 'private';
+    const chosenAudience = req.user!.age < 18 ? 'private'
+      : validAudiences.includes(audience) ? audience : 'private';
 
     const assetId = `med_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const token = crypto.randomBytes(16).toString('hex');

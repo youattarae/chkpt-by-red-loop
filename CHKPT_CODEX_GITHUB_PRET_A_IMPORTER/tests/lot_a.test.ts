@@ -125,9 +125,19 @@ try {
       assert.equal((await request(demo.url, '/api/checkins', { ...checkin, latitude }, outsider.token)).status >= 400, true);
     }
   });
-  await check('Mineur inscrit : profil privé imposé', async () => {
+  await check('Mineur inscrit : profil et médias privés imposés', async () => {
     const minor = await register(demo.url, 'lot_a_minor', 15);
     assert.equal(minor.user.visibility, 'private');
+    const upload = await request(demo.url, '/api/media/upload', {
+      dataBase64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+      mimeType:'image/png', audience:'public'
+    }, minor.token);
+    assert.equal(upload.status,201);
+    const media = await upload.json();
+    assert.equal(media.audience,'private');
+    assert.equal((await request(demo.url, '/api/media/'+media.assetId)).status,403);
+    assert.equal((await request(demo.url, '/api/media/'+media.assetId, undefined, outsider.token)).status,403);
+    assert.equal((await request(demo.url, '/api/media/'+media.assetId, undefined, minor.token)).status,200);
   });
   await check('Opérateur autorisé : personas, refus de cible arbitraire et reset', async () => {
     assert.equal((await request(demo.url, '/api/auth/switch-demo', { username: 'lot_a_user' }, admin)).status, 404);

@@ -22,7 +22,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
   onMediaCleared,
   label = 'Photo (EXIF GPS purgé automatiquement)',
 }) => {
-  const { authSessionToken } = useStore();
+  const { authSessionToken, currentUser } = useStore();
   const [previewUrl, setPreviewUrl] = useState<string>(initialMediaUrl || '');
   const [isProcessing, setIsProcessing] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -84,7 +84,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
           body: JSON.stringify({
             dataBase64: sanitizedBase64,
             mimeType: 'image/jpeg',
-            audience: 'public',
+            audience: currentUser.visibility === 'private' ? 'private' : 'public',
           }),
         })
           .then((res) => res.json())

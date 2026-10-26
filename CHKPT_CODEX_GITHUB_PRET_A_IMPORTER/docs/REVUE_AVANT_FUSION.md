@@ -14,6 +14,8 @@ La première recette était passée sur son parcours principal. Une seconde lect
   ou de choisir explicitement le simulateur. Test de position volontairement non fournie, sans appel de check-in au serveur.
 - **Petit écran :** panneau de compte défilant, boutons accessibles à 320 × 568 pixels.
 - **Fil Amis :** filtrage sur les comptes réellement suivis dans la base fictive, transmis par le serveur.
+- **Photos et profils privés :** confidentialité reprise par défaut dans l’interface ; photos des mineurs privées imposées côté serveur.
+  Test d’un envoi demandant public : réponse privée, refus pour un tiers et pour un visiteur sans session.
 - **Base illisible :** arrêt du démarrage et préservation du fichier existant, au lieu d'un remplacement silencieux.
   Essais avec JSON cassé et tables manquantes ; contenu du fichier inchangé après échec.
 - **Session mal formée :** date d'expiration invalide désormais refusée et session révoquée.
