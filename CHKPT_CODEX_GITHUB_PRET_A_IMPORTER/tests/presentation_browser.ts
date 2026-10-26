@@ -43,7 +43,7 @@ export async function checkPresentation(url: string, password: string) {
         await page.getByRole('button', { name: "Choisir Maquis L'Étoile d'Abidjan", exact: true }).click();
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
         await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
-        await page.getByRole('button', { name: 'Confirmer ma présence physique' }).click();
+        await page.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
         await page.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();
         await page.getByText('Nouveau Badge débloqué : Initié du Braisé !').waitFor();
       }

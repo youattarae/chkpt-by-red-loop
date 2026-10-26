@@ -166,7 +166,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 {step === 'propose_place' && 'Proposer un lieu manquant'}
               </h2>
               <span className="text-[11px] text-slate-400">
-                Preuve physique géolocalisée · Abidjan
+                {activeLocationMode === 'simulation' ? 'Simulation GPS · données fictives' : 'Position GPS · Abidjan'}
               </span>
             </div>
           </div>
@@ -323,7 +323,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 className="w-full py-3.5 bg-gradient-to-r from-rose-900 via-rose-800 to-blue-700 hover:from-rose-800 hover:to-blue-600 disabled:opacity-40 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Crosshair className="w-4 h-4" />
-                <span>Confirmer ma présence physique</span>
+                <span>{activeLocationMode === 'simulation' ? 'Simuler ma visite' : 'Confirmer ma présence physique'}</span>
               </button>
             </div>
 

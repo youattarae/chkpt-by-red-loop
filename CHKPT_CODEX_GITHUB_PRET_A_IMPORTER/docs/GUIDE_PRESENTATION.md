@@ -26,7 +26,7 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 |---|---|---|
 | 0:00–0:25 | Montrer l'accueil, puis le fil sous l'illustration. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
 | 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
-| 0:55–1:25 | Faire un check-in ici → confirmer. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
+| 0:55–1:25 | Faire un check-in ici → Simuler ma visite. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
 | 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
 | 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
 | 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
