@@ -6,7 +6,7 @@ Les réponses du porteur dans `visuels chkpt.docx`, la planche du symbole jointe
 
 - Interface blanche au premier lancement, indépendamment du thème système. Mode sombre facultatif depuis Profil → Réglages, conservé localement sous `chkpt_theme`.
 - Fonds et textes séparés par des couleurs sémantiques partagées entre tous les écrans. Bleu pour les actions principales et la navigation active ; bordeaux pour les réactions et récompenses.
-- Symbole CHKPT seul pour la marque en en-tête, avec le GPS et la cloche de notifications. Suppression du bloc promotionnel de l'accueil et du slogan dans l'interface ; fil social et découvertes au premier plan.
+- Symbole CHKPT seul pour la marque en en-tête, avec le GPS affichant la commune sélectionnée et la cloche de notifications. Suppression du bloc promotionnel de l'accueil et du slogan dans l'interface ; fil social et découvertes au premier plan.
 - Symbole CHKPT dans l'en-tête, le bouton central avec libellé Check-in et le favicon. Le bouton central garde son action et son nom accessible existants.
 - Arrondis conservés, animations sobres et préférence de réduction des mouvements respectée. Police Plus Jakarta Sans conservée, le fichier de la typographie RED LOOP n'ayant pas été fourni.
 - Médaillon bordeaux pour la récompense, avec nom du badge et famille issus de l'état réel de la démonstration.

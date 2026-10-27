@@ -11,7 +11,7 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 23 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 24 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
 Les publications, badges et intentions sont des états de démonstration locaux au navigateur.
@@ -55,3 +55,9 @@ Exécutés avec succès : `npm run lint`, `npm run build`, et **23/23 groupes** 
 Sur demande du porteur, les boutons de check sont retirés des publications, de la carte, des fiches et de l’état vide du fil. Le seul point d’ouverture est le bouton central Check-in. Aucun lieu n’est choisi automatiquement : Confirmer le check reste désactivé jusqu’à la sélection, puis la publication reste proposée séparément.
 
 Exécutés avec succès : lint, build et recette complète **23/23 groupes**, incluant le choix obligatoire, l’absence de raccourcis, l’identifiant exact transmis après sélection, le refus hors rayon et du doublon, les points, le badge, la publication et la répétition. Aucune autorisation ou règle serveur n’est modifiée.
+
+## GPS avec commune et fiche lieu agrandie
+
+Le bouton GPS affiche la commune sélectionnée. Son menu conserve Simulateur / GPS Réel et propose six positions de démonstration. La fiche lieu remplit l’écran mobile et s’élargit sur ordinateur : couverture, galerie disponible, adresse, horaires et favoris. Aucun raccourci de check-in n’y est ajouté.
+
+Vérification : `npm run lint`, `npm run build`, recette navigateur **24/24 groupes**, incluant les 11 tests historiques. Contrôles à 320/390/1280 pixels dans les deux thèmes : sélection GPS, dimensions, défilement, retour toujours accessible, galerie, favoris et absence de bouton de check. Captures réelles dans [GPS_ET_FICHE_LIEU.md](docs/GPS_ET_FICHE_LIEU.md). Tests sous Chromium Linux ; répétition physique Mac et Windows à prévoir après installation.

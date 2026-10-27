@@ -2,7 +2,7 @@
 
 L'accueil reprend la présentation des cartes de la référence fournie, avec deux onglets : **Pour toi** et **Amis**. Les cartes partagent leur composant avec le profil : avatar rond, auteur, texte avant le média, lieu lié, réactions, commentaires et enregistrement du lieu. Les filtres de catégories restent accessibles avec **Filtrer**. La publicité de démonstration conserve ses mentions et reste non cliquable.
 
-La référence corrigée privilégie une image arrondie, puis une ligne de lieu avec vignette. Le check-in commence uniquement par le bouton central : sélectionner le lieu, confirmer le check, puis choisir de publier. Aucun bouton Check n’est présent dans les publications, sur la carte ou dans les fiches. L'en-tête conserve le symbole, le GPS et les notifications. Les lettres CHKPT, la commune, le thème et l'avatar de compte sont retirés de cette barre ; le bouton GPS reste accessible.
+La référence corrigée privilégie une image arrondie, puis une ligne de lieu avec vignette. Le check-in commence uniquement par le bouton central : sélectionner le lieu, confirmer le check, puis choisir de publier. Aucun bouton Check n’est présent dans les publications, sur la carte ou dans les fiches. L’en-tête conserve le symbole, le GPS avec la commune sélectionnée et les notifications. Les lettres CHKPT, le sélecteur de commune séparé, le thème et l’avatar de compte sont retirés de cette barre.
 
 **Profil → Réglages** donne accès au mode sombre, à la commune et au choix de position. **Profil → Gérer mon compte** conserve la connexion et les outils de démo. Le total XP ouvre toujours l'historique et le journal des points.
 

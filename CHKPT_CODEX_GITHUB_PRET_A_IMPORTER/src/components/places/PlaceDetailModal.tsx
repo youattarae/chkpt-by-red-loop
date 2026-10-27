@@ -1,151 +1,66 @@
-import { SafeImage } from '../common/SafeImage';
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- * Detailed Place Modal Component
- */
-
-import React from 'react';
+import { useEffect, useState } from 'react';
+import { ArrowLeft, MapPin, Clock, Bookmark, Star, Tag } from 'lucide-react';
 import { Place } from '../../types';
 import { useStore } from '../../services/store';
-import { 
-  X, 
-  MapPin, 
-  Clock, 
-  Bookmark, 
-  Crosshair, 
-  Sparkles, 
-  CheckCircle2, 
-  Tag, 
-  Share2,
-  AlertTriangle
-} from 'lucide-react';
+import { SafeImage } from '../common/SafeImage';
+import { publicationImage, isGeneratedPublicationImage } from '../../data/publicationMedia';
 
 interface PlaceDetailModalProps {
   place: Place | null;
   onClose: () => void;
 }
 
-export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
-  place,
-  onClose,
-}) => {
+export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
   const { savedPlaceIds, toggleSavePlace } = useStore();
-
+  const [activeImage, setActiveImage] = useState(0);
+  const [fallback, setFallback] = useState(false);
+  useEffect(() => {
+    if (!place) return;
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', close);
+    return () => document.removeEventListener('keydown', close);
+  }, [place, onClose]);
   if (!place) return null;
-
-  const isSaved = savedPlaceIds.includes(place.id);
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-surface border border-line rounded-t-3xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
-        
-        {/* Cover Image & Close */}
-        <div className="relative aspect-video max-h-56 w-full bg-canvas overflow-hidden">
-          <SafeImage
-            src={place.coverImage}
-            alt={place.name}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-black/60"></div>
-          
-          <button
-            onClick={onClose}
-            aria-label="Fermer la fiche"
-            className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black text-white rounded-full transition-colors cursor-pointer"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between">
-            <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md text-white font-mono text-xs font-bold border border-white/10">
-              {place.priceDescription}
-            </span>
-
-            <button
-              onClick={() => toggleSavePlace(place.id)}
-              className={`p-2 rounded-xl backdrop-blur-md border transition-colors cursor-pointer ${
-                isSaved
-                  ? 'bg-rose-950/80 border-rose-600 text-rose-300'
-                  : 'bg-black/60 border-white/20 text-white hover:bg-black/80'
-              }`}
-              title={isSaved ? 'Retirer des favoris' : 'Enregistrer le lieu'}
-            >
-              <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-current' : ''}`} />
-            </button>
-          </div>
+  const images = [...new Set([place.coverImage, ...place.galleryImages].map(source => publicationImage(source)).filter((source): source is string => !!source))];
+  const image = images[activeImage] || images[0];
+  const saved = savedPlaceIds.includes(place.id);
+  return <div className="fixed inset-0 z-50 bg-black/60 flex items-stretch sm:items-center justify-center sm:p-6">
+    <section role="dialog" aria-modal="true" aria-labelledby="place-detail-title" className="place-detail bg-canvas text-ink w-full max-w-4xl h-[100dvh] sm:h-[calc(100dvh-3rem)] sm:rounded-3xl shadow-2xl overflow-y-auto overscroll-contain">
+      <div className="sticky top-0 z-10 h-0">
+        <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
+          <button type="button" onClick={onClose} aria-label="Fermer la fiche" className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><ArrowLeft className="w-5 h-5" /></button>
+          <button type="button" onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button>
         </div>
-
-        {/* Place Information */}
-        <div className="p-4 sm:p-5 overflow-y-auto no-scrollbar space-y-4">
-          
-          <div>
-            <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-ink tracking-tight">{place.name}</h2>
-              {place.verificationStatus === 'verified' && (
-                <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold flex items-center gap-1">
-                  <CheckCircle2 className="w-3 h-3" />
-                  <span>Référencé · démo</span>
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2 text-xs text-muted mt-1">
-              <span>{place.categoryLabel}</span>
-              <span>·</span>
-              <span className="flex items-center gap-1">
-                <MapPin className="w-3 h-3 text-rose-500" />
-                {place.neighborhood} ({place.commune})
-              </span>
-            </div>
-          </div>
-
-          <p className="media-disclosure rounded-lg">Lieu fictif de démonstration{place.coverImage.endsWith('.png') ? ' · illustration générée par IA' : ' · illustration de présentation'}</p>
-          <p className="text-xs text-body leading-relaxed">
-            {place.description}
-          </p>
-
-          {/* Details Pill grid */}
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="p-2.5 rounded-xl bg-canvas border border-line flex items-center gap-2">
-              <Clock className="w-4 h-4 text-muted shrink-0" />
-              <div>
-                <span className="text-[10px] text-muted block">Horaires</span>
-                <span className="text-ink font-medium text-[11px] truncate block">
-                  {place.openingHours || 'Ouvert tous les jours'}
-                </span>
-              </div>
-            </div>
-
-            <div className="p-2.5 rounded-xl bg-canvas border border-line flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-              <div>
-                <span className="text-[10px] text-muted block">Check-ins · données fictives</span>
-                <span className="text-ink font-bold text-[11px]">
-                  {place.totalCheckins} visites
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Tags */}
-          <div className="flex flex-wrap gap-1.5 pt-1">
-            {place.tags.map((tag) => (
-              <span
-                key={tag}
-                className="px-2 py-1 rounded-lg bg-canvas border border-line/80 text-[11px] text-body flex items-center gap-1"
-              >
-                <Tag className="w-3 h-3 text-muted" />
-                <span>{tag}</span>
-              </span>
-            ))}
-          </div>
-
-
-
-        </div>
-
       </div>
-    </div>
-  );
-};
+      <div className="relative h-[34dvh] min-h-52 sm:h-[40dvh] sm:min-h-64 bg-soft">
+        <SafeImage src={image} onError={() => setFallback(true)} alt={`Illustration : ${place.name}`} className="w-full h-full object-cover" />
+        <span className="absolute bottom-8 right-4 rounded-full px-2.5 py-1 text-xs font-semibold bg-black/65 text-white">{Math.min(activeImage + 1, images.length)} / {images.length}</span>
+      </div>
+      <div className="relative -mt-5 rounded-t-3xl bg-canvas p-5 sm:p-7 space-y-5">
+        <div className="space-y-2">
+          <h2 id="place-detail-title" className="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">{place.name}</h2>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1 text-muted"><MapPin className="w-3.5 h-3.5 text-rose-400" />{place.commune} · {place.neighborhood}</span>
+            <span className="bg-blue-950 text-blue-400 rounded-lg px-2 py-1 text-[10px] font-semibold">Lieu fictif de démonstration</span>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            {typeof place.rating === 'number' && Number.isFinite(place.rating) && <span className="inline-flex items-center gap-1 text-body"><Star className="w-4 h-4 text-amber-400 fill-current" /><strong>{place.rating.toFixed(1).replace('.', ',')}</strong><span className="text-muted">({place.reviewCount} avis fictifs)</span></span>}
+            <span className="bg-rose-950 text-rose-400 rounded-full px-2.5 py-1 font-semibold">{place.categoryLabel}</span>
+            <span className="text-body font-semibold">{place.priceDescription}</span>
+          </div>
+        </div>
+        <p className="text-sm text-body leading-relaxed">{place.description}</p>
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3">
+          <div className="bg-soft rounded-2xl p-3 flex items-start gap-2.5"><MapPin className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" /><div className="min-w-0"><h3 className="text-xs font-bold">Adresse</h3><p className="text-xs text-body leading-relaxed mt-1 break-words">{place.address}</p></div></div>
+          <div className="bg-soft rounded-2xl p-3 flex items-start gap-2.5"><Clock className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" /><div className="min-w-0"><h3 className="text-xs font-bold">Horaires</h3><p className="text-xs text-body leading-relaxed mt-1">{place.openingHours || 'Horaires non renseignés'}</p></div></div>
+        </div>
+        <div className="flex flex-wrap gap-2">{place.tags.map(tag => <span key={tag} className="inline-flex items-center gap-1.5 bg-soft border border-line rounded-full px-3 py-1.5 text-xs text-body"><Tag className="w-3 h-3" />{tag}</span>)}</div>
+        {images.length > 1 && <section aria-label="Illustrations du lieu" className="space-y-2">
+          <h3 className="text-sm font-bold">Illustrations du lieu</h3>
+          <div className="flex gap-2 overflow-x-auto pb-2">{images.map((source, index) => <button key={source} type="button" aria-label={`Voir l’illustration ${index + 1}`} aria-pressed={activeImage === index} onClick={() => { setActiveImage(index); setFallback(false); }} className={`shrink-0 w-24 h-20 overflow-hidden rounded-xl border-2 cursor-pointer ${activeImage === index ? 'border-blue-400' : 'border-transparent'}`}><SafeImage src={source} alt="" className="w-full h-full object-cover" /></button>)}</div>
+        </section>}
+        <div className="border-t border-line pt-4 flex flex-wrap justify-between gap-2 text-xs text-muted"><span>{place.totalCheckins} visites · données fictives</span><span>{!fallback && isGeneratedPublicationImage(image) ? 'Illustration générée par IA' : 'Illustration de présentation'}</span></div>
+      </div>
+    </section>
+  </div>;
+}

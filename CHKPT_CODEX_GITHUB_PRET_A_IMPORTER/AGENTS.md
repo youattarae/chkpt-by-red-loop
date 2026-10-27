@@ -7,7 +7,7 @@
 - Toute action de démonstration doit être explicitement identifiée comme simulée ou fondée sur des données fictives.
 
 ## Règles produit non négociables
-- **Décision utilisateur du 27 octobre 2026 (prioritaire sur les références historiques ci-dessous)** : interface blanche au premier lancement ; mode sombre mémorisé dans Profil → Réglages ; en-tête limité au symbole CHKPT, au GPS et aux notifications, sans lettres ni commune. Aucune signature « by RED LOOP » dans l'interface ; slogan réservé à la communication. Le bouton central de check-in utilise le symbole CHKPT, avec libellé conservé. Voir `docs/DIRECTION_VISUELLE_2026_10.md` pour les choix et les limites des assets.
+- **Décision utilisateur du 27 octobre 2026 (prioritaire sur les références historiques ci-dessous)** : interface blanche au premier lancement ; mode sombre mémorisé dans Profil → Réglages ; en-tête avec symbole CHKPT, bouton GPS portant la commune sélectionnée et notifications. Pas de lettres CHKPT ni de sélecteur de commune séparé. Le GPS conserve Simulateur / GPS Réel et la liste des positions au choix. Aucune signature « by RED LOOP » dans l'interface ; slogan réservé à la communication. Le bouton central de check-in utilise le symbole CHKPT, avec libellé conservé. Voir `docs/DIRECTION_VISUELLE_2026_10.md` pour les choix et les limites des assets.
 - CHKPT = application grand public ; RED LOOP = écosystème / structure de projet. Slogan CHKPT : « Sors. Check. Partage. ».
 - Navigation : Accueil, Carte, Check-in central, Sortir, Profil.
 - Accueil : Pour toi + Amis. Nearby reste sur Carte ; tendances dans Sortir.

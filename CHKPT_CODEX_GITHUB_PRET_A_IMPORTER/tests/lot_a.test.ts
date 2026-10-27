@@ -238,6 +238,8 @@ try {
     await check('Profil social : onglets, interactions partagées, historique et gestion du compte', () => checkProfile(demo.url, password));
     const { checkFeed } = await import('./feed_browser');
     await check('Accueil social : deux onglets, visuels locaux, filtres et confirmation du check', () => checkFeed(demo.url, password));
+    const { checkLargePlace } = await import('./place_browser');
+    await check('GPS avec commune et fiches lieu grand format, galerie et favoris', () => checkLargePlace(demo.url));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

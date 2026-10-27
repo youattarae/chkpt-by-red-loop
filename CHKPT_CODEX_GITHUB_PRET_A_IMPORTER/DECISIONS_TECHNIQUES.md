@@ -144,3 +144,7 @@ Ces décisions remplacent les affirmations historiques incompatibles ci-dessous 
 ## 9. Grounding Google Maps Côté Serveur (Gemini 3.8 Flash)
 - Route `POST /api/places/grounding` orchestrant les requêtes géolocalisées via `@google/genai` (modèle `gemini-3.8-flash` avec l'outil natif `googleMaps` et coordonnées d'Abidjan).
 - Restitution obligatoire des URLs Google Maps (`groundingChunks.maps.uri`) avec liens ouvrables.
+
+## GPS et fiche lieu — ajustement du 27 octobre 2026
+
+La commune apparaît dans le bouton GPS, sans sélecteur de commune séparé. Le menu réutilise les modes existants et six positions simulées ; choisir une position synchronise sa commune. La fiche utilise les données et favoris existants, en plein écran mobile et grand format sur ordinateur. Les illustrations locales remplacent les anciens chemins fictifs ; la galerie ne compte que les images distinctes disponibles et les horaires absents restent signalés comme non renseignés. Le check-in reste exclusivement accessible depuis le bouton central.

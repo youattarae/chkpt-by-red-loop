@@ -12,6 +12,8 @@ Le [profil social actualisé](docs/PROFIL_SOCIAL.md) rassemble la présentation 
 
 L'[accueil social actualisé](docs/ACCUEIL_SOCIAL.md) propose Pour toi et Amis, des cartes cohérentes avec le profil et des illustrations locales générées pour les publications fictives. Le bouton de validation s'intitule Confirmer le check.
 
+Le [GPS et les fiches lieu](docs/GPS_ET_FICHE_LIEU.md) disposent d’un choix de position par liste et d’un affichage grand format, sans raccourci de check dans les fiches.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

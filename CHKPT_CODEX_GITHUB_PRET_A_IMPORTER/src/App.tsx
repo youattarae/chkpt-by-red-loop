@@ -112,6 +112,7 @@ const AppContent: React.FC = () => {
       />}
 
       <PlaceDetailModal
+        key={selectedPlace?.id || 'no-place'}
         place={selectedPlace}
         onClose={() => setSelectedPlaceIdForDetail(null)}
       />
