@@ -406,10 +406,10 @@ export const INITIAL_BADGES: Badge[] = [
 export const INITIAL_AD_CAMPAIGNS: AdCampaign[] = [
   {
     id: 'ad_01',
-    advertiserName: 'Votre enseigne ici · exemple fictif',
-    bannerTitle: 'Les bonnes adresses méritent de se faire connaître',
-    bannerSubtitle: 'Emplacement publicitaire de démonstration, sans annonceur réel.',
-    imageUrl: '/illustrations/rooftop.svg',
+    advertiserName: 'Banque Boucle · banque imaginaire',
+    bannerTitle: 'Vos projets prennent de l’élan.',
+    bannerSubtitle: 'Banque imaginaire · Aucun service financier proposé.',
+    imageUrl: '/illustrations/banque-demo.png',
     ctaText: 'Campagne fictive · non cliquable',
     isNonClickableNotice: true,
     targetCommune: 'Cocody'

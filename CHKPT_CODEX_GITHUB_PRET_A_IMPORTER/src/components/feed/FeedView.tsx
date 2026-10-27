@@ -216,24 +216,27 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
 
       {/* Initial Non-clickable Ad Banner (Section 11 Contractual Compliance) */}
       {activeAd && (
-        <div className="bg-soft/60 border border-line/70 rounded-2xl p-3 overflow-hidden relative">
-          <div className="flex items-center justify-between text-[10px] text-muted mb-2 font-medium">
+        <section aria-label="Publicité fictive de banque" className="bg-surface border border-line rounded-2xl overflow-hidden">
+          <div className="flex items-center justify-between gap-2 text-[10px] text-muted px-3 py-2 font-medium">
             <span className="uppercase tracking-wider">Publicité · Exemple fictif</span>
-            <span className="text-muted">Non cliquable</span>
+            <span>Non cliquable</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="relative aspect-[2/1] bg-[#07182f]">
             <SafeImage
               src={activeAd.imageUrl}
-              alt={activeAd.advertiserName}
-              className="w-12 h-12 rounded-xl object-cover shrink-0 border border-line"
+              alt="Illustration fictive : une entrepreneuse dans un café d’Abidjan, tenant une carte bancaire imaginaire."
+              className="absolute inset-0 w-full h-full object-cover"
             />
-            <div className="flex-1 min-w-0">
-              <h4 className="text-xs font-bold text-ink leading-tight line-clamp-2">
-                {activeAd.bannerTitle}
-              </h4>
+            <div className="absolute inset-0 bg-gradient-to-r from-[#07182f]/95 via-[#07182f]/65 to-transparent" />
+            <div className="relative h-full w-[70%] flex flex-col justify-center p-4 sm:p-6 text-white">
+              <p className="text-[10px] sm:text-xs font-semibold tracking-wide">{activeAd.advertiserName}</p>
+              <h4 className="mt-2 text-xl sm:text-3xl font-bold leading-tight">{activeAd.bannerTitle}</h4>
             </div>
           </div>
-        </div>
+          <p className="px-3 py-2 text-[10px] text-muted leading-relaxed">
+            {activeAd.bannerSubtitle} Visuel généré par IA. Aucun partenariat réel.
+          </p>
+        </section>
       )}
 
       {/* Posts List or Empty Filter State */}

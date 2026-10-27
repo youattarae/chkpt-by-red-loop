@@ -18,3 +18,5 @@ Le monogramme CP est remplacé, sur demande du porteur, par `public/brand/chkpt-
 
 Les captures de `docs/captures` montrent le navigateur pendant la recette automatisée, avec données fictives.
 Le fichier de secours contient ces mêmes captures ; il ne simule pas une session interactive.
+
+`banque-demo.png` est un visuel publicitaire généré par IA pour **Banque Boucle**, une banque imaginaire. Cette publicité de démonstration apparaît en tête du fil d’accueil, sans lien, bouton, formulaire ou offre financière. Elle indique Publicité, Exemple fictif, Non cliquable et l’absence de partenariat réel. Aucune banque réelle n’est représentée.

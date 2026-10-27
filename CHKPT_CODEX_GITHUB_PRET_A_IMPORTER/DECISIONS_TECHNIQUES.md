@@ -148,3 +148,7 @@ Ces décisions remplacent les affirmations historiques incompatibles ci-dessous 
 ## GPS et fiche lieu — ajustement du 27 octobre 2026
 
 La commune apparaît dans le bouton GPS, sans sélecteur de commune séparé. Le menu réutilise les modes existants et six positions simulées ; choisir une position synchronise sa commune. La fiche utilise les données et favoris existants, en plein écran mobile et grand format sur ordinateur. Les illustrations locales remplacent les anciens chemins fictifs ; la galerie ne compte que les images distinctes disponibles et les horaires absents restent signalés comme non renseignés. Le check-in reste exclusivement accessible depuis le bouton central.
+
+## Publicité fictive de banque
+
+Réutilisation de la campagne initiale existante, sans régie ni dépendance ajoutée. Visuel local `banque-demo.png` et textes HTML lisibles, avec banque imaginaire, absence de service financier et de partenariat. L’encart est une section informative sans gestionnaire de clic ni lien.

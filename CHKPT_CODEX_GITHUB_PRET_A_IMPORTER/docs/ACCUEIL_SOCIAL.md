@@ -39,3 +39,9 @@ Les anciens chemins SVG des seules publications fictives sont adaptés à l'affi
 La recette contrôle les deux onglets et la navigation clavier, le filtre Amis, les catégories, la création d'une publication sans XP de visite, la réaction retrouvée dans le profil et les nouveaux visuels sur un ancien cache de démonstration. Les images sont chargées avec les requêtes externes bloquées. La confirmation reste désactivée tant qu’aucun lieu n’a été choisi. Son libellé et la mention de simulation sont conservés ; les tests existants de GPS, de sécurité, de répétition et de stabilité en mode développement restent exécutés.
 
 Les essais sont effectués avec Chromium sous Linux, sur téléphone et ordinateur et dans les deux thèmes. Une répétition sur Mac et sur le Windows d'Ingrid reste nécessaire après installation. Le prototype reste privé et ses publications restent locales au navigateur.
+
+## Publicité bancaire de démonstration
+
+L’accueil présente **Banque Boucle**, banque imaginaire, dans l’emplacement publicitaire existant. Le visuel est généré par IA et conservé dans le projet, sans chargement externe. L’encart indique Publicité, Exemple fictif, Non cliquable et Aucun partenariat réel. Il ne contient ni lien ni bouton et ne propose aucun service financier.
+
+![Publicité bancaire fictive dans l’accueil](captures/publicite-banque-390.png)

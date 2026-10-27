@@ -61,3 +61,9 @@ Exécutés avec succès : lint, build et recette complète **23/23 groupes**, in
 Le bouton GPS affiche la commune sélectionnée. Son menu conserve Simulateur / GPS Réel et propose six positions de démonstration. La fiche lieu remplit l’écran mobile et s’élargit sur ordinateur : couverture, galerie disponible, adresse, horaires et favoris. Aucun raccourci de check-in n’y est ajouté.
 
 Vérification : `npm run lint`, `npm run build`, recette navigateur **24/24 groupes**, incluant les 11 tests historiques. Contrôles à 320/390/1280 pixels dans les deux thèmes : sélection GPS, dimensions, défilement, retour toujours accessible, galerie, favoris et absence de bouton de check. Captures réelles dans [GPS_ET_FICHE_LIEU.md](docs/GPS_ET_FICHE_LIEU.md). Tests sous Chromium Linux ; répétition physique Mac et Windows à prévoir après installation.
+
+## Publicité bancaire fictive dans l’accueil
+
+L’emplacement initial de publicité utilise un visuel local généré pour Banque Boucle, banque imaginaire. L’encart indique explicitement sa nature fictive, la génération par IA, l’absence de partenariat et reste non cliquable. Aucun produit financier ni taux n’est proposé. Le contrôle du fil vérifie le chargement local de l’image et l’absence de lien ou commande interactive.
+
+Validation de cet ajout : `npm run lint`, `npm run build` et recette navigateur **24/24 groupes**, incluant les 11 tests historiques, réussis sous Chromium Linux. La publicité charge sans service externe et ne provoque pas de navigation au clic. Captures de l’accueil et supports de présentation actualisés.
