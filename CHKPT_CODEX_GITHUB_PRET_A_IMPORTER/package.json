@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
+    "demo": "npm run build && node --import tsx scripts/present.mjs",
     "start": "node server.ts",
     "build": "vite build",
     "preview": "vite preview",

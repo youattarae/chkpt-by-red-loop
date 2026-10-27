@@ -49,10 +49,11 @@ Dans `CHKPT_CODEX_GITHUB_PRET_A_IMPORTER` :
 
 ```bash
 npm ci
-npm run dev
+npm run demo
 ```
 
 Le serveur écoute uniquement sur la machine locale par défaut (`HOST=127.0.0.1`, port 3000).
+`npm run demo` prépare l'interface puis la sert sans surveillance des fichiers ni rechargements de développement. Cette commande fonctionne sur Mac et Windows. Pour modifier le code, `npm run dev` reste disponible ; les données `.data/` sont exclues de sa surveillance.
 Il reconstitue un jeu de données **fictives** dans `.data/`, ignoré par Git.
 Les outils de présentation sont désactivés par défaut. Un visiteur peut créer un compte
 ordinaire depuis l'onglet Inscription ; aucun ancien jeton ou mot de passe de seed ne fonctionne.

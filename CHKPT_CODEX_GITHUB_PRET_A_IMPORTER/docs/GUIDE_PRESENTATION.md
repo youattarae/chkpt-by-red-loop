@@ -11,7 +11,7 @@ Les lieux, personnes, statistiques, événements et points montrés sont fictifs
 4. Copier `.env.example` vers `.env`. Dans ce fichier local, mettre `CHKPT_PRIVATE_DEMO=true`
    et définir `CHKPT_DEMO_ADMIN_PASSWORD` avec un mot de passe personnel d'au moins 16 caractères.
    Garder `HOST=127.0.0.1`. `.env` est ignoré par Git. Ne pas recopier ce mot de passe dans le code.
-5. Exécuter `npm run dev` et ouvrir l'application locale sur le port indiqué dans le terminal.
+5. Exécuter `npm run demo` et ouvrir l'application locale sur le port indiqué dans le terminal.
 6. Ouvrir le bouton d'avatar « Profil & Compte Démo », onglet Connexion.
    Se connecter avec `redloop_admin` et le mot de passe défini à l'étape 4.
 7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**.
@@ -91,3 +91,18 @@ Le projet reste un prototype privé, pas une application de production ni une va
 L’interface s’ouvre sur fond blanc. Le bouton lune en haut permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
 
 Voir les [captures réelles et les choix visuels](DIRECTION_VISUELLE_2026_10.md). Les affichages sont contrôlés à 320, 390 et 1280 pixels, dans les deux thèmes. Une répétition reste nécessaire sur le Windows d’Ingrid ; aucun essai sur une machine Windows physique n’est revendiqué.
+
+## Lancement stable pour présenter
+
+Dans le dossier du prototype, après l'installation et la configuration privée, utiliser **`npm run demo`**, sur Mac comme sur Windows. Cette commande compile les écrans puis démarre le serveur avec les fichiers préparés, sans rechargement à chaud. Garder le Terminal ouvert et accéder à `http://localhost:3000`. Ce mode ne change ni le mot de passe, ni les autorisations, ni le caractère privé du prototype.
+
+Sur une version déjà téléchargée qui ne possède pas encore la commande `demo`, arrêter le serveur avec Ctrl+C puis, sur Mac, lancer :
+
+```bash
+npm run build
+NODE_ENV=production npm run dev
+```
+
+Il s'agit seulement du mode de service des fichiers compilés : le prototype ne devient pas une application de production. Après redémarrage, les comptes de seed doivent se reconnecter. Une visite déjà comptée reste comptée ; seul l'opérateur peut relancer le scénario fictif avec Démarrer la démo.
+
+Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.

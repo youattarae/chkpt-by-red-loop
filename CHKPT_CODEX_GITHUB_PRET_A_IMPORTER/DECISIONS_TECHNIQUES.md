@@ -1,3 +1,10 @@
+# Stabilité du check-in en démonstration — 27 octobre 2026
+
+- Reproduction dans un dossier isolé sans `.gitignore` : une écriture de la base au check-in peut déclencher un `full-reload` Vite et faire disparaître la confirmation. Les tests précédents sur assets compilés ne couvraient pas ce chemin.
+- Tailwind analyse explicitement `src/` et `index.html`, pas les fichiers JSON de données. Vite ignore `.data/` tout en conservant HMR pour les vraies modifications de l'interface.
+- `npm run demo` compile puis utilise `scripts/present.mjs` et le chargeur tsx pour servir les assets sans Vite. Le lanceur positionne NODE_ENV de façon portable sur Mac/Windows ; il n'active aucune permission de démo privée.
+- Test navigateur en mode dev, mouvements non réduits, dossier sans `.gitignore` : confirmation et badge persistants après écriture, aucune navigation/recharge CSS, publication possible et HMR source toujours actif. Test séparé du lanceur sur assets compilés et refus des outils démo par défaut.
+
 # Direction visuelle du 27 octobre 2026
 
 - Les décisions utilisateur les plus récentes priment sur les passages historiques : interface claire par défaut, sombre au choix, CHKPT seul, slogan en communication, symbole pour le check-in.
