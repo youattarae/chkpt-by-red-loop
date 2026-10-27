@@ -24,9 +24,10 @@ import {
 
 interface BadgesViewProps {
   onBack: () => void;
+  embedded?: boolean;
 }
 
-export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
+export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false }) => {
   const { badges, currentUser } = useStore();
   const [leaderboardTab, setLeaderboardTab] = useState<'friends' | 'national'>('friends');
 
@@ -47,12 +48,13 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
   const unlockedCount = badges.filter(b => b.isUnlocked).length;
 
   return (
-    <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-5 pb-24">
+    <div className={embedded ? 'space-y-5' : 'max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-5 pb-24'}>
       
       {/* Back button & Title */}
-      <div className="flex items-center gap-3">
+      {!embedded && <div className="flex items-center gap-3">
         <button
           onClick={onBack}
+          aria-label="Retour au profil"
           className="p-2 rounded-xl bg-surface border border-line text-body hover:text-ink cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -65,7 +67,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack }) => {
             {unlockedCount} sur {badges.length} trophées débloqués
           </span>
         </div>
-      </div>
+      </div>}
 
       {/* Gamification Rules Banner */}
       <div className="p-4 rounded-3xl bg-gradient-to-r from-amber-950/60 via-surface to-rose-950/40 border border-amber-900/60 flex items-center gap-3.5">

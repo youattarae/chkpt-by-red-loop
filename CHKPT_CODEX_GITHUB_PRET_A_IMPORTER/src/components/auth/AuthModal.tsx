@@ -198,6 +198,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
           <button
             onClick={onClose}
+            aria-label="Fermer le compte"
             className="p-2 text-muted hover:text-ink hover:bg-soft rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />

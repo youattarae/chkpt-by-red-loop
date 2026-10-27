@@ -11,7 +11,7 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 21 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 22 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
 Les publications, badges et intentions sont des états de démonstration locaux au navigateur.
@@ -35,3 +35,9 @@ Le contrôle à 320 pixels a révélé un débordement des compteurs du profil, 
 Un rechargement Vite a été reproduit sur l’ancienne configuration, dans une copie sans `.gitignore`, pendant l’écriture de la base : la fenêtre de résultat pouvait disparaître. Le correctif limite l’analyse Tailwind aux sources de l’interface et exclut `.data/` du watcher. `npm run demo` sert désormais les fichiers compilés sans Vite, avec le même serveur et les mêmes permissions.
 
 Vérification : `npm run lint`, `npm run build` et recette complète **21/21 groupes**, dont la suite historique de 11 tests. Le nouveau test en mode développement avec mouvements non réduits confirme que le badge reste lisible, que la page ne recharge pas, que la publication est possible et que les vraies modifications de code déclenchent toujours HMR. Le lanceur de présentation sert les assets compilés et maintient les outils démo fermés par défaut. Ces résultats concernent Chromium Linux ; le réessai sur le Mac de l’utilisateur reste nécessaire pour son symptôme précis.
+
+## Profil social — disposition demandée
+
+Le profil reprend la structure de la référence fournie : avatar rond, identité, bio, compteurs Checks / Badges / Abonnés, gestion du compte et onglets Publications / Lieux enregistrés / Badges. Le niveau et le total XP restent visibles ; historique et journal XP sont accessibles dans un volet secondaire. Les actions de réaction, commentaire et enregistrement d’un lieu utilisent les mêmes données que l’accueil. Aucune donnée serveur n’est modifiée.
+
+Vérification exécutée : `npm run lint`, `npm run build`, puis **22/22 groupes** de la recette navigateur, dont les 11 tests historiques. La nouvelle recette du profil couvre les deux thèmes à 320/390/1280 pixels, les onglets et leur navigation clavier, les interactions et leur conservation après rechargement, les badges, le compte et le volet d’activité. Un check-in réel de démonstration vérifie aussi l’historique rempli et le journal XP à 320 pixels. Le parcours complet et le test de stabilité du serveur dev passent toujours. Voir [PROFIL_SOCIAL.md](docs/PROFIL_SOCIAL.md) pour les captures réelles et les limites.

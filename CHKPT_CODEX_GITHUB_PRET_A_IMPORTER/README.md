@@ -8,6 +8,8 @@ CHKPT est un réseau social de découverte de lieux et sorties, centré sur Coco
 
 Interface claire par défaut, mode sombre au choix, symbole CHKPT pour le bouton central. Voir [les choix et les captures réelles](docs/DIRECTION_VISUELLE_2026_10.md).
 
+Le [profil social actualisé](docs/PROFIL_SOCIAL.md) rassemble la présentation du compte, trois compteurs et les onglets Publications, Lieux enregistrés et Badges. Les visites et les XP restent accessibles dans un volet secondaire.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

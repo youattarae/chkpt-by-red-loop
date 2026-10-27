@@ -234,6 +234,8 @@ try {
     await check('Direction visuelle claire et sombre, symbole et navigation de 320 à 1280px', () => checkVisualDirection(demo.url));
     const { checkDevStability } = await import('./dev_stability_browser');
     await check('Mode dev : confirmation persistante, aucune recharge pour les données et HMR source conservé', checkDevStability);
+    const { checkProfile } = await import('./profile_browser');
+    await check('Profil social : onglets, interactions partagées, historique et gestion du compte', () => checkProfile(demo.url, password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

@@ -1,3 +1,10 @@
+# Disposition du profil — 27 octobre 2026
+
+- En-tête personnel allégé avec avatar rond, identité et trois compteurs issus des données actuelles. Publications sélectionnées par défaut ; lieux enregistrés et badges disponibles par onglets. Les visites et le journal XP sont conservés dans un volet secondaire.
+- La collection de badges existante accepte un affichage intégré ; sa vue complète reste accessible. Les onglets prennent en charge la navigation clavier et les attributs ARIA de sélection.
+- Les cartes de publications du profil utilisent `likePost`, `addComment` et `toggleSavePlace` existants. Le signet enregistre un lieu lié. Aucun partage, sauvegarde de publication ou éditeur de profil factice n'est ajouté.
+- Les mentions de confidentialité, de simulation et d'illustration restent visibles. Aucune donnée serveur ni règle de check-in n'est modifiée. Voir `docs/PROFIL_SOCIAL.md` pour les captures et les contrôles.
+
 # Stabilité du check-in en démonstration — 27 octobre 2026
 
 - Reproduction dans un dossier isolé sans `.gitignore` : une écriture de la base au check-in peut déclencher un `full-reload` Vite et faire disparaître la confirmation. Les tests précédents sur assets compilés ne couvraient pas ce chemin.

@@ -1,27 +1,9 @@
-import { SafeImage } from '../common/SafeImage';
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- * User Profile & Personal Check-in History View
- */
-
-import React, { useState } from 'react';
+import React, { useId, useState } from 'react';
+import { MapPin, ChevronRight, Sparkles, MoreHorizontal, Settings, Lock, ChevronDown } from 'lucide-react';
 import { useStore } from '../../services/store';
-import { 
-  User, 
-  MapPin, 
-  Award, 
-  Bookmark, 
-  ShieldCheck, 
-  Clock, 
-  Lock, 
-  Globe, 
-  Users, 
-  ChevronRight,
-  Sparkles,
-  Trophy,
-  History
-} from 'lucide-react';
+import { SafeImage } from '../common/SafeImage';
+import { BadgesView } from '../badges/BadgesView';
+import { ProfilePostCard } from './ProfilePostCard';
 
 interface ProfileViewProps {
   onOpenBadges: () => void;
@@ -29,168 +11,61 @@ interface ProfileViewProps {
   onOpenAuth: () => void;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({
-  onOpenBadges,
-  onSelectPlace,
-  onOpenAuth
-}) => {
-  const { 
-    currentUser, 
-    checkins, 
-    places, 
-    savedPlaceIds, 
-    badges, 
-    pointsLedger,
-    posts 
-  } = useStore();
+export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelectPlace, onOpenAuth }) => {
+  const { currentUser, checkins, places, savedPlaceIds, badges, pointsLedger, posts } = useStore();
+  const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'badges'>('posts');
+  const [activityOpen, setActivityOpen] = useState(false);
+  const [activityTab, setActivityTab] = useState<'checkins' | 'ledger'>('checkins');
+  const profileId = useId();
+  const unlockedBadges = badges.filter(badge => badge.isUnlocked);
+  const userCheckins = checkins.filter(checkin => checkin.userId === currentUser.id);
+  const savedPlaces = places.filter(place => savedPlaceIds.includes(place.id));
+  const myPosts = posts.filter(post => post.authorId === currentUser.id);
+  const xpInCurrentLevel = currentUser.xpPoints % 300;
+  const progressPct = Math.min(100, Math.round(xpInCurrentLevel / 300 * 100));
+  const tabs = [{id: 'posts', label: 'Publications'}, {id: 'saved', label: 'Lieux enregistrés'}, {id: 'badges', label: 'Badges'}] as const;
 
-  const [activeTab, setActiveTab] = useState<'posts' | 'checkins' | 'saved' | 'ledger'>('posts');
-
-  const unlockedBadges = badges.filter(b => b.isUnlocked);
-  const userCheckins = checkins.filter(c => c.userId === currentUser.id);
-  const savedPlaces = places.filter(p => savedPlaceIds.includes(p.id));
-
-  // XP level calculation (300 XP / level)
-  const currentLevel = currentUser.level;
-  const currentXp = currentUser.xpPoints;
-  const xpInCurrentLevel = currentXp % 300;
-  const progressPct = Math.min(100, Math.round((xpInCurrentLevel / 300) * 100));
-
-  return (
-    <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-5 pb-24">
-      
-      {/* Profile Header Card */}
-      <div className="bg-surface border border-line rounded-3xl p-4 sm:p-5 shadow-sm space-y-4">
-        <div className="flex items-center gap-3.5">
-          <SafeImage
-            src={currentUser.avatarUrl}
-            alt={currentUser.displayName}
-            className="w-16 h-16 rounded-2xl object-cover border-2 border-line-strong shadow-md shrink-0"
-          />
-
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between">
-              <h2 className="text-base font-bold text-ink truncate">
-                {currentUser.displayName}
-              </h2>
-              <button
-                onClick={onOpenAuth}
-                className="px-2.5 py-1 rounded-xl bg-canvas border border-line text-[11px] font-semibold text-body hover:text-ink cursor-pointer"
-              >
-                Gérer
-              </button>
-            </div>
-
-            <span className="text-xs text-muted block mt-0.5">
-              @{currentUser.username} · {currentUser.homeZone}
-            </span>
-
-            <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-body mt-2 font-medium">
-              <span><strong>{currentUser.followersCount}</strong> abonnés</span>
-              <span>·</span>
-              <span><strong>{currentUser.followingCount}</strong> abonnements</span>
-              <span>·</span>
-              <span className="text-rose-400"><strong>{currentUser.checkinsCount}</strong> visites</span>
-            </div>
+  return <div className="profile-social max-w-2xl mx-auto pb-24">
+    <section aria-label="Mon profil" className="bg-canvas p-4 sm:p-6 space-y-5">
+      <div className="flex items-start gap-4">
+        <div className="profile-avatar-ring shrink-0"><SafeImage src={currentUser.avatarUrl} alt={currentUser.displayName} className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover" /></div>
+        <div className="min-w-0 flex-1 pt-1">
+          <div className="flex items-start justify-between gap-2">
+            <h1 className="text-lg sm:text-xl font-extrabold text-ink leading-tight break-words">{currentUser.displayName}</h1>
+            <button type="button" title="Historique et journal XP" aria-label="Afficher mon activité" aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}
+              onClick={() => setActivityOpen(!activityOpen)} className="shrink-0 p-1 rounded-lg text-muted hover:bg-soft cursor-pointer"><MoreHorizontal className="w-5 h-5" /></button>
           </div>
+          <p className="text-xs text-muted mt-1 break-words">@{currentUser.username}</p>
+          <p className="text-xs sm:text-sm text-body leading-relaxed mt-2 break-words">{currentUser.bio}</p>
+          <p className="text-[11px] text-muted mt-2">{currentUser.homeZone} · {currentUser.followingCount} abonnements</p>
+          {currentUser.visibility === 'private' && <span className="inline-flex items-center gap-1 text-[10px] text-muted mt-1"><Lock className="w-3 h-3" />Profil privé</span>}
         </div>
-
-        <p className="text-xs text-body leading-relaxed">
-          {currentUser.bio}
-        </p>
-
-        {/* Level & XP Gauge */}
-        <div className="p-3 bg-canvas border border-line/80 rounded-2xl space-y-2">
-          <div className="flex flex-wrap items-center justify-between gap-2 text-xs font-bold">
-            <div className="flex items-center gap-1.5 text-ink">
-              <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Niveau {currentLevel}</span>
-            </div>
-            <span className="text-rose-400 font-mono">
-              {currentXp} XP au total ({xpInCurrentLevel} / 300 XP)
-            </span>
-          </div>
-
-          {/* Progress bar */}
-          <div className="w-full h-2 rounded-full bg-soft overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-rose-900 to-rose-500 rounded-full transition-all duration-500"
-              style={{ width: `${progressPct}%` }}
-            ></div>
-          </div>
-        </div>
-
-        {/* Badges Preview Banner */}
-        <button
-          onClick={onOpenBadges}
-          className="w-full p-3 rounded-2xl bg-gradient-to-r from-amber-950/40 via-canvas to-canvas border border-amber-900/60 hover:border-amber-700/80 flex items-center justify-between text-left transition-colors cursor-pointer group"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-950/80 border border-amber-600/80 text-amber-400 flex items-center justify-center shrink-0">
-              <Trophy className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-xs font-bold text-ink">Familles de Badges</span>
-                <span className="text-[10px] bg-amber-950 text-amber-300 px-1.5 py-0.2 rounded font-bold">
-                  {unlockedBadges.length} / {badges.length} débloqués
-                </span>
-              </div>
-              <span className="text-[11px] text-muted">
-                Explorateur, Foodie, Maquis Master, Culture...
-              </span>
-            </div>
-          </div>
-
-          <ChevronRight className="w-4 h-4 text-muted group-hover:text-ink transition-colors" />
-        </button>
-
       </div>
 
-      <section aria-label="Mes publications" className="space-y-3">
-        <div className="flex justify-between items-center">
-          <h3 className="text-base font-bold">Mes publications</h3>
-          <span className="text-xs text-muted">{posts.filter(p => p.authorId === currentUser.id).length} souvenirs</span>
-        </div>
-        {posts.filter(p => p.authorId === currentUser.id).map(post => (
-          <article key={post.id} className="bg-surface border border-line rounded-2xl overflow-hidden">
-            {post.mediaUrl && <><SafeImage src={post.mediaUrl} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[3/2] object-cover" />{post.mediaUrl.startsWith('/illustrations/') && <p className="media-disclosure">Illustration de démonstration · lieu fictif{post.mediaUrl.endsWith('.png') ? ' · image générée par IA' : ''}</p>}</>}
-            <div className="p-4 space-y-2"><p className="text-sm">{post.text}</p>
-            <p className="text-xs text-blue-300">{post.linkedPlaceName} · {post.audience === 'private' ? 'Moi uniquement' : 'Public'} · Démonstration</p></div>
-          </article>
-        ))}
-      </section>
-
-      {/* Tabs Filter: Mes Check-ins / Lieux Enregistrés / Journal XP */}
-      <div className="flex border-b border-line gap-4 text-xs font-bold">
-        <button
-          onClick={() => setActiveTab('checkins')}
-          className={`pb-2.5 transition-colors cursor-pointer border-b-2 ${
-            activeTab === 'checkins' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
-          }`}
-        >
-          Mes visites ({userCheckins.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('saved')}
-          className={`pb-2.5 transition-colors cursor-pointer border-b-2 ${
-            activeTab === 'saved' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
-          }`}
-        >
-          Favoris ({savedPlaces.length})
-        </button>
-        <button
-          onClick={() => setActiveTab('ledger')}
-          className={`pb-2.5 transition-colors cursor-pointer border-b-2 ${
-            activeTab === 'ledger' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
-          }`}
-        >
-          Journal XP
-        </button>
+      <div aria-label="Statistiques du profil" className="grid grid-cols-3 divide-x divide-line text-center">
+        <div className="px-2"><strong className="block text-lg font-extrabold text-ink">{currentUser.checkinsCount}</strong><span className="text-xs text-muted">Checks</span></div>
+        <button type="button" onClick={() => setActiveTab('badges')} aria-label="Voir mes badges" className="px-2 hover:text-blue-400 cursor-pointer"><strong className="block text-lg font-extrabold text-ink">{unlockedBadges.length}</strong><span className="text-xs text-muted">Badges</span></button>
+        <div className="px-2"><strong className="block text-lg font-extrabold text-ink">{currentUser.followersCount}</strong><span className="text-xs text-muted">Abonnés</span></div>
       </div>
 
+      <button type="button" onClick={onOpenAuth} className="w-full py-3 rounded-2xl bg-soft hover:bg-raised text-ink font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"><Settings className="w-4 h-4" />Gérer mon compte</button>
+
+      <div className="space-y-2">
+        <button type="button" onClick={() => setActivityOpen(!activityOpen)} aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}
+          className="w-full flex flex-wrap items-center justify-between gap-2 text-xs text-muted cursor-pointer">
+          <span className="flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-blue-400" />Niveau {currentUser.level}</span>
+          <span className="flex items-center gap-1.5">{currentUser.xpPoints} XP au total<ChevronDown className={`w-3.5 h-3.5 ${activityOpen ? 'rotate-180' : ''}`} /></span>
+        </button>
+        <div role="progressbar" aria-label="Progression du niveau" aria-valuemin={0} aria-valuemax={300} aria-valuenow={xpInCurrentLevel} className="h-1 rounded-full bg-soft overflow-hidden"><div className="h-full rounded-full bg-blue-600" style={{width: `${progressPct}%`}} /></div>
+      </div>
+
+      {activityOpen && <section id={`${profileId}-activity`} aria-label="Mon activité" className="border border-line rounded-2xl p-3 space-y-3">
+        <div className="flex flex-wrap gap-2">
+          <button type="button" onClick={() => setActivityTab('checkins')} aria-pressed={activityTab === 'checkins'} className={`text-xs font-semibold px-3 py-2 rounded-xl cursor-pointer ${activityTab === 'checkins' ? 'bg-blue-950 text-blue-400' : 'bg-soft text-muted'}`}>Mes visites ({userCheckins.length})</button>
+          <button type="button" onClick={() => setActivityTab('ledger')} aria-pressed={activityTab === 'ledger'} className={`text-xs font-semibold px-3 py-2 rounded-xl cursor-pointer ${activityTab === 'ledger' ? 'bg-blue-950 text-blue-400' : 'bg-soft text-muted'}`}>Journal XP</button>
+        </div>
       {/* Content 1: Checkins History */}
-      {activeTab === 'checkins' && (
+      {activityTab === 'checkins' && (
         <div className="space-y-2.5">
           {userCheckins.length === 0 ? (
             <div className="p-8 text-center bg-surface border border-line rounded-3xl text-muted text-xs">
@@ -200,9 +75,9 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
             userCheckins.map((chk) => (
               <div
                 key={chk.id}
-                className="p-3.5 bg-surface border border-line rounded-2xl flex items-center justify-between"
+                className="p-3.5 bg-surface border border-line rounded-2xl flex items-center justify-between gap-2"
               >
-                <div className="flex items-center gap-3">
+                <div className="flex-1 min-w-0 flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 ${
                     chk.status === 'verified'
                       ? 'bg-emerald-950 text-emerald-400 border border-emerald-800'
@@ -210,7 +85,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
                   }`}>
                     <MapPin className="w-4 h-4" />
                   </div>
-                  <div>
+                  <div className="min-w-0 break-words">
                     <h4 className="text-xs font-bold text-ink">{chk.placeName}</h4>
                     <span className="text-[10px] text-muted">
                       {new Date(chk.timestamp).toLocaleDateString('fr-FR', {
@@ -241,44 +116,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
         </div>
       )}
 
-      {/* Content 2: Saved Places */}
-      {activeTab === 'saved' && (
-        <div className="space-y-2.5">
-          {savedPlaces.length === 0 ? (
-            <div className="p-8 text-center bg-surface border border-line rounded-3xl text-muted text-xs">
-              Aucun lieu enregistré dans vos favoris.
-            </div>
-          ) : (
-            savedPlaces.map((place) => (
-              <div
-                key={place.id}
-                onClick={() => onSelectPlace(place.id)}
-                className="p-3 bg-surface border border-line rounded-2xl flex items-center justify-between hover:border-line-strong transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-3">
-                  <SafeImage
-                    src={place.coverImage}
-                    alt={place.name}
-                    className="w-12 h-12 rounded-xl object-cover shrink-0"
-                  />
-                  <div>
-                    <h4 className="text-xs font-bold text-ink">{place.name}</h4>
-                    <span className="text-[11px] text-muted block">
-                      {place.neighborhood} ({place.commune})
-                    </span>
-                  </div>
-                </div>
-
-                <ChevronRight className="w-4 h-4 text-muted" />
-              </div>
-            ))
-          )}
-        </div>
-      )}
-
       {/* Content 3: Points Ledger Audit Trail */}
-      {activeTab === 'ledger' && (
+      {activityTab === 'ledger' && (
         <div className="space-y-2">
+          {!pointsLedger.some(entry => entry.userId === currentUser.id) && <p className="p-4 text-xs text-muted">Aucun mouvement de points pour le moment.</p>}
           {pointsLedger.filter(entry => entry.userId === currentUser.id).map((entry) => (
             <div
               key={entry.id}
@@ -302,7 +143,41 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           ))}
         </div>
       )}
+      </section>}
+    </section>
 
+    <div role="tablist" aria-label="Sections du profil" className="profile-tabs grid grid-cols-3 border-b border-line bg-canvas px-2"
+      onKeyDown={event => {
+        if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        const buttons = Array.from(event.currentTarget.querySelectorAll<HTMLButtonElement>('[role=tab]'));
+        const current = buttons.indexOf(event.target as HTMLButtonElement);
+        if (current < 0) return;
+        event.preventDefault();
+        const index = event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + buttons.length) % buttons.length;
+        buttons[index].click(); buttons[index].focus();
+      }}>
+      {tabs.map(tab => <button type="button" key={tab.id} id={`${profileId}-tab-${tab.id}`} role="tab" aria-selected={activeTab === tab.id}
+        aria-controls={`${profileId}-panel`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => setActiveTab(tab.id)}
+        className={`profile-tab px-1 py-4 text-xs font-semibold cursor-pointer ${activeTab === tab.id ? 'is-active text-ink' : 'text-muted hover:text-ink'}`}>{tab.label}</button>)}
     </div>
-  );
+
+    <div role="tabpanel" id={`${profileId}-panel`} aria-labelledby={`${profileId}-tab-${activeTab}`} className="bg-soft/60 p-3 sm:p-4 min-h-48">
+      {activeTab === 'posts' && <section aria-label="Mes publications" className="space-y-3">
+        {myPosts.length === 0 ? <p className="bg-surface border border-line rounded-2xl p-6 text-sm text-muted text-center">Tes découvertes apparaîtront ici après ta première publication.</p>
+          : myPosts.map(post => <ProfilePostCard key={post.id} post={post} onSelectPlace={onSelectPlace} />)}
+      </section>}
+      {activeTab === 'saved' && <section aria-label="Mes lieux enregistrés" className="space-y-3">
+        {savedPlaces.length === 0 ? <p className="bg-surface border border-line rounded-2xl p-6 text-sm text-muted text-center">Aucun lieu enregistré pour le moment.</p>
+          : savedPlaces.map(place => <button type="button" key={place.id} onClick={() => onSelectPlace(place.id)} className="w-full p-3 bg-surface border border-line rounded-2xl flex items-center gap-3 text-left hover:border-line-strong cursor-pointer">
+            <SafeImage src={place.coverImage} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" />
+            <div className="flex-1 min-w-0"><h3 className="text-sm font-bold text-ink break-words">{place.name}</h3><p className="text-xs text-muted mt-1">{place.neighborhood} · {place.commune}</p></div>
+            <ChevronRight className="w-4 h-4 text-muted shrink-0" />
+          </button>)}
+      </section>}
+      {activeTab === 'badges' && <section aria-label="Mes badges" className="space-y-4">
+        <button type="button" onClick={onOpenBadges} className="text-xs font-bold text-blue-400 cursor-pointer">Ouvrir les familles de badges →</button>
+        <BadgesView embedded onBack={() => setActiveTab('posts')} />
+      </section>}
+    </div>
+  </div>;
 };

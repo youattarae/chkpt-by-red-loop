@@ -1,0 +1,50 @@
+import { useState } from 'react';
+import { Heart, MessageCircle, Bookmark, MapPin, Lock } from 'lucide-react';
+import { Post } from '../../types';
+import { useStore } from '../../services/store';
+import { SafeImage } from '../common/SafeImage';
+
+export function ProfilePostCard({ post, onSelectPlace }: { post: Post; onSelectPlace: (id: string) => void }) {
+  const { likePost, addComment, savedPlaceIds, toggleSavePlace } = useStore();
+  const [commentsOpen, setCommentsOpen] = useState(false);
+  const [comment, setComment] = useState('');
+  const saved = !!post.linkedPlaceId && savedPlaceIds.includes(post.linkedPlaceId);
+  return <article className="profile-post bg-surface border border-line/70 rounded-3xl overflow-hidden shadow-sm">
+    <header className="p-4 flex items-start gap-3">
+      <SafeImage src={post.authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover border border-line shrink-0" />
+      <div className="min-w-0 flex-1">
+        <h3 className="text-sm font-bold text-ink break-words">{post.authorName}</h3>
+        <p className="text-[11px] text-muted break-words">@{post.authorUsername} · {post.createdAt}</p>
+      </div>
+      {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}
+    </header>
+    <p className="px-4 pb-3 text-sm text-body leading-relaxed whitespace-pre-line break-words">{post.text}</p>
+    {post.linkedPlaceId && <button type="button" onClick={() => onSelectPlace(post.linkedPlaceId!)} className="mx-4 mb-3 text-xs font-semibold text-blue-400 inline-flex items-start gap-1.5 text-left cursor-pointer">
+      <MapPin className="w-3.5 h-3.5 shrink-0 mt-0.5" />{post.linkedPlaceName}
+    </button>}
+    {post.mediaUrl && <>
+      <SafeImage src={post.mediaUrl} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[3/2] object-cover" />
+      {post.mediaUrl.startsWith('/illustrations/') && <p className="media-disclosure">Illustration de démonstration · lieu fictif{post.mediaUrl.endsWith('.png') ? ' · image générée par IA' : ''}</p>}
+    </>}
+    {post.isSimulated && <p className="px-4 pt-3 text-[10px] text-muted">Visite simulée · démonstration</p>}
+    <div className="px-4 py-3 flex items-center gap-5 text-xs text-muted">
+      <button type="button" onClick={() => likePost(post.id)} aria-label="Aimer cette publication" aria-pressed={post.isLikedByCurrentUser}
+        className={`inline-flex items-center gap-2 py-1 cursor-pointer ${post.isLikedByCurrentUser ? 'text-rose-400' : 'hover:text-rose-400'}`}>
+        <Heart className={`w-5 h-5 ${post.isLikedByCurrentUser ? 'fill-current' : ''}`} /><span>{post.likesCount}</span>
+      </button>
+      <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-label="Commentaires de cette publication" aria-expanded={commentsOpen}
+        className="inline-flex items-center gap-2 py-1 hover:text-blue-400 cursor-pointer"><MessageCircle className="w-5 h-5" /><span>{post.commentsCount}</span></button>
+      {post.linkedPlaceId && <button type="button" onClick={() => toggleSavePlace(post.linkedPlaceId!)} aria-label="Enregistrer le lieu de cette publication" aria-pressed={saved}
+        className="ml-auto py-1 hover:text-blue-400 cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'text-blue-400 fill-current' : ''}`} /></button>}
+    </div>
+    {commentsOpen && <div className="border-t border-line bg-soft/50 p-4 space-y-3">
+      {post.comments.map(item => <p key={item.id} className="text-xs text-body break-words"><strong className="text-ink">{item.authorName} : </strong><span>{item.text}</span></p>)}
+      {post.comments.length === 0 && <p className="text-xs text-muted">Aucun commentaire pour le moment.</p>}
+      <form className="flex flex-wrap gap-2" onSubmit={event => { event.preventDefault(); if (!comment.trim()) return; addComment(post.id, comment); setComment(''); }}>
+        <input aria-label="Ton commentaire" value={comment} onChange={event => setComment(event.target.value)} placeholder="Ajouter un commentaire…"
+          className="min-w-0 flex-1 bg-surface border border-line rounded-xl p-2 text-xs text-ink" />
+        <button type="submit" disabled={!comment.trim()} className="bg-blue-600 text-white rounded-xl px-3 py-2 text-xs font-semibold disabled:opacity-40 cursor-pointer">Envoyer</button>
+      </form>
+    </div>}
+  </article>;
+}
