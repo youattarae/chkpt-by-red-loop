@@ -21,10 +21,9 @@ import {
 
 interface MapViewProps {
   onSelectPlace: (placeId: string) => void;
-  onOpenCheckinHere: (placeId: string) => void;
 }
 
-export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHere }) => {
+export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const { places } = useStore();
 
   // Local state to store selected categories (Chip-based multi-toggle)
@@ -262,13 +261,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace, onOpenCheckinHe
               >
                 Détails
               </button>
-              <button
-                onClick={() => onOpenCheckinHere(activePlace.id)}
-                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-colors shadow-md flex items-center justify-center gap-1 cursor-pointer"
-              >
-                <Crosshair className="w-3.5 h-3.5" />
-                <span>Check-in</span>
-              </button>
+
             </div>
           </div>
         </div>

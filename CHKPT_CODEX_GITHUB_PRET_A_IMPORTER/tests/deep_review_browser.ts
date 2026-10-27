@@ -80,6 +80,7 @@ export async function checkDeepReview(url: string, password: string) {
     let submissions=0;
     gps.on('request',req=>{if(req.url().endsWith('/api/checkins') && req.method()==='POST') submissions++;});
     await gps.getByRole('button',{name:'Valider ma présence physique',exact:true}).click();
+    await gps.getByRole('dialog',{name:'Check-in',exact:true}).getByRole('button',{name:/Maquis L'Étoile/}).click();
     await gps.getByRole('button',{name:'Confirmer le check',exact:true}).click();
     await gps.getByText(/Position GPS en cours de recherche/).waitFor();
     assert.equal(submissions,0,'Aucune coordonnée simulée ne doit être envoyée comme un GPS réel en attente');

@@ -27,7 +27,6 @@ const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState<MainTab>('feed');
   const [isCheckinOpen, setIsCheckinOpen] = useState(false);
   const [selectedPlaceIdForDetail, setSelectedPlaceIdForDetail] = useState<string | null>(null);
-  const [preselectedPlaceIdForCheckin, setPreselectedPlaceIdForCheckin] = useState<string | null>(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesViewOpen, setIsBadgesViewOpen] = useState(false);
@@ -35,10 +34,6 @@ const AppContent: React.FC = () => {
 
   const selectedPlace = places.find(p => p.id === selectedPlaceIdForDetail) || null;
 
-  const handleOpenCheckinWithPlace = (placeId: string) => {
-    setPreselectedPlaceIdForCheckin(placeId);
-    setIsCheckinOpen(true);
-  };
 
   return (
     <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans selection:bg-rose-900 selection:text-white">
@@ -64,18 +59,13 @@ const AppContent: React.FC = () => {
             {activeTab === 'feed' && (
               <FeedView
                 onSelectPlace={(id) => setSelectedPlaceIdForDetail(id)}
-                onOpenCheckin={() => {
-                  setPreselectedPlaceIdForCheckin(null);
-                  setIsCheckinOpen(true);
-                }}
-                onOpenCheckinHere={handleOpenCheckinWithPlace}
+
               />
             )}
 
             {activeTab === 'map' && (
               <MapView
                 onSelectPlace={(id) => setSelectedPlaceIdForDetail(id)}
-                onOpenCheckinHere={handleOpenCheckinWithPlace}
               />
             )}
 
@@ -107,7 +97,6 @@ const AppContent: React.FC = () => {
             setIsBadgesViewOpen(false);
           }}
           onOpenCheckin={() => {
-            setPreselectedPlaceIdForCheckin(null);
             setIsCheckinOpen(true);
           }}
         />
@@ -115,20 +104,16 @@ const AppContent: React.FC = () => {
 
       {/* Modals & Dialogs */}
       {isCheckinOpen && <CheckinModal
-        key={preselectedPlaceIdForCheckin || "nearby"}
         isOpen={isCheckinOpen}
         onClose={() => {
           setIsCheckinOpen(false);
-          setPreselectedPlaceIdForCheckin(null);
         }}
-        preselectedPlaceId={preselectedPlaceIdForCheckin}
         onPostPublishedSuccess={() => { dismissToastNotification(); setActiveTab('feed'); }}
       />}
 
       <PlaceDetailModal
         place={selectedPlace}
         onClose={() => setSelectedPlaceIdForDetail(null)}
-        onCheckinHere={handleOpenCheckinWithPlace}
       />
 
       <AuthModal

@@ -75,11 +75,14 @@ export async function checkFeed(url: string, password: string) {
       assert.equal(await mine.getByRole('button', { name: 'Aimer cette publication', exact: true }).getAttribute('aria-pressed'), 'true');
       await page.getByText(/1240 XP au total/).waitFor();
       await page.getByRole('button', { name: 'Accueil', exact: true }).click();
-      await page.getByRole('article').filter({ hasText: 'Une belle découverte à Cocody' }).getByRole('button', { name: /Faire un check à Maquis/ }).click();
+      assert.equal(await page.getByRole('article').getByRole('button', { name: /Faire un check/ }).count(), 0);
+      await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
       const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
       await dialog.getByText('Simulation GPS · données fictives', { exact: true }).waitFor();
       assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).count(), 1);
       assert.equal(await dialog.getByRole('button', { name: /Simuler ma visite/ }).count(), 0);
+      assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).isDisabled(), true);
+      await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
       assert.match(await dialog.getByRole('button', { pressed: true }).innerText(), /Maquis L'Étoile/);
       const sent = page.waitForRequest(request => request.url().endsWith('/api/checkins') && request.method() === 'POST');
       await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).click();

@@ -44,8 +44,14 @@ Vérification exécutée : `npm run lint`, `npm run build`, puis **22/22 groupes
 
 ## Accueil, en-tête et nouveaux visuels
 
-Le dernier modèle fourni guide les cartes : image arrondie, ligne du lieu avec vignette et action Check. L’accueil garde seulement Pour toi et Amis ; les filtres sont regroupés. L’en-tête conserve le symbole, le GPS et les notifications. Les lettres et la commune sont retirées de cette barre. Le thème passe dans Profil → Réglages, et le compte reste accessible dans Profil → Gérer mon compte.
+Le dernier modèle fourni guide les cartes : image arrondie et ligne du lieu avec vignette. Le bouton central est désormais l’unique accès au check-in. L’accueil garde seulement Pour toi et Amis ; les filtres sont regroupés. L’en-tête conserve le symbole, le GPS et les notifications. Les lettres et la commune sont retirées de cette barre. Le thème passe dans Profil → Réglages, et le compte reste accessible dans Profil → Gérer mon compte.
 
 Le bouton de confirmation porte Confirmer le check. La simulation reste identifiée et les contrôles serveur ne changent pas. Deux illustrations IA locales supplémentaires enrichissent les publications de terrasse et de culture, avec adaptation des anciens chemins fictifs à l’affichage et conservation des médias importés.
 
-Exécutés avec succès : `npm run lint`, `npm run build`, et **23/23 groupes** de la recette complète, dont les 11 tests historiques. Le parcours depuis la carte et depuis une publication transmet le bon lieu ; les XP restent uniques, le thème reste mémorisé dans les réglages, le GPS fonctionne depuis l’en-tête, les anciens caches affichent les nouvelles images, et les relations réelles de la base servent au filtre Amis. Les captures et les supports de présentation sont actualisés. Voir [ACCUEIL_SOCIAL.md](docs/ACCUEIL_SOCIAL.md). Les tests sont réalisés sous Chromium Linux ; la répétition sur les ordinateurs de présentation reste à refaire après mise à jour.
+Exécutés avec succès : `npm run lint`, `npm run build`, et **23/23 groupes** de la recette complète, dont les 11 tests historiques. Le parcours central avec choix explicite transmet le bon lieu ; les XP restent uniques, le thème reste mémorisé dans les réglages, le GPS fonctionne depuis l’en-tête, les anciens caches affichent les nouvelles images, et les relations réelles de la base servent au filtre Amis. Les captures et les supports de présentation sont actualisés. Voir [ACCUEIL_SOCIAL.md](docs/ACCUEIL_SOCIAL.md). Les tests sont réalisés sous Chromium Linux ; la répétition sur les ordinateurs de présentation reste à refaire après mise à jour.
+
+## Entrée unique du check-in
+
+Sur demande du porteur, les boutons de check sont retirés des publications, de la carte, des fiches et de l’état vide du fil. Le seul point d’ouverture est le bouton central Check-in. Aucun lieu n’est choisi automatiquement : Confirmer le check reste désactivé jusqu’à la sélection, puis la publication reste proposée séparément.
+
+Exécutés avec succès : lint, build et recette complète **23/23 groupes**, incluant le choix obligatoire, l’absence de raccourcis, l’identifiant exact transmis après sélection, le refus hors rayon et du doublon, les points, le badge, la publication et la répétition. Aucune autorisation ou règle serveur n’est modifiée.

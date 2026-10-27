@@ -34,14 +34,12 @@ import {
 interface CheckinModalProps {
   isOpen: boolean;
   onClose: () => void;
-  preselectedPlaceId?: string | null;
   onPostPublishedSuccess?: () => void;
 }
 
 export const CheckinModal: React.FC<CheckinModalProps> = ({
   isOpen,
   onClose,
-  preselectedPlaceId,
   onPostPublishedSuccess
 }) => {
   const { 
@@ -58,7 +56,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     'select_place'
   );
   
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>(preselectedPlaceId || places[0]?.id || '');
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
   const [audience, setAudience] = useState<CheckInAudience>('private');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
@@ -92,8 +90,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
 
   if (!isOpen) return null;
 
-  const currentPlace = places.find(p => p.id === selectedPlaceId) ||
-    (preselectedPlaceId ? undefined : sortedPlaces[0]);
+  const currentPlace = places.find(p => p.id === selectedPlaceId);
 
   const handleExecuteCheckIn = async () => {
     if (!currentPlace) return;
@@ -207,7 +204,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               <div className="space-y-2 max-h-56 overflow-y-auto no-scrollbar pr-1">
                 {sortedPlaces.map(place => {
                   const isEligible = place.distance <= DEFAULT_CHECKIN_RADIUS_METERS;
-                  const isSelected = (selectedPlaceId || sortedPlaces[0]?.id) === place.id;
+                  const isSelected = selectedPlaceId === place.id;
 
                   return (
                     <button

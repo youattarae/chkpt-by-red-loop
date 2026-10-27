@@ -4,9 +4,8 @@ import { Post } from '../../types';
 import { useStore } from '../../services/store';
 import { SafeImage } from './SafeImage';
 import { publicationImage, isGeneratedPublicationImage } from '../../data/publicationMedia';
-import { BrandSymbol } from './BrandSymbol';
 
-export function PublicationCard({ post, onSelectPlace, onCheckinPlace }: { post: Post; onSelectPlace: (id: string) => void; onCheckinPlace?: (id: string) => void }) {
+export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectPlace: (id: string) => void }) {
   const { likePost, addComment, savedPlaceIds, toggleSavePlace, places } = useStore();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comment, setComment] = useState('');
@@ -33,7 +32,6 @@ export function PublicationCard({ post, onSelectPlace, onCheckinPlace }: { post:
         {image ? <SafeImage src={image} alt="" className="w-11 h-11 rounded-xl object-cover shrink-0" /> : <MapPin className="w-5 h-5 text-blue-400 shrink-0" />}
         <span className="min-w-0"><span className="block text-xs font-bold text-ink break-words">{post.linkedPlaceName || place?.name}</span><span className="block text-[10px] text-muted mt-1">{place ? `${place.categoryLabel} · ${place.commune}` : 'Lieu de la publication'}</span></span>
       </button>
-      {place && onCheckinPlace && <button type="button" onClick={() => onCheckinPlace(place.id)} aria-label={`Faire un check à ${place.name}`} className="shrink-0 flex items-center gap-1 rounded-full bg-rose-700 hover:bg-rose-800 text-white text-xs font-bold px-3 py-2 cursor-pointer"><BrandSymbol className="w-5 h-5" />Check</button>}
     </div>}
     {post.isVerifiedVisit && <p className="px-4 pt-3 text-[10px] text-muted flex items-center gap-1"><CheckCircle2 className="w-3 h-3" />{post.isSimulated ? 'Check simulé · démonstration' : 'Check enregistré · démonstration'}</p>}
     <div className="px-4 py-3 flex items-center gap-5 text-xs text-muted">

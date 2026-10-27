@@ -12,7 +12,7 @@
 - Navigation : Accueil, Carte, Check-in central, Sortir, Profil.
 - Accueil : Pour toi + Amis. Nearby reste sur Carte ; tendances dans Sortir.
 - Le bouton de confirmation du check-in porte le texte « Confirmer le check » (demande utilisateur du 27 octobre 2026). La mention de position simulée et de données fictives reste visible en démonstration ; le changement de texte ne modifie pas les contrôles serveur.
-- Check-in distinct d'une publication facultative ; pas de post automatique. Simulation GPS de présentation explicite.
+- Le bouton central Check-in est l'unique point d'entrée : sélectionner explicitement un lieu → Confirmer le check → publication facultative. Aucun raccourci de check sur les publications, la carte ou les fiches. Pas de post automatique ; simulation de présentation explicite.
 - 8 familles de badges ; ne pas inventer que les 40 badges complets sont implémentés.
 - Publicités non cliquables, avec mention « Publicité » ; aucune publicité sur Carte.
 - Aucun paiement interne, wallet ou billetterie intégrée ; pas de nouvelles fonctionnalités non validées.
@@ -37,4 +37,4 @@
 7. Proposer les changements dans une branche / pull request plutôt que modifier directement la branche principale.
 
 ## Définition du succès immédiat
-Un jury peut voir sans erreur : Accueil → Carte → sélection d'un maquis de Cocody → fiche → check-in **simulé** exactement sur ce lieu → points / badge → publication → Profil → événement « J'y serai ». L'animateur peut réinitialiser la démo de manière **autorisée**. Les éléments simulés sont identifiables et le parcours est fiable sur smartphone et ordinateur.
+Un jury peut voir sans erreur : Accueil → Carte → sélection d'un maquis de Cocody → fiche → bouton central Check-in → sélection du lieu → confirmation **simulé** exactement sur ce lieu → points / badge → publication → Profil → événement « J'y serai ». L'animateur peut réinitialiser la démo de manière **autorisée**. Les éléments simulés sont identifiables et le parcours est fiable sur smartphone et ordinateur.

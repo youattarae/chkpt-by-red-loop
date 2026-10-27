@@ -19,11 +19,9 @@ import { PublicationCard } from '../common/PublicationCard';
 
 interface FeedViewProps {
   onSelectPlace: (placeId: string) => void;
-  onOpenCheckin: () => void;
-  onOpenCheckinHere: (id: string) => void;
 }
 
-export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin, onOpenCheckinHere }) => {
+export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const { 
     currentUser,
     followingIds,
@@ -256,17 +254,12 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
             >
               Réinitialiser les filtres
             </button>
-            <button
-              onClick={onOpenCheckin}
-              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer"
-            >
-              Faire un check-in
-            </button>
+
           </div>
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredPosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} onCheckinPlace={onOpenCheckinHere} />)}
+          {filteredPosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />)}
         </div>
       )}
       </div>

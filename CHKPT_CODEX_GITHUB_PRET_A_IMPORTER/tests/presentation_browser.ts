@@ -49,7 +49,9 @@ export async function checkPresentation(url: string, password: string) {
         await capture('carte');
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
         await capture('fiche');
-        await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
+        await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+        await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+        await page.getByRole('dialog', { name: 'Check-in', exact: true }).getByRole('button', { name: /Maquis L'Étoile/ }).click();
         await capture('check-confirm');
         await page.getByRole('button', { name: 'Confirmer le check' }).click();
         await page.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();

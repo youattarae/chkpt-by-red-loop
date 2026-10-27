@@ -25,8 +25,13 @@ export async function checkBrowser(url: string) {
       await page.getByRole('button', { name: 'Carte', exact: true }).click();
       await page.getByRole('button', { name: "Choisir Maquis L'Étoile d'Abidjan", exact: true }).click();
       await page.getByRole('button', { name: 'Détails', exact: true }).click();
-      await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
+      assert.equal(await page.getByRole('button', { name: 'Faire un check-in ici' }).count(), 0);
+      await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+      await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
       const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
+      assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).isDisabled(), true);
+      assert.equal(await dialog.getByRole('button', { pressed: true }).count(), 0);
+      await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
       assert.match(await dialog.getByRole('button', { pressed: true }).innerText(), /Maquis L'Étoile/);
       const sent = page.waitForRequest(request => request.url().endsWith('/api/checkins') && request.method() === 'POST');
       await dialog.getByRole('button', { name: 'Confirmer le check' }).click();
@@ -38,7 +43,10 @@ export async function checkBrowser(url: string) {
       // This used to keep the previous result/selection when reopening the persistent modal.
       await page.getByRole('button', { name: "Choisir L'Atelier Café & Bakery", exact: true }).click();
       await page.getByRole('button', { name: 'Détails', exact: true }).click();
-      await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
+      await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+      await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+      assert.equal(await dialog.getByRole('button', { pressed: true }).count(), 0);
+      await dialog.getByRole('button', { name: /Atelier Café/ }).click();
       assert.match(await dialog.getByRole('button', { pressed: true }).innerText(), /Atelier Café/);
       const second = page.waitForRequest(request => request.url().endsWith('/api/checkins') && request.method() === 'POST');
       await dialog.getByRole('button', { name: 'Confirmer le check' }).click();
@@ -47,6 +55,7 @@ export async function checkBrowser(url: string) {
       await dialog.getByRole('button', { name: 'Fermer le check-in' }).click();
       await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
       await dialog.getByRole('button', { name: 'Confirmer le check' }).waitFor();
+      assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check' }).isDisabled(), true);
       assert.equal(await dialog.getByRole('heading', { name: 'Présence non confirmée' }).count(), 0);
       await dialog.getByRole('button', { name: 'Fermer le check-in' }).click();
       await openAccount(page);

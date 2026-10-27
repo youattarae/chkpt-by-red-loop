@@ -26,14 +26,14 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 |---|---|---|
 | 0:00–0:25 | Montrer l’accueil, les onglets Pour toi / Amis et les publications illustrées. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
 | 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
-| 0:55–1:25 | Faire un check-in ici → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
+| 0:55–1:25 | Fermer la fiche → bouton central Check-in → choisir Maquis L’Étoile → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
 | 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
 | 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
 | 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
 | 2:35–2:55 | Sortir → premier événement → J'y serai. | « Je prépare aussi ma prochaine sortie. Cette intention est simulée et enregistrée dans ce navigateur. » |
 | 2:55–3:00 | Revenir à l'accueil ou au profil. | « CHKPT : Sors. Check. Partage. » |
 
-Le maquis doit rester présélectionné dans la modale. Le badge attendu s'appelle **Initié du Braisé**,
+Le maquis doit être sélectionné explicitement dans la fenêtre ouverte par le bouton central Check-in. Le badge attendu s'appelle **Initié du Braisé**,
 dans la famille **Maquis Master** ; il ne faut pas annoncer que quarante badges sont implémentés.
 Publier n'ajoute pas de XP de visite. Les 1240 XP de départ et les quatre visites du badge sont des données fictives préchargées.
 
@@ -107,4 +107,4 @@ Il s'agit seulement du mode de service des fichiers compilés : le prototype ne 
 
 Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.
 
-Les réglages de thème, commune et position sont regroupés dans **Profil → Réglages**. L’en-tête conserve le symbole, le bouton GPS et la cloche de notifications. Les cartes de l’accueil proposent aussi un bouton **Check** qui présélectionne leur lieu ; le bouton suivant est **Confirmer le check**.
+Les réglages de thème, commune et position sont regroupés dans **Profil → Réglages**. L’en-tête conserve le symbole, le bouton GPS et la cloche de notifications. Le bouton central est l’unique accès au check-in : choisir le lieu, appuyer sur **Confirmer le check**, puis **Créer une publication** si souhaité. Les cartes et les fiches restent consultables sans bouton de check.

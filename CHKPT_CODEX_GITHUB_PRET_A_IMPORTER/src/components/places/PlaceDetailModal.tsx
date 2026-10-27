@@ -1,4 +1,3 @@
-import { BrandSymbol } from '../common/BrandSymbol';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -25,13 +24,11 @@ import {
 interface PlaceDetailModalProps {
   place: Place | null;
   onClose: () => void;
-  onCheckinHere: (placeId: string) => void;
 }
 
 export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
   place,
   onClose,
-  onCheckinHere,
 }) => {
   const { savedPlaceIds, toggleSavePlace } = useStore();
 
@@ -54,6 +51,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
           
           <button
             onClick={onClose}
+            aria-label="Fermer la fiche"
             className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black text-white rounded-full transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -143,19 +141,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
             ))}
           </div>
 
-          {/* CTAs */}
-          <div className="pt-2 flex gap-2">
-            <button
-              onClick={() => {
-                onClose();
-                onCheckinHere(place.id);
-              }}
-              className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer"
-            >
-              <BrandSymbol className="w-6 h-6" />
-              <span>Faire un check-in ici</span>
-            </button>
-          </div>
+
 
         </div>
 
