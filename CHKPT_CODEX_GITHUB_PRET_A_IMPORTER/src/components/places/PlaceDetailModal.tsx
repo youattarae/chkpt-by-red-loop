@@ -1,3 +1,4 @@
+import { BrandSymbol } from '../common/BrandSymbol';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -40,16 +41,16 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/75 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-t-3xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="bg-surface border border-line rounded-t-3xl sm:rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Cover Image & Close */}
-        <div className="relative aspect-video max-h-56 w-full bg-slate-950 overflow-hidden">
+        <div className="relative aspect-video max-h-56 w-full bg-canvas overflow-hidden">
           <SafeImage
             src={place.coverImage}
             alt={place.name}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-black/60"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-surface via-transparent to-black/60"></div>
           
           <button
             onClick={onClose}
@@ -82,7 +83,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
           
           <div>
             <div className="flex items-center gap-2">
-              <h2 className="text-lg font-bold text-white tracking-tight">{place.name}</h2>
+              <h2 className="text-lg font-bold text-ink tracking-tight">{place.name}</h2>
               {place.verificationStatus === 'verified' && (
                 <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-800 text-[10px] font-bold flex items-center gap-1">
                   <CheckCircle2 className="w-3 h-3" />
@@ -91,7 +92,7 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
               )}
             </div>
 
-            <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+            <div className="flex items-center gap-2 text-xs text-muted mt-1">
               <span>{place.categoryLabel}</span>
               <span>·</span>
               <span className="flex items-center gap-1">
@@ -101,27 +102,28 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
             </div>
           </div>
 
-          <p className="text-xs text-slate-300 leading-relaxed">
+          <p className="media-disclosure rounded-lg">Lieu fictif de démonstration{place.coverImage.endsWith('.png') ? ' · illustration générée par IA' : ' · illustration de présentation'}</p>
+          <p className="text-xs text-body leading-relaxed">
             {place.description}
           </p>
 
           {/* Details Pill grid */}
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-2">
-              <Clock className="w-4 h-4 text-slate-400 shrink-0" />
+            <div className="p-2.5 rounded-xl bg-canvas border border-line flex items-center gap-2">
+              <Clock className="w-4 h-4 text-muted shrink-0" />
               <div>
-                <span className="text-[10px] text-slate-400 block">Horaires</span>
-                <span className="text-white font-medium text-[11px] truncate block">
+                <span className="text-[10px] text-muted block">Horaires</span>
+                <span className="text-ink font-medium text-[11px] truncate block">
                   {place.openingHours || 'Ouvert tous les jours'}
                 </span>
               </div>
             </div>
 
-            <div className="p-2.5 rounded-xl bg-slate-950 border border-slate-800 flex items-center gap-2">
+            <div className="p-2.5 rounded-xl bg-canvas border border-line flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
               <div>
-                <span className="text-[10px] text-slate-400 block">Check-ins vérifiés</span>
-                <span className="text-white font-bold text-[11px]">
+                <span className="text-[10px] text-muted block">Check-ins · données fictives</span>
+                <span className="text-ink font-bold text-[11px]">
                   {place.totalCheckins} visites
                 </span>
               </div>
@@ -133,9 +135,9 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
             {place.tags.map((tag) => (
               <span
                 key={tag}
-                className="px-2 py-1 rounded-lg bg-slate-950 border border-slate-800/80 text-[11px] text-slate-300 flex items-center gap-1"
+                className="px-2 py-1 rounded-lg bg-canvas border border-line/80 text-[11px] text-body flex items-center gap-1"
               >
-                <Tag className="w-3 h-3 text-slate-400" />
+                <Tag className="w-3 h-3 text-muted" />
                 <span>{tag}</span>
               </span>
             ))}
@@ -148,9 +150,9 @@ export const PlaceDetailModal: React.FC<PlaceDetailModalProps> = ({
                 onClose();
                 onCheckinHere(place.id);
               }}
-              className="flex-1 py-3 bg-gradient-to-r from-rose-900 to-rose-700 hover:from-rose-800 hover:to-rose-600 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer"
+              className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-lg flex items-center justify-center gap-2 cursor-pointer"
             >
-              <Crosshair className="w-4 h-4" />
+              <BrandSymbol className="w-6 h-6" />
               <span>Faire un check-in ici</span>
             </button>
           </div>

@@ -80,10 +80,10 @@ export const INITIAL_PLACES: Place[] = [
     priceDescription: '3 500 – 9 000 FCFA',
     openingHours: 'Mardi au Dimanche : 11h30 - 01h00',
     isCurrentlyOpen: true,
-    coverImage: '/illustrations/maquis.svg',
+    coverImage: '/illustrations/maquis-demo.png',
     galleryImages: [
-      '/illustrations/maquis.svg',
-      '/illustrations/maquis.svg'
+      '/illustrations/maquis-demo.png',
+      '/illustrations/maquis-demo.png'
     ],
     tags: ['Poisson braisé', 'Alloco', 'Attiéké', 'Convivial', 'Musique live'],
     totalCheckins: 289,
@@ -198,6 +198,16 @@ export const INITIAL_PLACES: Place[] = [
 ];
 
 export const INITIAL_POSTS: Post[] = [
+  {
+    id: 'pst_maquis_demo', authorId: 'usr_01', authorName: 'Koffi Kouamé',
+    authorUsername: 'koffi_urbex', authorAvatar: '/illustrations/koffi.svg',
+    createdAt: 'Publication de démonstration',
+    text: 'Une belle découverte à Cocody : une terrasse, du braisé et une soirée entre amis.',
+    mediaUrl: '/illustrations/maquis-demo.png', mediaType: 'image',
+    linkedPlaceId: 'plc_maquis_etoile', linkedPlaceName: "Maquis L’Étoile d’Abidjan",
+    isVerifiedVisit: false, audience: 'public', likesCount: 0, isLikedByCurrentUser: false,
+    commentsCount: 0, comments: [],
+  },
   {
     id: 'pst_01',
     authorId: 'usr_sarah',

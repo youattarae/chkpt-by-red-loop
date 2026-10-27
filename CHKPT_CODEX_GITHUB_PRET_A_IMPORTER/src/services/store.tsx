@@ -151,6 +151,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               const localMatch = prev.find((p) => p.id === serverPlace.id);
               return {
                 ...serverPlace,
+                coverImage: serverPlace.id === 'plc_maquis_etoile' ? '/illustrations/maquis-demo.png' : serverPlace.coverImage,
                 rating: localMatch?.rating || 4.7,
                 reviewCount: localMatch?.reviewCount || 20,
                 totalCheckins: localMatch?.totalCheckins || serverPlace.totalCheckins || 50,

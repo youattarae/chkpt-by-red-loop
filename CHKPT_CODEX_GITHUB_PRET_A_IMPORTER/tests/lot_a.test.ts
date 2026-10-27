@@ -218,6 +218,8 @@ try {
     await check('Présentation complète et répétition après reset autorisé', () => checkPresentation(demo.url, password));
     const { checkDeepReview } = await import('./deep_review_browser');
     await check('Petit écran, ancienne réponse de connexion, filtre Amis et GPS en attente', () => checkDeepReview(demo.url, password));
+    const { checkVisualDirection } = await import('./visual_direction_browser');
+    await check('Direction visuelle claire et sombre, symbole et navigation de 320 à 1280px', () => checkVisualDirection(demo.url));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

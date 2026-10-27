@@ -121,7 +121,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between text-xs font-semibold text-slate-300">
+      <div className="flex items-center justify-between text-xs font-semibold text-body">
         <span>{label}</span>
         <span className="text-[10px] text-emerald-400 flex items-center gap-1 font-normal">
           <ShieldCheck className="w-3 h-3" />
@@ -138,7 +138,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
       />
 
       {previewUrl ? (
-        <div className="relative rounded-2xl overflow-hidden border border-slate-800 bg-slate-950 group aspect-video max-h-48">
+        <div className="relative rounded-2xl overflow-hidden border border-line bg-canvas group aspect-video max-h-48">
           <SafeImage src={previewUrl} alt="Aperçu" className="w-full h-full object-cover" />
           <button
             type="button"
@@ -157,7 +157,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isProcessing}
-          className="w-full p-4 border border-dashed border-slate-800 hover:border-slate-700 bg-slate-950/60 rounded-2xl flex flex-col items-center justify-center gap-2 text-slate-400 hover:text-slate-300 transition-colors cursor-pointer"
+          className="w-full p-4 border border-dashed border-line hover:border-line-strong bg-canvas/60 rounded-2xl flex flex-col items-center justify-center gap-2 text-muted hover:text-body transition-colors cursor-pointer"
         >
           {isProcessing ? (
             <Loader2 className="w-6 h-6 animate-spin text-rose-500" />
@@ -167,7 +167,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
               <span className="text-xs font-medium">Ajouter une photo de la visite</span>
             </div>
           )}
-          <span className="text-[10px] text-slate-400">
+          <span className="text-[10px] text-muted">
             JPG, PNG ou WebP · Nettoyage automatique des métadonnées de géolocalisation
           </span>
         </button>

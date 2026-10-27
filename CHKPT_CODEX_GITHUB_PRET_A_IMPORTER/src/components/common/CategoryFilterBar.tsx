@@ -76,16 +76,16 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
           onClick={onClearFilters}
           className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap backdrop-blur-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 ${
             !isFilteringActive
-              ? 'bg-rose-900 text-white border border-rose-700 shadow-lg shadow-rose-950/40 ring-1 ring-rose-600'
-              : 'bg-slate-900/90 text-slate-300 border border-slate-800 hover:text-white hover:border-slate-700'
+              ? 'bg-blue-600 text-white border border-blue-600 shadow-sm'
+              : 'bg-surface/90 text-body border border-line hover:text-ink hover:border-line-strong'
           }`}
           title="Afficher toutes les catégories"
         >
-          {!isFilteringActive && <Check className="w-3.5 h-3.5 text-rose-300 stroke-[3]" />}
+          {!isFilteringActive && <Check className="w-3.5 h-3.5 text-white stroke-[3]" />}
           <span>{allLabel}</span>
           {typeof totalCount === 'number' && (
             <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
-              !isFilteringActive ? 'bg-black/40 text-rose-100' : 'bg-slate-800 text-slate-400'
+              !isFilteringActive ? 'bg-black/15 text-white' : 'bg-soft text-muted'
             }`}>
               {totalCount}
             </span>
@@ -105,7 +105,7 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap backdrop-blur-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border ${
                 isSelected
                   ? 'bg-rose-950 text-rose-200 border-rose-600 ring-1 ring-rose-500 shadow-md shadow-rose-950/50 font-bold'
-                  : 'bg-slate-900/90 text-slate-300 border-slate-800/90 hover:text-white hover:border-slate-700'
+                  : 'bg-surface/90 text-body border-line/90 hover:text-ink hover:border-line-strong'
               }`}
               title={cat.description}
             >
@@ -119,8 +119,8 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
               {typeof count === 'number' && (
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                   isSelected
-                    ? 'bg-rose-900 text-rose-100'
-                    : 'bg-slate-800 text-slate-400'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-soft text-muted'
                 }`}>
                   {count}
                 </span>
@@ -132,7 +132,7 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
 
       {/* Optional Filter Status Banner */}
       {showStatusBanner && isFilteringActive && (
-        <div className="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-slate-900/95 border border-slate-800 text-[11px] text-slate-300 shadow-sm backdrop-blur-md animate-in fade-in duration-150">
+        <div className="flex items-center justify-between px-3.5 py-1.5 rounded-xl bg-surface/95 border border-line text-[11px] text-body shadow-sm backdrop-blur-md animate-in fade-in duration-150">
           <div className="flex items-center gap-1.5">
             <SlidersHorizontal className="w-3.5 h-3.5 text-rose-400 shrink-0" />
             <span>
