@@ -15,6 +15,9 @@ export async function checkPresentation(url: string, password: string) {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
+      // Exercise the entire scenario in light on mobile and dark on desktop.
+      const theme = width === 1280 ? 'dark' : 'light';
+      if (theme === 'dark') await page.getByRole('button', { name: 'Mode sombre', exact: true }).click();
       async function capture(name: string) {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForFunction(() => [...document.images].every(image => image.complete));
@@ -37,6 +40,7 @@ export async function checkPresentation(url: string, password: string) {
         await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
         await page.getByRole('button', { name: 'Démarrer la démo', exact: true }).click();
         await page.getByRole('button', { name: 'Carte', exact: true }).waitFor();
+        assert.equal(await page.locator('html').getAttribute('data-theme'), theme, 'La remise à zéro du scénario conserve le thème');
       }
       async function visit() {
         await page.getByRole('button', { name: 'Carte', exact: true }).click();

@@ -1,3 +1,4 @@
+import { BrandSymbol } from './BrandSymbol';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -8,7 +9,6 @@ import React from 'react';
 import { 
   Home, 
   Map, 
-  Crosshair, 
   Compass, 
   User 
 } from 'lucide-react';
@@ -27,15 +27,16 @@ export const BottomNav: React.FC<BottomNavProps> = ({
   onOpenCheckin
 }) => {
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-slate-950/95 backdrop-blur-lg border-t border-slate-900 pb-safe">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-canvas/95 backdrop-blur-lg border-t border-line pb-safe">
       <div className="max-w-md mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* Tab 1: Accueil */}
         <button
           onClick={() => onSelectTab('feed')}
           className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors cursor-pointer ${
-            activeTab === 'feed' ? 'text-rose-500 font-bold' : 'text-slate-400 hover:text-slate-200'
+            activeTab === 'feed' ? 'text-blue-400 font-bold' : 'text-muted hover:text-body'
           }`}
+          aria-current={activeTab === 'feed' ? 'page' : undefined}
         >
           <Home className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">Accueil</span>
@@ -45,8 +46,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <button
           onClick={() => onSelectTab('map')}
           className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors cursor-pointer ${
-            activeTab === 'map' ? 'text-rose-500 font-bold' : 'text-slate-400 hover:text-slate-200'
+            activeTab === 'map' ? 'text-blue-400 font-bold' : 'text-muted hover:text-body'
           }`}
+          aria-current={activeTab === 'map' ? 'page' : undefined}
         >
           <Map className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">Carte</span>
@@ -56,11 +58,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <div className="flex-1 flex justify-center -mt-5">
           <button
             onClick={onOpenCheckin}
-            className="w-13 h-13 rounded-2xl bg-gradient-to-tr from-rose-950 via-rose-900 to-rose-700 text-white shadow-lg shadow-rose-950/60 border-2 border-slate-950 flex flex-col items-center justify-center hover:scale-105 active:scale-95 transition-all group cursor-pointer"
+            className="checkin-brand-button w-16 h-16 rounded-2xl bg-surface text-ink shadow-lg shadow-shadow-tone/10 border border-line flex flex-col items-center justify-center hover:scale-105 active:scale-95 transition-transform cursor-pointer"
             aria-label="Valider ma présence physique"
           >
-            <Crosshair className="w-6 h-6 group-hover:rotate-45 transition-transform" />
-            <span className="text-[8px] font-extrabold uppercase tracking-tighter mt-0.5">Check-in</span>
+            <BrandSymbol className="w-10 h-10" />
+            <span className="text-[10px] font-bold tracking-tight">Check-in</span>
           </button>
         </div>
 
@@ -68,8 +70,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <button
           onClick={() => onSelectTab('sortir')}
           className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors cursor-pointer ${
-            activeTab === 'sortir' ? 'text-rose-500 font-bold' : 'text-slate-400 hover:text-slate-200'
+            activeTab === 'sortir' ? 'text-blue-400 font-bold' : 'text-muted hover:text-body'
           }`}
+          aria-current={activeTab === 'sortir' ? 'page' : undefined}
         >
           <Compass className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">Sortir</span>
@@ -79,8 +82,9 @@ export const BottomNav: React.FC<BottomNavProps> = ({
         <button
           onClick={() => onSelectTab('profile')}
           className={`flex-1 flex flex-col items-center justify-center py-1 transition-colors cursor-pointer ${
-            activeTab === 'profile' ? 'text-rose-500 font-bold' : 'text-slate-400 hover:text-slate-200'
+            activeTab === 'profile' ? 'text-blue-400 font-bold' : 'text-muted hover:text-body'
           }`}
+          aria-current={activeTab === 'profile' ? 'page' : undefined}
         >
           <User className="w-5 h-5 mb-0.5" />
           <span className="text-[10px] tracking-tight">Profil</span>

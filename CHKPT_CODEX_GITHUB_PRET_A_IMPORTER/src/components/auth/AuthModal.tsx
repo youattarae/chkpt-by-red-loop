@@ -181,43 +181,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const isMinor = numAge >= 13 && numAge <= 17;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-slate-950/80 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-md shadow-2xl max-h-[90dvh] overflow-y-auto flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-canvas/80 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="bg-surface border border-line rounded-3xl w-full max-w-md shadow-2xl max-h-[90dvh] overflow-y-auto flex flex-col">
         
         {/* Header */}
-        <div className="p-4 sm:p-5 border-b border-slate-800 flex items-center justify-between">
+        <div className="p-4 sm:p-5 border-b border-line flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-950 flex items-center justify-center border border-blue-500/30">
-              <User className="w-5 h-5 text-white" />
+            <div className="w-10 h-10 rounded-xl bg-blue-950 text-blue-400 flex items-center justify-center border border-blue-500/30">
+              <User className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white tracking-tight">Compte & Environnement</h3>
-              <p className="text-xs text-slate-400">Contrôle de session & scénario de pitch</p>
+              <h3 className="text-base font-bold text-ink tracking-tight">Compte & Environnement</h3>
+              <p className="text-xs text-muted">Contrôle de session & scénario de pitch</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
+            className="p-2 text-muted hover:text-ink hover:bg-soft rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="bg-slate-950/80 border-b border-slate-800/80 px-4 py-2.5 text-xs text-amber-300">
+        <div className="bg-canvas/80 border-b border-line/80 px-4 py-2.5 text-xs text-amber-300">
           Prototype de démonstration — données fictives
         </div>
-        <p className="px-4 pt-2 text-[11px] text-slate-400">
+        <p className="px-4 pt-2 text-[11px] text-muted">
           Les profils et la réinitialisation nécessitent une démo privée activée sur le serveur
           et une connexion opérateur.
         </p>
 
         {/* Tab Switcher */}
-        <div className="flex border-b border-slate-800 bg-slate-950/40 px-4 pt-2 gap-2 text-xs font-semibold">
+        <div className="flex border-b border-line bg-canvas/40 px-4 pt-2 gap-2 text-xs font-semibold">
           <button
             onClick={() => { setTab('switch_demo'); setErrorMsg(null); }}
             className={`pb-2.5 px-2 border-b-2 transition-colors cursor-pointer ${
-              tab === 'switch_demo' ? 'border-rose-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+              tab === 'switch_demo' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
             }`}
           >
             Profils Démo (opérateur)
@@ -225,7 +225,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             onClick={() => { setTab('login'); setErrorMsg(null); }}
             className={`pb-2.5 px-2 border-b-2 transition-colors cursor-pointer ${
-              tab === 'login' ? 'border-rose-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+              tab === 'login' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
             }`}
           >
             Connexion
@@ -233,7 +233,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           <button
             onClick={() => { setTab('register'); setErrorMsg(null); }}
             className={`pb-2.5 px-2 border-b-2 transition-colors cursor-pointer ${
-              tab === 'register' ? 'border-rose-500 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'
+              tab === 'register' ? 'border-rose-500 text-ink' : 'border-transparent text-muted hover:text-body'
             }`}
           >
             Inscription
@@ -258,7 +258,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {/* Tab 1: Switch Persona */}
         {tab === 'switch_demo' && (
           <div className="p-4 sm:p-5 space-y-3">
-            <p className="text-xs text-slate-400 leading-relaxed">
+            <p className="text-xs text-muted leading-relaxed">
               Basculez entre les comptes de démonstration pour tester les rôles et permissions :
             </p>
 
@@ -268,23 +268,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                 currentUser.username === 'koffi_urbex'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
-                  : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                  : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
                   src="/illustrations/koffi.svg"
                   alt=""
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                  className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">Koffi Kouamé</span>
-                    <span className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700">
+                    <span className="text-sm font-bold text-ink">Koffi Kouamé</span>
+                    <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Utilisateur normal
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400">@koffi_urbex · Niv. {currentUser.level} · Cocody</span>
+                  <span className="text-xs text-muted">@koffi_urbex · Niv. {currentUser.level} · Cocody</span>
                 </div>
               </div>
               {currentUser.username === 'koffi_urbex' && (
@@ -298,23 +298,23 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                 currentUser.username === 'sarah_dlo'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
-                  : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                  : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
                   src="/illustrations/sarah.svg"
                   alt=""
-                  className="w-10 h-10 rounded-xl object-cover border border-slate-700"
+                  className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">Sarah Diallo</span>
-                    <span className="text-[10px] bg-slate-800 text-slate-300 px-1.5 py-0.5 rounded border border-slate-700">
+                    <span className="text-sm font-bold text-ink">Sarah Diallo</span>
+                    <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Abonnée confirmée
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400">@sarah_dlo · 512 abonnés · Cocody</span>
+                  <span className="text-xs text-muted">@sarah_dlo · 512 abonnés · Cocody</span>
                 </div>
               </div>
               {currentUser.username === 'sarah_dlo' && (
@@ -328,21 +328,21 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
                 currentUser.username === 'redloop_admin'
                   ? 'bg-rose-950/60 border-rose-600/70 shadow-sm'
-                  : 'bg-slate-950/40 border-slate-800 hover:border-slate-700'
+                  : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-600 to-rose-950 flex items-center justify-center border border-rose-500/40">
-                  <Shield className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 rounded-xl bg-rose-950 text-rose-400 flex items-center justify-center border border-rose-500/40">
+                  <Shield className="w-5 h-5" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-white">Superviseur RED LOOP</span>
+                    <span className="text-sm font-bold text-ink">Superviseur RED LOOP</span>
                     <span className="text-[10px] bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800">
                       Rôle Opérateur / Admin
                     </span>
                   </div>
-                  <span className="text-xs text-slate-400">Accès exclusif console M01–M14</span>
+                  <span className="text-xs text-muted">Accès exclusif console M01–M14</span>
                 </div>
               </div>
               {currentUser.username === 'redloop_admin' && (
@@ -352,22 +352,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
             {['admin', 'superadmin', 'moderator'].includes(currentUser.role) && (
               <button onClick={handleStartPitch} disabled={isLoading}
-                className="w-full py-3 bg-blue-500 text-slate-950 rounded-xl font-bold text-sm">
+                className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm">
                 Démarrer la démo
               </button>
             )}
             {/* Reset Pitch Button */}
-            <div className="pt-3 border-t border-slate-800">
+            <div className="pt-3 border-t border-line">
               <button
                 type="button"
                 onClick={handleResetPitch}
                 disabled={isResetting}
-                className="w-full py-2.5 px-3 bg-slate-950 hover:bg-rose-950/40 text-rose-300 hover:text-white border border-dashed border-rose-800/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
+                className="w-full py-2.5 px-3 bg-canvas hover:bg-rose-950/40 text-rose-300 hover:text-ink border border-dashed border-rose-800/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <RotateCcw className={`w-3.5 h-3.5 ${isResetting ? 'animate-spin' : ''}`} />
                 <span>Réinitialiser le scénario Pitch (Démo vierge)</span>
               </button>
-              <span className="block text-[10px] text-slate-400 text-center mt-1">
+              <span className="block text-[10px] text-muted text-center mt-1">
                 Remet à zéro les check-ins d'aujourd'hui, le fil et les points pour rejouer le scénario.
               </span>
             </div>
@@ -378,33 +378,33 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {tab === 'login' && (
           <form onSubmit={handleLogin} className="p-4 sm:p-5 space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Identifiant / Nom d'utilisateur</label>
+              <label className="block text-xs font-medium text-body mb-1">Identifiant / Nom d'utilisateur</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="ex: koffi_urbex"
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Mot de passe</label>
+              <label className="block text-xs font-medium text-body mb-1">Mot de passe</label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <LogIn className="w-4 h-4" />
               <span>Se connecter</span>
@@ -416,31 +416,31 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         {tab === 'register' && (
           <form onSubmit={handleRegister} className="p-4 sm:p-5 space-y-3.5">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Nom d'affichage</label>
+              <label className="block text-xs font-medium text-body mb-1">Nom d'affichage</label>
               <input
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="ex: Yao Koffi"
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Nom d'utilisateur (@)</label>
+              <label className="block text-xs font-medium text-body mb-1">Nom d'utilisateur (@)</label>
               <input
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="ex: yao_abidjan"
                 required
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-2.5">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Âge</label>
+                <label className="block text-xs font-medium text-body mb-1">Âge</label>
                 <input
                   type="number"
                   min="13"
@@ -448,18 +448,18 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                   value={age}
                   onChange={(e) => setAge(e.target.value)}
                   required
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500"
+                  className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink focus:outline-none focus:border-rose-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">Zone</label>
+                <label className="block text-xs font-medium text-body mb-1">Zone</label>
                 <input
                   type="text"
                   value={homeZone}
                   onChange={(e) => setHomeZone(e.target.value)}
                   placeholder="Cocody"
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-rose-500"
+                  className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink focus:outline-none focus:border-rose-500"
                 />
               </div>
             </div>
@@ -474,7 +474,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             )}
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">Mot de passe (min 6 car.)</label>
+              <label className="block text-xs font-medium text-body mb-1">Mot de passe (min 6 car.)</label>
               <input
                 type="password"
                 value={password}
@@ -482,14 +482,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 placeholder="••••••••"
                 required
                 minLength={6}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-rose-500"
+                className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
             </div>
 
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold rounded-xl text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
             >
               <UserPlus className="w-4 h-4" />
               <span>Créer mon compte</span>

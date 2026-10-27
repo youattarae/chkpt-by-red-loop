@@ -39,7 +39,7 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col font-sans selection:bg-rose-900 selection:text-white">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans selection:bg-rose-900 selection:text-ink">
       
       <div className="demo-ribbon"><span className="demo-dot" /> Mode démonstration · données fictives</div>
       {/* Contractual Header */}

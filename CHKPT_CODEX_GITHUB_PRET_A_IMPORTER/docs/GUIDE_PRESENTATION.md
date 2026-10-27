@@ -83,5 +83,11 @@ Recette navigateur à 390 et 1280 pixels, accès externes bloqués, image indisp
 Restent simulés ou limités : GPS de présentation, jeu de départ, compteurs, badges locaux, publications et intentions locales
 au navigateur, carte illustrée. Ce n'est pas un partage synchronisé entre plusieurs utilisateurs.
 Les médias importés restent en mémoire serveur. Une position annoncée comme réelle vient encore du client.
-Les logos officiels et photographies de lieux validées ne sont pas fournis ; les illustrations locales servent de présentation.
+Le symbole est une adaptation vectorielle simplifiée de la planche fournie ; le fichier maître reste attendu. Les illustrations locales, dont une image générée par IA explicitement signalée, représentent des lieux fictifs.
 Le projet reste un prototype privé, pas une application de production ni une validation d'intérêt par le marché.
+
+## Habillage CHKPT actualisé
+
+L’interface s’ouvre sur fond blanc. Le bouton lune en haut permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
+
+Voir les [captures réelles et les choix visuels](DIRECTION_VISUELLE_2026_10.md). Les affichages sont contrôlés à 320, 390 et 1280 pixels, dans les deux thèmes. Une répétition reste nécessaire sur le Windows d’Ingrid ; aucun essai sur une machine Windows physique n’est revendiqué.

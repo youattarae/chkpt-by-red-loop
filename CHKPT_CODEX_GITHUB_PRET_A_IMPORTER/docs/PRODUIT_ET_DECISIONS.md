@@ -1,5 +1,7 @@
 # CHKPT — le projet raconté simplement
 
+> Mise à jour visuelle du 27 octobre 2026 : interface blanche par défaut, mode sombre facultatif, nom CHKPT seul dans l'interface, slogan réservé à la communication et symbole comme bouton central de check-in. Cette décision utilisateur remplace les indications historiques incompatibles. Voir [la direction visuelle](DIRECTION_VISUELLE_2026_10.md).
+
 ## C'est quoi ?
 CHKPT (prononcé « checkpoint ») est une application de sorties et de découverte qui mélange réseau social, carte de lieux et progression ludique. Une personne à Abidjan trouve une bonne adresse, la visite, confirme un check-in, peut partager son expérience et débloquer des badges.
 

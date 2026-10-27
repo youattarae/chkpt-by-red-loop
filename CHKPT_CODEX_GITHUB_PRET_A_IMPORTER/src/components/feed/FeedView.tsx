@@ -144,26 +144,18 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
   return (
     <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-4 pb-24">
       
-      <section className="discovery-hero" aria-label="Découvrir Cocody">
-        <SafeImage src="/illustrations/maquis.svg" alt="Illustration d'une terrasse de maquis à la tombée du jour" className="discovery-hero__art" />
-        <div className="discovery-hero__shade" />
-        <div className="discovery-hero__content">
-          <span className="eyebrow">COCODY, À VOTRE RYTHME</span>
-          <h1>Sors.<br /><span>Check.</span> Partage.</h1>
-          <p>Les meilleures découvertes<br />commencent près de vous.</p>
-          <button onClick={() => onSelectPlace('plc_maquis_etoile')} className="hero-cta">Découvrir le spot du jour <span aria-hidden="true">↗</span></button>
-          <span className="hero-caption">Lieu fictif · illustration de présentation</span>
-        </div>
-      </section>
-      <div className="flex items-end justify-between pt-2"><div><span className="eyebrow text-blue-300">LA VILLE SE RACONTE</span><h2 className="text-xl font-bold mt-1">Dans la boucle</h2></div><span className="text-xs text-slate-400">Cocody · Abidjan</span></div>
+      <div className="flex items-center justify-between gap-3">
+        <h1 className="text-lg font-bold text-ink tracking-tight">Tes découvertes</h1>
+        <span className="text-xs text-muted">{selectedZone} · Abidjan</span>
+      </div>
       {/* Feed Tabs: Pour toi / Amis */}
-      <div className="flex border-b border-slate-900 gap-4">
+      <div className="flex border-b border-line gap-4">
         <button
           onClick={() => setFeedFilter('for_you')}
           className={`pb-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 ${
             feedFilter === 'for_you'
-              ? 'border-rose-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-muted hover:text-body'
           }`}
         >
           Pour toi ({selectedZone})
@@ -172,8 +164,8 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
           onClick={() => setFeedFilter('friends')}
           className={`pb-2.5 text-xs font-bold transition-colors cursor-pointer border-b-2 ${
             feedFilter === 'friends'
-              ? 'border-rose-500 text-white'
-              : 'border-transparent text-slate-400 hover:text-slate-200'
+              ? 'border-blue-500 text-blue-400'
+              : 'border-transparent text-muted hover:text-body'
           }`}
         >
           Amis & Abonnés
@@ -195,29 +187,29 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
       />
 
       {/* Create Post Card */}
-      <div className="bg-slate-900/90 border border-slate-800 rounded-3xl p-3 sm:p-4 shadow-sm">
+      <div className="bg-surface/90 border border-line rounded-3xl p-3 sm:p-4 shadow-sm">
         <div className="flex items-center gap-3">
           <SafeImage
             src={currentUser.avatarUrl}
             alt={currentUser.displayName}
-            className="w-9 h-9 rounded-xl object-cover shrink-0 border border-slate-700"
+            className="w-9 h-9 rounded-xl object-cover shrink-0 border border-line-strong"
           />
           <button
             onClick={() => setIsCreatingPost(true)}
-            className="flex-1 bg-slate-950 hover:bg-slate-800/80 border border-slate-800 rounded-2xl px-3.5 py-2.5 text-left text-xs text-slate-400 transition-colors cursor-pointer"
+            className="flex-1 bg-canvas hover:bg-soft/80 border border-line rounded-2xl px-3.5 py-2.5 text-left text-xs text-muted transition-colors cursor-pointer"
           >
-            Qu'avez-vous découvert à {selectedZone} ?
+            Qu’as-tu découvert à {selectedZone} ?
           </button>
         </div>
 
         {isCreatingPost && (
-          <form onSubmit={handlePublishPost} className="mt-3 pt-3 border-t border-slate-800/80 space-y-3">
+          <form onSubmit={handlePublishPost} className="mt-3 pt-3 border-t border-line/80 space-y-3">
             <textarea
               value={newPostText}
               onChange={(e) => setNewPostText(e.target.value)}
-              placeholder="Partagez vos bonnes adresses, vos coups de cœur..."
+              placeholder="Partage tes bonnes adresses, tes coups de cœur…"
               rows={3}
-              className="w-full bg-slate-950 border border-slate-800 rounded-2xl p-3 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500"
+              className="w-full bg-canvas border border-line rounded-2xl p-3 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
             />
 
             <MediaUploader
@@ -234,7 +226,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                   setNewPostText('');
                   setNewPostMediaUrl('');
                 }}
-                className="text-xs text-slate-400 hover:text-white px-3 py-1.5 cursor-pointer"
+                className="text-xs text-muted hover:text-ink px-3 py-1.5 cursor-pointer"
               >
                 Annuler
               </button>
@@ -242,7 +234,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
               <button
                 type="submit"
                 disabled={!newPostText.trim()}
-                className="px-4 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 Publier
               </button>
@@ -253,25 +245,25 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
       {/* Initial Non-clickable Ad Banner (Section 11 Contractual Compliance) */}
       {activeAd && (
-        <div className="bg-slate-950 border border-slate-800/80 rounded-2xl p-3 overflow-hidden relative">
-          <div className="flex items-center justify-between text-[10px] text-slate-400 mb-2 font-medium">
-            <span className="uppercase tracking-wider">Publicité · Régie RED LOOP</span>
-            <span className="text-slate-400">Non cliquable</span>
+        <div className="bg-canvas border border-line/80 rounded-2xl p-3 overflow-hidden relative">
+          <div className="flex items-center justify-between text-[10px] text-muted mb-2 font-medium">
+            <span className="uppercase tracking-wider">Publicité · Exemple fictif</span>
+            <span className="text-muted">Non cliquable</span>
           </div>
           <div className="flex items-center gap-3">
             <SafeImage
               src={activeAd.imageUrl}
               alt={activeAd.advertiserName}
-              className="w-16 h-16 rounded-xl object-cover shrink-0 border border-slate-800"
+              className="w-16 h-16 rounded-xl object-cover shrink-0 border border-line"
             />
             <div className="flex-1 min-w-0">
               <span className="text-[10px] font-bold text-rose-400 block truncate">
                 {activeAd.advertiserName}
               </span>
-              <h4 className="text-xs font-bold text-white leading-tight mt-0.5">
+              <h4 className="text-xs font-bold text-ink leading-tight mt-0.5">
                 {activeAd.bannerTitle}
               </h4>
-              <p className="text-[11px] text-slate-400 mt-1 line-clamp-1">
+              <p className="text-[11px] text-muted mt-1 line-clamp-1">
                 {activeAd.bannerSubtitle}
               </p>
             </div>
@@ -281,24 +273,24 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
       {/* Posts List or Empty Filter State */}
       {filteredPosts.length === 0 ? (
-        <div className="p-8 text-center bg-slate-900 border border-slate-800 rounded-3xl space-y-3">
-          <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-slate-800 text-slate-400 flex items-center justify-center mx-auto">
+        <div className="p-8 text-center bg-surface border border-line rounded-3xl space-y-3">
+          <div className="w-12 h-12 rounded-2xl bg-canvas border border-line text-muted flex items-center justify-center mx-auto">
             <Filter className="w-6 h-6" />
           </div>
-          <h3 className="text-sm font-bold text-white">Aucune publication pour ces types de lieux</h3>
-          <p className="text-xs text-slate-400 max-w-xs mx-auto">
+          <h3 className="text-sm font-bold text-ink">Aucune publication pour ces types de lieux</h3>
+          <p className="text-xs text-muted max-w-xs mx-auto">
             Soyez le premier à explorer un lieu de cette catégorie et à partager votre visite vérifiée !
           </p>
           <div className="flex items-center justify-center gap-2 pt-2">
             <button
               onClick={handleResetFilters}
-              className="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-xl cursor-pointer"
+              className="px-3.5 py-2 bg-soft hover:bg-raised text-body text-xs font-semibold rounded-xl cursor-pointer"
             >
               Afficher toutes les publications
             </button>
             <button
               onClick={onOpenCheckin}
-              className="px-3.5 py-2 bg-rose-900 hover:bg-rose-800 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer"
+              className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md cursor-pointer"
             >
               Faire un check-in
             </button>
@@ -312,7 +304,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
             return (
               <article
                 key={post.id}
-                className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-sm"
+                className="bg-surface border border-line rounded-3xl overflow-hidden shadow-sm"
               >
                 {/* Post Header */}
                 <div className="p-3.5 sm:p-4 flex items-center justify-between">
@@ -320,14 +312,14 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                     <SafeImage
                       src={post.authorAvatar}
                       alt={post.authorName}
-                      className="w-9 h-9 rounded-xl object-cover border border-slate-700 shrink-0"
+                      className="w-9 h-9 rounded-xl object-cover border border-line-strong shrink-0"
                     />
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="text-xs font-bold text-white">{post.authorName}</span>
-                        <span className="text-[10px] text-slate-400">@{post.authorUsername}</span>
+                        <span className="text-xs font-bold text-ink">{post.authorName}</span>
+                        <span className="text-[10px] text-muted">@{post.authorUsername}</span>
                       </div>
-                      <span className="text-[10px] text-slate-400">{post.createdAt}</span>
+                      <span className="text-[10px] text-muted">{post.createdAt}</span>
                     </div>
                   </div>
 
@@ -344,7 +336,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                   <div className="px-4 pb-2">
                     <button
                       onClick={() => post.linkedPlaceId && onSelectPlace(post.linkedPlaceId)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-950 border border-slate-800 text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-canvas border border-line text-xs font-semibold text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
                     >
                       <MapPin className="w-3.5 h-3.5 text-rose-500" />
                       <span>{post.linkedPlaceName}</span>
@@ -354,31 +346,32 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
                 {/* Text */}
                 <div className="px-4 pb-3">
-                  <p className="text-xs text-slate-200 leading-relaxed whitespace-pre-line">
+                  <p className="text-xs text-body leading-relaxed whitespace-pre-line">
                     {post.text}
                   </p>
                 </div>
 
                 {/* Media */}
                 {post.mediaUrl && (
-                  <div className="aspect-video w-full bg-slate-950 overflow-hidden">
+                  <div className="w-full bg-canvas overflow-hidden [&>img]:aspect-[3/2]">
                     <SafeImage
                       src={post.mediaUrl}
                       alt=""
                       className="w-full h-full object-cover"
                     />
+                    {post.mediaUrl.startsWith('/illustrations/') && <p className="media-disclosure">Illustration de démonstration · lieu fictif{post.mediaUrl.endsWith('.png') ? ' · image générée par IA' : ''}</p>}
                   </div>
                 )}
 
                 {/* Actions Footer */}
-                <div className="p-3 sm:p-4 border-t border-slate-800/80 flex items-center justify-between">
+                <div className="p-3 sm:p-4 border-t border-line/80 flex items-center justify-between">
                   <div className="flex items-center gap-4">
                     <button
                       onClick={() => likePost(post.id)}
                       className={`flex items-center gap-1.5 text-xs font-semibold transition-colors cursor-pointer ${
                         post.isLikedByCurrentUser
                           ? 'text-rose-500'
-                          : 'text-slate-400 hover:text-slate-200'
+                          : 'text-muted hover:text-body'
                       }`}
                     >
                       <Heart className={`w-4 h-4 ${post.isLikedByCurrentUser ? 'fill-current' : ''}`} />
@@ -387,7 +380,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
                     <button
                       onClick={() => setActiveCommentPostId(activeCommentPostId === post.id ? null : post.id)}
-                      className="flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors cursor-pointer"
+                      className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-body transition-colors cursor-pointer"
                     >
                       <MessageCircle className="w-4 h-4" />
                       <span>{post.commentsCount}</span>
@@ -406,14 +399,14 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
 
                 {/* Comments Section */}
                 {activeCommentPostId === post.id && (
-                  <div className="p-3.5 bg-slate-950/60 border-t border-slate-800/80 space-y-2.5">
+                  <div className="p-3.5 bg-canvas/60 border-t border-line/80 space-y-2.5">
                     {post.comments.length > 0 && (
                       <div className="space-y-2">
                         {post.comments.map((c) => (
-                          <div key={c.id} className="text-xs text-slate-300 flex items-start gap-2">
+                          <div key={c.id} className="text-xs text-body flex items-start gap-2">
                             <SafeImage src={c.authorAvatar} alt="" className="w-5 h-5 rounded-md object-cover mt-0.5" />
                             <div>
-                              <span className="font-bold text-white mr-1.5">{c.authorName}:</span>
+                              <span className="font-bold text-ink mr-1.5">{c.authorName}:</span>
                               <span>{c.text}</span>
                             </div>
                           </div>
@@ -428,11 +421,11 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace, onOpenCheckin
                         onChange={(e) => setCommentInput(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSendComment(post.id)}
                         placeholder="Ajouter un commentaire..."
-                        className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500"
+                        className="flex-1 bg-canvas border border-line rounded-xl px-3 py-1.5 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
                       />
                       <button
                         onClick={() => handleSendComment(post.id)}
-                        className="p-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl transition-colors cursor-pointer"
+                        className="p-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition-colors cursor-pointer"
                       >
                         <Send className="w-3.5 h-3.5" />
                       </button>

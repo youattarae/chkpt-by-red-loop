@@ -83,43 +83,43 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
     <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-6 pb-24">
       
       {/* Header Banner */}
-      <div className="p-4 rounded-3xl bg-gradient-to-r from-blue-950/80 via-slate-900 to-rose-950/60 border border-slate-800">
+      <div className="p-4 rounded-3xl bg-gradient-to-r from-blue-950/80 via-surface to-rose-950/60 border border-line">
         <div className="flex items-center gap-2 text-rose-500 text-xs font-bold uppercase tracking-wider mb-1">
           <Compass className="w-4 h-4" />
           <span>Guide & Sorties · {selectedZone}</span>
         </div>
-        <h2 className="text-base font-extrabold text-white tracking-tight">
+        <h2 className="text-base font-extrabold text-ink tracking-tight">
           L'Agenda & Les Bonnes Adresses
         </h2>
-        <p className="text-xs text-slate-300 mt-1">
+        <p className="text-xs text-body mt-1">
           Une sélection fictive pour imaginer vos prochaines sorties à Cocody.
         </p>
       </div>
 
       {/* Google Maps Grounding Search (Gemini 3.8 Flash) */}
-      <div className="bg-slate-900 border border-slate-800 rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3">
+      <div className="bg-surface border border-line rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-amber-400" />
-          <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          <h3 className="text-xs font-bold text-ink uppercase tracking-wider">
             Recherche Intelligente Lieux & Événements
           </h3>
         </div>
 
         <form onSubmit={handleSearchGrounding} className="flex gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-3" />
+            <Search className="w-4 h-4 text-muted absolute left-3 top-3" />
             <input
               type="text"
               value={groundingQuery}
               onChange={(e) => setGroundingQuery(e.target.value)}
               placeholder="Où manger un poisson braisé ce soir à Saint-Jean ?"
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-500"
+              className="w-full bg-canvas border border-line rounded-xl pl-9 pr-3 py-2 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
             />
           </div>
           <button
             type="submit"
             disabled={isSearchingGrounding}
-            className="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition-colors flex items-center gap-1 cursor-pointer"
+            className="px-3.5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-md transition-colors flex items-center gap-1 cursor-pointer"
           >
             {isSearchingGrounding ? (
               <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -130,14 +130,14 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
         </form>
 
         {groundingResult && (
-          <div className="p-3 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-2">
-            <p className="text-slate-200 leading-relaxed whitespace-pre-line">
+          <div className="p-3 rounded-2xl bg-canvas border border-line text-xs space-y-2">
+            <p className="text-body leading-relaxed whitespace-pre-line">
               {groundingResult.text}
             </p>
 
             {groundingResult.groundedPlaces.length > 0 && (
-              <div className="pt-2 border-t border-slate-800/80 space-y-1">
-                <span className="text-[10px] text-slate-400 font-bold uppercase">Sources Google Maps :</span>
+              <div className="pt-2 border-t border-line/80 space-y-1">
+                <span className="text-[10px] text-muted font-bold uppercase">Sources Google Maps :</span>
                 <div className="flex flex-wrap gap-1.5">
                   {groundingResult.groundedPlaces.map((gp, idx) => (
                     <a
@@ -145,7 +145,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                       href={gp.uri}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-blue-400 hover:text-blue-300 text-[11px]"
+                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface border border-line-strong text-blue-400 hover:text-blue-300 text-[11px]"
                     >
                       <span>{gp.title}</span>
                       <ExternalLink className="w-3 h-3" />
@@ -163,20 +163,20 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Calendar className="w-4 h-4 text-rose-500" />
-            <h3 className="text-sm font-bold text-white tracking-tight">
+            <h3 className="text-sm font-bold text-ink tracking-tight">
               Événements de la Semaine
             </h3>
           </div>
-          <span className="text-[10px] text-slate-400 uppercase font-semibold">Abidjan GMT</span>
+          <span className="text-[10px] text-muted uppercase font-semibold">Abidjan GMT</span>
         </div>
 
         <div className="space-y-3">
           {events.map((evt) => (
             <div
               key={evt.id}
-              className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-sm flex flex-col sm:flex-row"
+              className="bg-surface border border-line rounded-3xl overflow-hidden shadow-sm flex flex-col sm:flex-row"
             >
-              <div className="sm:w-40 aspect-video sm:aspect-auto bg-slate-950 shrink-0">
+              <div className="sm:w-40 aspect-video sm:aspect-auto bg-canvas shrink-0">
                 <SafeImage
                   src={evt.coverImage}
                   alt={evt.title}
@@ -188,23 +188,23 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                 <div>
                   <div className="flex items-center justify-between text-[11px] text-rose-400 font-semibold mb-1">
                     <span>{new Date(evt.utcDate).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'Africa/Abidjan' })} · {evt.timeLabel}</span>
-                    <span className="text-slate-400 font-normal">{evt.priceLabel}</span>
+                    <span className="text-muted font-normal">{evt.priceLabel}</span>
                   </div>
 
-                  <h4 className="text-xs font-bold text-white">{evt.title}</h4>
+                  <h4 className="text-xs font-bold text-ink">{evt.title}</h4>
                   
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400 mt-0.5">
-                    <MapPin className="w-3 h-3 text-slate-400" />
+                  <div className="flex items-center gap-1 text-[11px] text-muted mt-0.5">
+                    <MapPin className="w-3 h-3 text-muted" />
                     <span>{evt.locationName} ({evt.commune})</span>
                   </div>
 
-                  <p className="text-[11px] text-slate-300 mt-1.5 line-clamp-2">
+                  <p className="text-[11px] text-body mt-1.5 line-clamp-2">
                     {evt.description}
                   </p>
                 </div>
 
-                <div className="flex flex-wrap gap-3 items-center justify-between pt-3 border-t border-slate-800/80 mt-2">
-                  <span className="text-[10px] text-slate-400 font-medium">
+                <div className="flex flex-wrap gap-3 items-center justify-between pt-3 border-t border-line/80 mt-2">
+                  <span className="text-[10px] text-muted font-medium">
                     {evt.goingCount} participants · {evt.interestedCount} intéressés
                   </span>
 
@@ -215,7 +215,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                         evt.userIntent === 'interested'
                           ? 'bg-blue-950 text-blue-300 border border-blue-800'
-                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                          : 'bg-canvas text-muted hover:text-ink border border-line'
                       }`}
                     >
                       Ça m'intéresse
@@ -226,7 +226,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                       className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                         evt.userIntent === 'going'
                           ? 'bg-rose-950 text-rose-300 border border-rose-800'
-                          : 'bg-slate-950 text-slate-400 hover:text-white border border-slate-800'
+                          : 'bg-canvas text-muted hover:text-ink border border-line'
                       }`}
                     >
                       J'y serai
@@ -244,7 +244,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-amber-500" />
-          <h3 className="text-sm font-bold text-white tracking-tight">
+          <h3 className="text-sm font-bold text-ink tracking-tight">
             Rooftops & Cocktails avec Vue Lagune
           </h3>
         </div>
@@ -254,9 +254,9 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
             <div
               key={place.id}
               onClick={() => onSelectPlace(place.id)}
-              className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
+              className="bg-surface border border-line rounded-3xl overflow-hidden cursor-pointer hover:border-line-strong transition-all group"
             >
-              <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
+              <div className="aspect-video w-full bg-canvas overflow-hidden relative">
                 <SafeImage
                   src={place.coverImage}
                   alt={place.name}
@@ -267,8 +267,8 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                 </span>
               </div>
               <div className="p-3">
-                <h4 className="text-xs font-bold text-white truncate">{place.name}</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                <h4 className="text-xs font-bold text-ink truncate">{place.name}</h4>
+                <p className="text-[11px] text-muted mt-0.5 truncate">
                   {place.neighborhood} ({place.commune})
                 </p>
               </div>
@@ -281,7 +281,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
       <div className="space-y-3">
         <div className="flex items-center gap-2">
           <Flame className="w-4 h-4 text-rose-500" />
-          <h3 className="text-sm font-bold text-white tracking-tight">
+          <h3 className="text-sm font-bold text-ink tracking-tight">
             Maquis Réputés & Braisés d'Exception
           </h3>
         </div>
@@ -291,9 +291,9 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
             <div
               key={place.id}
               onClick={() => onSelectPlace(place.id)}
-              className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden cursor-pointer hover:border-slate-700 transition-all group"
+              className="bg-surface border border-line rounded-3xl overflow-hidden cursor-pointer hover:border-line-strong transition-all group"
             >
-              <div className="aspect-video w-full bg-slate-950 overflow-hidden relative">
+              <div className="aspect-video w-full bg-canvas overflow-hidden relative">
                 <SafeImage
                   src={place.coverImage}
                   alt={place.name}
@@ -304,8 +304,8 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                 </span>
               </div>
               <div className="p-3">
-                <h4 className="text-xs font-bold text-white truncate">{place.name}</h4>
-                <p className="text-[11px] text-slate-400 mt-0.5 truncate">
+                <h4 className="text-xs font-bold text-ink truncate">{place.name}</h4>
+                <p className="text-[11px] text-muted mt-0.5 truncate">
                   {place.neighborhood} ({place.commune})
                 </p>
               </div>

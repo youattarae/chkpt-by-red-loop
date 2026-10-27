@@ -1,3 +1,12 @@
+# Direction visuelle du 27 octobre 2026
+
+- Les décisions utilisateur les plus récentes priment sur les passages historiques : interface claire par défaut, sombre au choix, CHKPT seul, slogan en communication, symbole pour le check-in.
+- Couleurs sémantiques `canvas`, `surface`, `ink`, `body`, `muted`, `line` : les anciennes classes slate sont remplacées selon leur rôle pour éviter une inversion globale des images et du texte des boutons.
+- Préférence de thème appliquée avant le montage React, indépendante du système, enregistrée localement avec gestion du stockage indisponible. Aucune nouvelle dépendance.
+- Un seul asset vectoriel simplifié pour le symbole fourni en référence ; fichier maître attendu pour une fidélité exacte. Une image IA locale et signalée pour le lieu fictif du scénario. Aucune dépendance réseau ajoutée.
+- Aucun changement aux autorisations serveur, calculs XP, endpoints de check-in ou aux protections du Lot A. Une publication synthétique de départ ajoutée sans XP ; les contenus locaux existants sont préservés.
+- Voir `docs/DIRECTION_VISUELLE_2026_10.md` et la recette visuelle à 320/390/1280 pixels.
+
 # Décisions des lots B, C et D
 
 - `/api/demo/start` reprend les protections de reset (démo privée + opérateur). Il réinitialise les données fictives
