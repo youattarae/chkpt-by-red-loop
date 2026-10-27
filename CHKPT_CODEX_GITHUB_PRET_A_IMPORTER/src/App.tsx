@@ -19,9 +19,10 @@ import { SortirView } from './components/sortir/SortirView';
 import { ProfileView } from './components/profile/ProfileView';
 import { BadgesView } from './components/badges/BadgesView';
 import { OperatorConsole } from './components/operator/OperatorConsole';
+import { SettingsModal } from './components/common/SettingsModal';
 
 const AppContent: React.FC = () => {
-  const { isOperatorView, places, dismissToastNotification } = useStore();
+  const { isOperatorView, setIsOperatorView, places, dismissToastNotification } = useStore();
 
   const [activeTab, setActiveTab] = useState<MainTab>('feed');
   const [isCheckinOpen, setIsCheckinOpen] = useState(false);
@@ -30,6 +31,7 @@ const AppContent: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesViewOpen, setIsBadgesViewOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   const selectedPlace = places.find(p => p.id === selectedPlaceIdForDetail) || null;
 
@@ -39,13 +41,13 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans selection:bg-rose-900 selection:text-ink">
+    <div className="min-h-screen bg-canvas text-ink flex flex-col font-sans selection:bg-rose-900 selection:text-white">
       
       <div className="demo-ribbon"><span className="demo-dot" /> Mode démonstration · données fictives</div>
       {/* Contractual Header */}
       <Header
         onOpenNotifications={() => setIsNotificationsOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
+        onGoHome={() => { dismissToastNotification(); setIsOperatorView(false); setIsBadgesViewOpen(false); setActiveTab('feed'); }}
       />
 
       {/* In-App Toast Notification */}
@@ -66,6 +68,7 @@ const AppContent: React.FC = () => {
                   setPreselectedPlaceIdForCheckin(null);
                   setIsCheckinOpen(true);
                 }}
+                onOpenCheckinHere={handleOpenCheckinWithPlace}
               />
             )}
 
@@ -87,6 +90,7 @@ const AppContent: React.FC = () => {
                 onOpenBadges={() => setIsBadgesViewOpen(true)}
                 onSelectPlace={(id) => setSelectedPlaceIdForDetail(id)}
                 onOpenAuth={() => setIsAuthOpen(true)}
+                onOpenSettings={() => { dismissToastNotification(); setIsSettingsOpen(true); }}
               />
             )}
           </>
@@ -136,6 +140,7 @@ const AppContent: React.FC = () => {
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
       />
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
     </div>
   );

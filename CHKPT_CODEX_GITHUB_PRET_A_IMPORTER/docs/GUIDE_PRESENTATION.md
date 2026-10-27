@@ -12,7 +12,7 @@ Les lieux, personnes, statistiques, événements et points montrés sont fictifs
    et définir `CHKPT_DEMO_ADMIN_PASSWORD` avec un mot de passe personnel d'au moins 16 caractères.
    Garder `HOST=127.0.0.1`. `.env` est ignoré par Git. Ne pas recopier ce mot de passe dans le code.
 5. Exécuter `npm run demo` et ouvrir l'application locale sur le port indiqué dans le terminal.
-6. Ouvrir le bouton d'avatar « Profil & Compte Démo », onglet Connexion.
+6. Ouvrir **Profil → Gérer mon compte**, puis l’onglet Connexion.
    Se connecter avec `redloop_admin` et le mot de passe défini à l'étape 4.
 7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**.
    Cette action protégée réinitialise le jeu fictif et connecte Koffi, le personnage de la présentation.
@@ -24,9 +24,9 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 
 | Temps | Geste | Phrase proposée |
 |---|---|---|
-| 0:00–0:25 | Montrer l'accueil, puis le fil sous l'illustration. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
+| 0:00–0:25 | Montrer l’accueil, les onglets Pour toi / Amis et les publications illustrées. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
 | 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
-| 0:55–1:25 | Faire un check-in ici → Simuler ma visite. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
+| 0:55–1:25 | Faire un check-in ici → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
 | 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
 | 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
 | 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
@@ -59,7 +59,7 @@ Un rechargement conserve publications, badge et intentions dans le même navigat
 ## Si quelque chose bloque
 
 - **Connexion refusée** : vérifier l'activation privée et le mot de passe local ; les anciens identifiants de seed sont désactivés.
-- **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans le simulateur du bandeau, rouvrir la fiche du maquis.
+- **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans Profil → Réglages → Position, rouvrir la fiche du maquis.
 - **Visite déjà validée** : recommencer via l'opérateur, pas en insistant sur Confirmer.
 - **Serveur indisponible** : passer au fichier de secours. Dire : « Voici des captures du parcours testé ; ce n'est pas une session en direct. »
 
@@ -88,7 +88,7 @@ Le projet reste un prototype privé, pas une application de production ni une va
 
 ## Habillage CHKPT actualisé
 
-L’interface s’ouvre sur fond blanc. Le bouton lune en haut permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
+L’interface s’ouvre sur fond blanc. Profil → Réglages permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
 
 Voir les [captures réelles et les choix visuels](DIRECTION_VISUELLE_2026_10.md). Les affichages sont contrôlés à 320, 390 et 1280 pixels, dans les deux thèmes. Une répétition reste nécessaire sur le Windows d’Ingrid ; aucun essai sur une machine Windows physique n’est revendiqué.
 
@@ -106,3 +106,5 @@ NODE_ENV=production npm run dev
 Il s'agit seulement du mode de service des fichiers compilés : le prototype ne devient pas une application de production. Après redémarrage, les comptes de seed doivent se reconnecter. Une visite déjà comptée reste comptée ; seul l'opérateur peut relancer le scénario fictif avec Démarrer la démo.
 
 Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.
+
+Les réglages de thème, commune et position sont regroupés dans **Profil → Réglages**. L’en-tête conserve le symbole, le bouton GPS et la cloche de notifications. Les cartes de l’accueil proposent aussi un bouton **Check** qui présélectionne leur lieu ; le bouton suivant est **Confirmer le check**.

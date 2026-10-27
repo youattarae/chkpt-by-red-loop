@@ -1,3 +1,4 @@
+import { toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -30,7 +31,7 @@ export async function checkProfile(url: string, password: string) {
       const text = await firstPost.locator('p').filter({ hasText: 'Une belle découverte' }).innerText();
       await page.getByText(/1240 XP au total/).waitFor();
       for (const theme of ['light', 'dark']) {
-        if (theme === 'dark') await page.getByRole('button', { name: 'Mode sombre', exact: true }).click();
+        if (theme === 'dark') await toggleTheme(page);
         await page.evaluate(() => document.fonts.ready);
         await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
         for (const tab of ['Lieux enregistrés', 'Badges', 'Publications']) {
@@ -83,7 +84,7 @@ export async function checkProfile(url: string, password: string) {
         await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
         const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
         await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
-        await dialog.getByRole('button', { name: 'Simuler ma visite', exact: true }).click();
+        await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).click();
         await dialog.getByRole('heading', { name: 'Visite simulée enregistrée !', exact: true }).waitFor();
         await dialog.getByRole('button', { name: 'Plus tard (Terminer)', exact: true }).click();
         await page.getByRole('button', { name: 'Profil', exact: true }).click();

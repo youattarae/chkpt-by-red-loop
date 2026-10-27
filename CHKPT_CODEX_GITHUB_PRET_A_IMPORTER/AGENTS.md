@@ -7,10 +7,11 @@
 - Toute action de démonstration doit être explicitement identifiée comme simulée ou fondée sur des données fictives.
 
 ## Règles produit non négociables
-- **Décision utilisateur du 27 octobre 2026 (prioritaire sur les références historiques ci-dessous)** : interface blanche au premier lancement, mode sombre au choix mémorisé ; CHKPT seul en en-tête, aucune signature « by RED LOOP » dans l'interface ; slogan réservé à la communication. Le bouton central de check-in utilise le symbole CHKPT, avec libellé conservé. Voir `docs/DIRECTION_VISUELLE_2026_10.md` pour les choix et les limites des assets.
+- **Décision utilisateur du 27 octobre 2026 (prioritaire sur les références historiques ci-dessous)** : interface blanche au premier lancement ; mode sombre mémorisé dans Profil → Réglages ; en-tête limité au symbole CHKPT, au GPS et aux notifications, sans lettres ni commune. Aucune signature « by RED LOOP » dans l'interface ; slogan réservé à la communication. Le bouton central de check-in utilise le symbole CHKPT, avec libellé conservé. Voir `docs/DIRECTION_VISUELLE_2026_10.md` pour les choix et les limites des assets.
 - CHKPT = application grand public ; RED LOOP = écosystème / structure de projet. Slogan CHKPT : « Sors. Check. Partage. ».
 - Navigation : Accueil, Carte, Check-in central, Sortir, Profil.
 - Accueil : Pour toi + Amis. Nearby reste sur Carte ; tendances dans Sortir.
+- Le bouton de confirmation du check-in porte le texte « Confirmer le check » (demande utilisateur du 27 octobre 2026). La mention de position simulée et de données fictives reste visible en démonstration ; le changement de texte ne modifie pas les contrôles serveur.
 - Check-in distinct d'une publication facultative ; pas de post automatique. Simulation GPS de présentation explicite.
 - 8 familles de badges ; ne pas inventer que les 40 badges complets sont implémentés.
 - Publicités non cliquables, avec mention « Publicité » ; aucune publicité sur Carte.

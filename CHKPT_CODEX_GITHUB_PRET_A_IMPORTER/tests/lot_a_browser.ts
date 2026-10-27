@@ -1,3 +1,4 @@
+import { openAccount } from './browser_ui';
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { chromium } from 'playwright';
@@ -28,7 +29,7 @@ export async function checkBrowser(url: string) {
       const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
       assert.match(await dialog.getByRole('button', { pressed: true }).innerText(), /Maquis L'Étoile/);
       const sent = page.waitForRequest(request => request.url().endsWith('/api/checkins') && request.method() === 'POST');
-      await dialog.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
+      await dialog.getByRole('button', { name: 'Confirmer le check' }).click();
       const payload = (await sent).postDataJSON();
       assert.equal(payload.placeId, 'plc_maquis_etoile');
       assert.equal(payload.isSimulated, true);
@@ -40,15 +41,15 @@ export async function checkBrowser(url: string) {
       await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
       assert.match(await dialog.getByRole('button', { pressed: true }).innerText(), /Atelier Café/);
       const second = page.waitForRequest(request => request.url().endsWith('/api/checkins') && request.method() === 'POST');
-      await dialog.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
+      await dialog.getByRole('button', { name: 'Confirmer le check' }).click();
       assert.equal((await second).postDataJSON().placeId, 'plc_cafe_atelier');
       await dialog.getByRole('heading', { name: 'Présence non confirmée' }).waitFor();
       await dialog.getByRole('button', { name: 'Fermer le check-in' }).click();
       await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
-      await dialog.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).waitFor();
+      await dialog.getByRole('button', { name: 'Confirmer le check' }).waitFor();
       assert.equal(await dialog.getByRole('heading', { name: 'Présence non confirmée' }).count(), 0);
       await dialog.getByRole('button', { name: 'Fermer le check-in' }).click();
-      await page.getByTitle('Profil & Compte Démo').click();
+      await openAccount(page);
       await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
       await page.getByRole('button', { name: 'Réinitialiser le scénario Pitch (Démo vierge)' }).click();
       await page.getByText(/Erreur lors de la réinitialisation/).waitFor();

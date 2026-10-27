@@ -1,0 +1,39 @@
+import { useEffect } from 'react';
+import { X, Shield } from 'lucide-react';
+import { useStore } from '../../services/store';
+import { LocationControls } from './LocationControls';
+import { ThemeToggle } from './ThemeToggle';
+
+export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { currentUser, selectedZone, setSelectedZone, isOperatorView, setIsOperatorView } = useStore();
+  useEffect(() => {
+    if (!isOpen) return;
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape') onClose(); };
+    document.addEventListener('keydown', close);
+    return () => document.removeEventListener('keydown', close);
+  }, [isOpen, onClose]);
+  if (!isOpen) return null;
+  const operator = ['admin', 'superadmin', 'moderator'].includes(currentUser.role);
+  return <div role="dialog" aria-modal="true" aria-label="Réglages" className="fixed inset-0 z-50 bg-black/60 p-3 flex items-center justify-center">
+    <div className="bg-surface text-ink border border-line rounded-3xl w-full max-w-md max-h-[90dvh] overflow-y-auto p-5 space-y-5">
+      <div className="flex items-center justify-between"><h2 className="text-lg font-bold">Réglages</h2><button type="button" onClick={onClose} aria-label="Fermer les réglages" className="p-2 rounded-xl bg-soft cursor-pointer"><X className="w-4 h-4" /></button></div>
+      <section aria-label="Apparence" className="space-y-3">
+        <h3 className="text-xs font-bold text-muted uppercase tracking-wider">Apparence</h3>
+        <div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold">Mode sombre</span><ThemeToggle /></div>
+      </section>
+      <section aria-label="Découverte" className="space-y-3 border-t border-line pt-4">
+        <h3 className="text-xs font-bold text-muted uppercase tracking-wider">Découverte</h3>
+        <label className="flex items-center justify-between gap-3 text-sm">Commune
+          <select value={selectedZone} onChange={event => setSelectedZone(event.target.value)} className="bg-soft border border-line rounded-xl px-3 py-2 text-sm">
+            {['Cocody', 'Plateau', 'Marcory'].map(zone => <option key={zone}>{zone}</option>)}
+          </select>
+        </label>
+      </section>
+      <section aria-label="Position" className="space-y-3 border-t border-line pt-4">
+        <h3 className="text-xs font-bold text-muted uppercase tracking-wider">Position</h3>
+        <LocationControls />
+      </section>
+      {operator && <button type="button" onClick={() => { setIsOperatorView(!isOperatorView); onClose(); }} className="w-full flex items-center justify-center gap-2 bg-soft rounded-xl p-3 text-sm font-semibold cursor-pointer"><Shield className="w-4 h-4" />Console opérateur</button>}
+    </div>
+  </div>;
+}

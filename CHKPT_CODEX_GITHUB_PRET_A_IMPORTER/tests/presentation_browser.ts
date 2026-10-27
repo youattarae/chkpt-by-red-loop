@@ -1,3 +1,4 @@
+import { openAccount, toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -17,7 +18,7 @@ export async function checkPresentation(url: string, password: string) {
       await page.goto(url);
       // Exercise the entire scenario in light on mobile and dark on desktop.
       const theme = width === 1280 ? 'dark' : 'light';
-      if (theme === 'dark') await page.getByRole('button', { name: 'Mode sombre', exact: true }).click();
+      if (theme === 'dark') await toggleTheme(page);
       async function capture(name: string) {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForFunction(() => [...document.images].every(image => image.complete));
@@ -30,13 +31,13 @@ export async function checkPresentation(url: string, password: string) {
       }
       await capture('accueil');
       async function start() {
-        await page.getByTitle('Profil & Compte Démo').click();
+        await openAccount(page);
         await page.getByRole('button', { name: 'Connexion', exact: true }).click();
         await page.getByPlaceholder('ex: koffi_urbex').fill('redloop_admin');
         await page.locator('input[type=password]').fill(password);
         await page.getByRole('button', { name: /Se connecter/ }).click();
         await page.waitForTimeout(1200);
-        await page.getByTitle('Profil & Compte Démo').click();
+        await openAccount(page);
         await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
         await page.getByRole('button', { name: 'Démarrer la démo', exact: true }).click();
         await page.getByRole('button', { name: 'Carte', exact: true }).waitFor();
@@ -49,7 +50,8 @@ export async function checkPresentation(url: string, password: string) {
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
         await capture('fiche');
         await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
-        await page.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
+        await capture('check-confirm');
+        await page.getByRole('button', { name: 'Confirmer le check' }).click();
         await page.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();
         await page.getByText('Nouveau Badge débloqué : Initié du Braisé !').waitFor();
       }

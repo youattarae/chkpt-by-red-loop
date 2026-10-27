@@ -10,6 +10,8 @@ Interface claire par défaut, mode sombre au choix, symbole CHKPT pour le bouton
 
 Le [profil social actualisé](docs/PROFIL_SOCIAL.md) rassemble la présentation du compte, trois compteurs et les onglets Publications, Lieux enregistrés et Badges. Les visites et les XP restent accessibles dans un volet secondaire.
 
+L'[accueil social actualisé](docs/ACCUEIL_SOCIAL.md) propose Pour toi et Amis, des cartes cohérentes avec le profil et des illustrations locales générées pour les publications fictives. Le bouton de validation s'intitule Confirmer le check.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

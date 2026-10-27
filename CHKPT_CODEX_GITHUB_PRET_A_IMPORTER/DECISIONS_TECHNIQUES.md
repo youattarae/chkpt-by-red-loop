@@ -1,3 +1,12 @@
+# Accueil, confirmation et illustrations — 27 octobre 2026
+
+- En-tête limité au symbole, au GPS et aux notifications. Thème, commune, position et accès opérateur regroupés dans les réglages du profil ; compte accessible depuis Gérer mon compte. Le bouton Check des publications présélectionne leur lieu via le même handler que la carte.
+- Accueil limité aux onglets Pour toi et Amis, avec navigation clavier. Les catégories restent disponibles via Filtrer. Les comptes visibles et leurs compteurs sont calculés à partir des publications accessibles pour ce compte et cet onglet.
+- Un composant `PublicationCard` commun au fil et au profil conserve les actions réelles et les mentions de confidentialité / démonstration. Le contenu textuel précède le média, comme dans la référence visuelle.
+- Le libellé devient Confirmer le check dans les deux modes GPS. Les mentions de simulation et les règles serveur restent inchangées.
+- Deux nouvelles illustrations IA locales complètent le maquis. `publicationMedia.ts` adapte uniquement les anciens chemins d'illustrations fictives pour les caches existants, sans réécrire les publications ni les URL des médias importés. Une image de secours conserve une légende générique.
+- La recette du fil vérifie aussi le cas sans abonnement réel (Koffi) et le cas avec relation existante (Sarah suit Koffi), sans inventer de relations à partir des compteurs fictifs.
+
 # Disposition du profil — 27 octobre 2026
 
 - En-tête personnel allégé avec avatar rond, identité et trois compteurs issus des données actuelles. Publications sélectionnées par défaut ; lieux enregistrés et badges disponibles par onglets. Les visites et le journal XP sont conservés dans un volet secondaire.

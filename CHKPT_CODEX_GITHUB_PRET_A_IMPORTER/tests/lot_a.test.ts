@@ -236,6 +236,8 @@ try {
     await check('Mode dev : confirmation persistante, aucune recharge pour les données et HMR source conservé', checkDevStability);
     const { checkProfile } = await import('./profile_browser');
     await check('Profil social : onglets, interactions partagées, historique et gestion du compte', () => checkProfile(demo.url, password));
+    const { checkFeed } = await import('./feed_browser');
+    await check('Accueil social : deux onglets, visuels locaux, filtres et confirmation du check', () => checkFeed(demo.url, password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

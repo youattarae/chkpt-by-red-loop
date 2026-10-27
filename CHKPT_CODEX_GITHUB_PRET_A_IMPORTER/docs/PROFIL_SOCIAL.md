@@ -6,8 +6,9 @@ La disposition du profil est revue à la demande du porteur : avatar rond, nom e
 
 - **Présentation** : avatar entouré des couleurs CHKPT, nom, identifiant, bio, zone et abonnements. Un profil privé conserve une indication visible.
 - **Compteurs** : Checks (compteur du profil), Badges (trophées actuellement débloqués) et Abonnés. Aucun chiffre n'est augmenté pour correspondre à la référence.
+- **Réglages** : bouton engrenage du profil, avec thème, commune et position.
 - **Gérer mon compte** : accès à la fenêtre de compte existante, avec connexion et outils de démo autorisés. L'édition des informations du profil ne fait pas partie de ce changement.
-- **Progression** : niveau et total XP restent visibles dans une ligne compacte. Le bouton à trois points ou la ligne XP ouvre le volet **Mon activité**, avec les visites et le journal des points.
+- **Progression** : niveau et total XP restent visibles dans une ligne compacte. La ligne XP ouvre le volet **Mon activité**, avec les visites et le journal des points.
 - **Publications** : onglet sélectionné à l'ouverture, avec auteur, texte, lieu et média. Les mentions de simulation, de confidentialité et d'illustration fictive restent conservées. Réactions et commentaires utilisent les mêmes données que le fil d'accueil.
 - **Lieux enregistrés** : lieux réellement enregistrés dans ce navigateur ; les cartes ouvrent leur fiche. Le signet d'une publication enregistre son lieu lié et porte un libellé explicite.
 - **Badges** : collection existante intégrée dans le profil, avec accès conservé à sa vue complète. Les onglets sont utilisables au clavier avec les flèches, Début et Fin.

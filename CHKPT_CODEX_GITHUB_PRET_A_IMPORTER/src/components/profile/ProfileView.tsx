@@ -1,17 +1,18 @@
 import React, { useId, useState } from 'react';
-import { MapPin, ChevronRight, Sparkles, MoreHorizontal, Settings, Lock, ChevronDown } from 'lucide-react';
+import { MapPin, ChevronRight, Sparkles, UserRound, Settings, Lock, ChevronDown } from 'lucide-react';
 import { useStore } from '../../services/store';
 import { SafeImage } from '../common/SafeImage';
 import { BadgesView } from '../badges/BadgesView';
-import { ProfilePostCard } from './ProfilePostCard';
+import { PublicationCard } from '../common/PublicationCard';
 
 interface ProfileViewProps {
   onOpenBadges: () => void;
   onSelectPlace: (placeId: string) => void;
   onOpenAuth: () => void;
+  onOpenSettings: () => void;
 }
 
-export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelectPlace, onOpenAuth }) => {
+export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelectPlace, onOpenAuth, onOpenSettings }) => {
   const { currentUser, checkins, places, savedPlaceIds, badges, pointsLedger, posts } = useStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'badges'>('posts');
   const [activityOpen, setActivityOpen] = useState(false);
@@ -32,8 +33,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
         <div className="min-w-0 flex-1 pt-1">
           <div className="flex items-start justify-between gap-2">
             <h1 className="text-lg sm:text-xl font-extrabold text-ink leading-tight break-words">{currentUser.displayName}</h1>
-            <button type="button" title="Historique et journal XP" aria-label="Afficher mon activité" aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}
-              onClick={() => setActivityOpen(!activityOpen)} className="shrink-0 p-1 rounded-lg text-muted hover:bg-soft cursor-pointer"><MoreHorizontal className="w-5 h-5" /></button>
+            <button type="button" title="Réglages" aria-label="Réglages" onClick={onOpenSettings} className="shrink-0 p-1 rounded-lg text-muted hover:bg-soft cursor-pointer"><Settings className="w-5 h-5" /></button>
           </div>
           <p className="text-xs text-muted mt-1 break-words">@{currentUser.username}</p>
           <p className="text-xs sm:text-sm text-body leading-relaxed mt-2 break-words">{currentUser.bio}</p>
@@ -48,10 +48,10 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
         <div className="px-2"><strong className="block text-lg font-extrabold text-ink">{currentUser.followersCount}</strong><span className="text-xs text-muted">Abonnés</span></div>
       </div>
 
-      <button type="button" onClick={onOpenAuth} className="w-full py-3 rounded-2xl bg-soft hover:bg-raised text-ink font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"><Settings className="w-4 h-4" />Gérer mon compte</button>
+      <button type="button" onClick={onOpenAuth} title="Profil & Compte Démo" className="w-full py-3 rounded-2xl bg-soft hover:bg-raised text-ink font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"><UserRound className="w-4 h-4" />Gérer mon compte</button>
 
       <div className="space-y-2">
-        <button type="button" onClick={() => setActivityOpen(!activityOpen)} aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}
+        <button type="button" aria-label="Afficher mon activité" onClick={() => setActivityOpen(!activityOpen)} aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}
           className="w-full flex flex-wrap items-center justify-between gap-2 text-xs text-muted cursor-pointer">
           <span className="flex items-center gap-1.5"><Sparkles className="w-3.5 h-3.5 text-blue-400" />Niveau {currentUser.level}</span>
           <span className="flex items-center gap-1.5">{currentUser.xpPoints} XP au total<ChevronDown className={`w-3.5 h-3.5 ${activityOpen ? 'rotate-180' : ''}`} /></span>
@@ -158,13 +158,13 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
       }}>
       {tabs.map(tab => <button type="button" key={tab.id} id={`${profileId}-tab-${tab.id}`} role="tab" aria-selected={activeTab === tab.id}
         aria-controls={`${profileId}-panel`} tabIndex={activeTab === tab.id ? 0 : -1} onClick={() => setActiveTab(tab.id)}
-        className={`profile-tab px-1 py-4 text-xs font-semibold cursor-pointer ${activeTab === tab.id ? 'is-active text-ink' : 'text-muted hover:text-ink'}`}>{tab.label}</button>)}
+        className={`social-tab px-1 py-4 text-xs font-semibold cursor-pointer ${activeTab === tab.id ? 'is-active text-ink' : 'text-muted hover:text-ink'}`}>{tab.label}</button>)}
     </div>
 
     <div role="tabpanel" id={`${profileId}-panel`} aria-labelledby={`${profileId}-tab-${activeTab}`} className="bg-soft/60 p-3 sm:p-4 min-h-48">
       {activeTab === 'posts' && <section aria-label="Mes publications" className="space-y-3">
         {myPosts.length === 0 ? <p className="bg-surface border border-line rounded-2xl p-6 text-sm text-muted text-center">Tes découvertes apparaîtront ici après ta première publication.</p>
-          : myPosts.map(post => <ProfilePostCard key={post.id} post={post} onSelectPlace={onSelectPlace} />)}
+          : myPosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />)}
       </section>}
       {activeTab === 'saved' && <section aria-label="Mes lieux enregistrés" className="space-y-3">
         {savedPlaces.length === 0 ? <p className="bg-surface border border-line rounded-2xl p-6 text-sm text-muted text-center">Aucun lieu enregistré pour le moment.</p>

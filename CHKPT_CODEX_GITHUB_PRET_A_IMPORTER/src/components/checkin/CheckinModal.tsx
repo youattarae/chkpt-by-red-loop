@@ -325,7 +325,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Crosshair className="w-4 h-4" />
-                <span>{activeLocationMode === 'simulation' ? 'Simuler ma visite' : 'Confirmer ma présence physique'}</span>
+                <span>Confirmer le check</span>
               </button>
             </div>
 

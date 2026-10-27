@@ -14,5 +14,7 @@ Le monogramme CP est remplacé, sur demande du porteur, par `public/brand/chkpt-
 
 `public/illustrations/maquis-demo.png` est une illustration photoréaliste générée par IA pour le lieu fictif du scénario. Elle est identifiée dans la fiche, les publications et le profil comme illustration de démonstration. Il ne s'agit pas d'une photographie d'un établissement réel ni d'une preuve de partenariat. Les autres SVG restent utilisés, notamment en secours.
 
+`rooftop-demo.png` (terrasse au coucher du soleil) et `culture-demo.png` (cour culturelle, peintures et céramiques) sont deux autres illustrations photoréalistes générées par IA à la demande du porteur. Les trois publications de départ utilisent ces visuels locaux, avec mention explicite de leur caractère fictif et de la génération par IA. Les anciens chemins d'illustrations présents dans les publications de démonstration déjà conservées dans le navigateur sont adaptés uniquement à l'affichage. Les médias importés gardent leurs URL ; les SVG originaux restent disponibles pour les autres écrans et le secours.
+
 Les captures de `docs/captures` montrent le navigateur pendant la recette automatisée, avec données fictives.
 Le fichier de secours contient ces mêmes captures ; il ne simule pas une session interactive.
