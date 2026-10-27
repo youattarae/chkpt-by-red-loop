@@ -23,12 +23,12 @@ async function stop(child: ChildProcess) {
   await exited;
   processes.delete(child);
 }
-async function start(name: string, demo: boolean) {
+async function start(name: string, demo: boolean, presentation = false) {
   const cwd = path.join(runtime, name);
   await mkdir(cwd, { recursive: true });
   // Production asset serving keeps API tests independent of the frontend build.
-  const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, 'server.ts')], {
-    cwd, env: { ...process.env, PORT: '0', HOST: '127.0.0.1', NODE_ENV: 'production',
+  const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, presentation ? 'scripts/present.mjs' : 'server.ts')], {
+    cwd, env: { ...process.env, PORT: '0', HOST: '127.0.0.1', NODE_ENV: presentation ? 'development' : 'production',
       CHKPT_PRIVATE_DEMO: String(demo), CHKPT_DEMO_ADMIN_PASSWORD: demo ? password : '' },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -212,6 +212,18 @@ try {
   });
   if (process.argv.includes('--browser')) {
     await symlink(path.join(project, 'dist'), path.join(demo.cwd, 'dist'));
+    await check('Lancement présentation : assets compilés sans Vite, accès démo toujours fermés par défaut', async () => {
+      const presentation = await start('presentation', false, true);
+      await symlink(path.join(project, 'dist'), path.join(presentation.cwd, 'dist'));
+      const response = await fetch(presentation.url);
+      assert.equal(response.status, 200);
+      const html = await response.text();
+      assert.match(html, /\/assets\/index-[^\s"']+\.js/);
+      assert.ok(!html.includes('/@vite/client'));
+      assert.equal((await request(presentation.url, '/api/demo/start', {})).status, 403);
+      assert.equal((await request(presentation.url, '/api/places')).status, 200);
+      await stop(presentation.child);
+    });
     const { checkBrowser } = await import('./lot_a_browser');
     await check('Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu', () => checkBrowser(demo.url));
     const { checkPresentation } = await import('./presentation_browser');
@@ -220,6 +232,8 @@ try {
     await check('Petit écran, ancienne réponse de connexion, filtre Amis et GPS en attente', () => checkDeepReview(demo.url, password));
     const { checkVisualDirection } = await import('./visual_direction_browser');
     await check('Direction visuelle claire et sombre, symbole et navigation de 320 à 1280px', () => checkVisualDirection(demo.url));
+    const { checkDevStability } = await import('./dev_stability_browser');
+    await check('Mode dev : confirmation persistante, aucune recharge pour les données et HMR source conservé', checkDevStability);
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

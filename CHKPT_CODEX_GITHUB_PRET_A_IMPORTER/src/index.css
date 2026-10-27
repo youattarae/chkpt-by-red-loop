@@ -3,7 +3,10 @@
 @import '@fontsource/plus-jakarta-sans/latin-600.css';
 @import '@fontsource/plus-jakarta-sans/latin-700.css';
 @import '@fontsource/plus-jakarta-sans/latin-800.css';
-@import "tailwindcss";
+/* Scan interface sources only: runtime JSON writes must never reload a demo. */
+@import "tailwindcss" source(none);
+@source "./";
+@source "../index.html";
 
 /* Shared semantic colors keep every existing screen readable in both themes. */
 :root {
