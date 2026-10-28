@@ -14,6 +14,10 @@ L'[accueil social actualisé](docs/ACCUEIL_SOCIAL.md) propose Pour toi et Amis, 
 
 Le [GPS et les fiches lieu](docs/GPS_ET_FICHE_LIEU.md) disposent d’un choix de position par liste et d’un affichage grand format, sans raccourci de check dans les fiches.
 
+Le [partage des établissements et l’historique personnel](docs/PARTAGE_ET_HISTORIQUE.md) complètent les fiches et le profil. L’historique est réservé au propriétaire.
+
+Voir aussi le [bilan complet du prototype](docs/BILAN_PROTOTYPE.md).
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

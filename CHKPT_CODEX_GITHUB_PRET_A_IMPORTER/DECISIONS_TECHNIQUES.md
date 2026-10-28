@@ -152,3 +152,9 @@ La commune apparaît dans le bouton GPS, sans sélecteur de commune séparé. Le
 ## Publicité fictive de banque
 
 Réutilisation de la campagne initiale existante, sans régie ni dépendance ajoutée. Visuel local `banque-demo.png` et textes HTML lisibles, avec banque imaginaire, absence de service financier et de partenariat. L’encart est une section informative sans gestionnaire de clic ni lien.
+
+## Partage de fiche et historique réservé au propriétaire — 28 octobre 2026
+
+Web Share API sans dépendance, avec volet de secours (copie/manuelle, WhatsApp, e-mail). Le lien est reconstruit depuis l’origine et le chemin uniquement, avec un fragment `lieu` validé contre les établissements existants. Aucune query, session ou donnée de visite transmise. Le partage n’ouvre pas le serveur au public.
+
+Réutilisation des check-ins locaux pour le résumé des lieux visités, sans altérer l’ancien journal XP ni les trois onglets du profil. Filtre propriétaire + statut vérifié, regroupement par lieu et tri par dernière date. L’API historique refuse dorénavant toute cible différente de la session, avant consultation des données. Cette décision utilisateur remplace l’ancienne exposition d’historiques de checks publics/abonnés.

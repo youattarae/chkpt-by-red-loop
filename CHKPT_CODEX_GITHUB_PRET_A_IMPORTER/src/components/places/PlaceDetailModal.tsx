@@ -1,3 +1,4 @@
+import { PlaceShare } from './PlaceShare';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, MapPin, Clock, Bookmark, Star, Tag } from 'lucide-react';
 import { Place } from '../../types';
@@ -29,7 +30,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
       <div className="sticky top-0 z-10 h-0">
         <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
           <button type="button" onClick={onClose} aria-label="Fermer la fiche" className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><ArrowLeft className="w-5 h-5" /></button>
-          <button type="button" onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button>
+          <div className="flex gap-2"><PlaceShare place={place} /><button type="button" onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button></div>
         </div>
       </div>
       <div className="relative h-[34dvh] min-h-52 sm:h-[40dvh] sm:min-h-64 bg-soft">

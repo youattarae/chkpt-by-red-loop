@@ -13,6 +13,7 @@
 - Accueil : Pour toi + Amis. Nearby reste sur Carte ; tendances dans Sortir.
 - Le bouton de confirmation du check-in porte le texte « Confirmer le check » (demande utilisateur du 27 octobre 2026). La mention de position simulée et de données fictives reste visible en démonstration ; le changement de texte ne modifie pas les contrôles serveur.
 - Le bouton central Check-in est l'unique point d'entrée : sélectionner explicitement un lieu → Confirmer le check → publication facultative. Aucun raccourci de check sur les publications, la carte ou les fiches. Pas de post automatique ; simulation de présentation explicite.
+- Décision du 28 octobre 2026 : historique des lieux visités réservé au propriétaire, même pour un profil ou un check public. Le partage d’un établissement contient seulement sa fiche fictive, sans identité, visite ou coordonnées de preuve.
 - 8 familles de badges ; ne pas inventer que les 40 badges complets sont implémentés.
 - Publicités non cliquables, avec mention « Publicité » ; aucune publicité sur Carte.
 - Aucun paiement interne, wallet ou billetterie intégrée ; pas de nouvelles fonctionnalités non validées.

@@ -117,8 +117,15 @@ try {
   });
   await check('Historique privé masqué pour un tiers et visible pour son auteur', async () => {
     const route = `/api/checkins/history?userId=${user.user.id}`;
-    assert.equal((await (await request(demo.url, route, undefined, outsider.token)).json()).checkins.length, 0);
+    assert.equal((await request(demo.url, route, undefined, outsider.token)).status, 403);
+    assert.equal((await request(demo.url, route, undefined, admin)).status, 403);
+    assert.equal((await request(demo.url, route)).status, 401);
     assert.equal((await (await request(demo.url, route, undefined, user.token)).json()).checkins.length, 1);
+    const publicVisit = await request(demo.url, '/api/checkins', { ...checkin, audience: 'public' }, outsider.token);
+    assert.equal(publicVisit.status, 201);
+    const publicRoute = `/api/checkins/history?userId=${outsider.user.id}`;
+    assert.equal((await request(demo.url, publicRoute, undefined, user.token)).status, 403, 'Même un check public reste dans un historique réservé au propriétaire');
+    assert.equal((await (await request(demo.url, '/api/checkins/history', undefined, outsider.token)).json()).checkins.length, 1);
   });
   await check('Coordonnées invalides : aucun XP ni validation', async () => {
     for (const latitude of [91, null, 'NaN']) {
@@ -240,6 +247,8 @@ try {
     await check('Accueil social : deux onglets, visuels locaux, filtres et confirmation du check', () => checkFeed(demo.url, password));
     const { checkLargePlace } = await import('./place_browser');
     await check('GPS avec commune et fiches lieu grand format, galerie et favoris', () => checkLargePlace(demo.url));
+    const { checkShareHistory } = await import('./share_history_browser');
+    await check('Partage natif ou copie, lien direct et historique personnel des lieux visités', () => checkShareHistory(demo.url, password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

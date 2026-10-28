@@ -11,7 +11,7 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 24 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 25 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
 Les publications, badges et intentions sont des états de démonstration locaux au navigateur.
@@ -67,3 +67,11 @@ Vérification : `npm run lint`, `npm run build`, recette navigateur **24/24 grou
 L’emplacement initial de publicité utilise un visuel local généré pour Banque Boucle, banque imaginaire. L’encart indique explicitement sa nature fictive, la génération par IA, l’absence de partenariat et reste non cliquable. Aucun produit financier ni taux n’est proposé. Le contrôle du fil vérifie le chargement local de l’image et l’absence de lien ou commande interactive.
 
 Validation de cet ajout : `npm run lint`, `npm run build` et recette navigateur **24/24 groupes**, incluant les 11 tests historiques, réussis sous Chromium Linux. La publicité charge sans service externe et ne provoque pas de navigation au clic. Captures de l’accueil et supports de présentation actualisés.
+
+## Partage des établissements et historique personnel — 28 octobre 2026
+
+Ajout du partage natif ou, en secours, du lien de fiche à copier, WhatsApp et e-mail. Les liens ouvrent la fiche, sans déclencher de check, et excluent toute session, visite ou coordonnée de preuve. Le destinataire doit avoir accès au serveur privé.
+
+Le profil propose un accès explicite aux lieux visités, regroupés par établissement et triés par dernière visite validée, sans refus ni visites d’un autre compte. L’historique est réservé au propriétaire côté interface et API, même pour les profils/checks publics et les opérateurs. Les données affichées restent celles du navigateur. Voir [PARTAGE_ET_HISTORIQUE.md](docs/PARTAGE_ET_HISTORIQUE.md).
+
+Validation de cette version : `npm run lint`, `npm run build`, puis **25/25 groupes** de la recette navigateur réussis, incluant les 11 tests historiques. Le contrôle API vérifie les refus anonymes, tiers et opérateurs ainsi que l’accès du propriétaire, même après un check public. Le nouveau contrôle navigateur couvre partage natif/annulation, copie/secours, lien direct, regroupement, confidentialité et persistance dans les deux thèmes à 320/390/1280 pixels. PDF et support HTML régénérés ; secours revérifié hors connexion. Le [bilan complet](docs/BILAN_PROTOTYPE.md) récapitule les lots, fonctionnalités et limites.

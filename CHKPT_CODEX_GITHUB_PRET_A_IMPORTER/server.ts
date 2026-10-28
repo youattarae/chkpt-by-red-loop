@@ -325,25 +325,12 @@ app.post('/api/checkins', requireAuth, (req: Request, res: Response) => {
  */
 app.get('/api/checkins/history', requireAuth, (req: Request, res: Response) => {
   const targetUserId = (req.query.userId as string) || req.user!.id;
-
-  const targetUser = db.findUserById(targetUserId);
-  if (!targetUser) {
-    res.status(404).json({ error: 'user_not_found' });
+  // Personal history is owner-only, including public profiles and operator sessions.
+  if (targetUserId !== req.user!.id) {
+    res.status(403).json({ error: 'history_owner_only', message: 'Seul le propriétaire peut consulter son historique.' });
     return;
   }
-
-  if (targetUser.visibility === 'private' && targetUserId !== req.user!.id) {
-    res.status(403).json({
-      error: 'private_profile',
-      message: 'Ce profil est privé. L\'historique des visites est inaccessible.',
-    });
-    return;
-  }
-
-  const checkins = db.getCheckins(targetUserId).filter(checkin =>
-    targetUserId === req.user!.id || checkin.audience === 'public' ||
-    (checkin.audience === 'followers' && db.isFollower(req.user!.id, targetUserId))
-  );
+  const checkins = db.getCheckins(req.user!.id);
   res.json({ checkins });
 });
 

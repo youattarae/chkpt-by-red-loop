@@ -4,7 +4,7 @@
  * CHKPT by RED LOOP — Main Application Shell
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StoreProvider, useStore } from './services/store';
 import { Header } from './components/common/Header';
 import { BottomNav, MainTab } from './components/common/BottomNav';
@@ -31,6 +31,22 @@ const AppContent: React.FC = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesViewOpen, setIsBadgesViewOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  useEffect(() => {
+    const openSharedPlace = () => {
+      const id = new URLSearchParams(window.location.hash.slice(1)).get('lieu');
+      setSelectedPlaceIdForDetail(id && places.some(place => place.id === id) ? id : null);
+    };
+    openSharedPlace();
+    window.addEventListener('hashchange', openSharedPlace);
+    return () => window.removeEventListener('hashchange', openSharedPlace);
+  }, [places]);
+  const closePlace = () => {
+    setSelectedPlaceIdForDetail(null);
+    if (new URLSearchParams(window.location.hash.slice(1)).has('lieu')) {
+      window.history.replaceState(null, '', window.location.pathname + window.location.search);
+    }
+  };
 
   const selectedPlace = places.find(p => p.id === selectedPlaceIdForDetail) || null;
 
@@ -114,7 +130,7 @@ const AppContent: React.FC = () => {
       <PlaceDetailModal
         key={selectedPlace?.id || 'no-place'}
         place={selectedPlace}
-        onClose={() => setSelectedPlaceIdForDetail(null)}
+        onClose={closePlace}
       />
 
       <AuthModal
