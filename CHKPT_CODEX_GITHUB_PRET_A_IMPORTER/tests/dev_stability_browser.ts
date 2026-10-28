@@ -15,7 +15,7 @@ export async function checkDevStability() {
   let server: ReturnType<typeof spawn> | undefined;
   let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
   try {
-    for (const file of ['src', 'server', 'server.ts', 'public', 'index.html', 'vite.config.ts', 'tsconfig.json', 'package.json', 'package-lock.json']) {
+    for (const file of ['src', 'shared', 'server', 'server.ts', 'public', 'index.html', 'vite.config.ts', 'tsconfig.json', 'package.json', 'package-lock.json']) {
       await cp(path.join(project, file), path.join(runtime, file), { recursive: true });
     }
     await symlink(path.join(project, 'node_modules'), path.join(runtime, 'node_modules'));

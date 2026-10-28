@@ -4,6 +4,7 @@
  * Canonical Reference Data for Abidjan (Cocody priority)
  */
 
+import { demoBadges } from '../../shared/badgeCatalog';
 import { 
   Place, 
   UserProfile, 
@@ -302,106 +303,7 @@ export const INITIAL_EVENTS: EventItem[] = [
 ];
 
 // The 8 Canonical Badge Families of CHKPT
-export const INITIAL_BADGES: Badge[] = [
-  {
-    id: 'bdg_maquis_bronze',
-    name: 'Initié du Braisé',
-    family: 'Maquis Master',
-    tier: 'bronze',
-    description: 'Validez votre présence dans 5 maquis certifiés d\'Abidjan.',
-    iconName: 'Flame',
-    requiredCount: 5,
-    currentCount: 4, // Set to 4 so checking into Maquis L'Etoile triggers unlock 5/5!
-    isUnlocked: false,
-    xpReward: 100
-  },
-  {
-    id: 'bdg_explorateur_bronze',
-    name: 'Flâneur de Cocody',
-    family: 'Explorateur',
-    tier: 'bronze',
-    description: 'Validez votre présence dans au moins 10 lieux différents à Cocody.',
-    iconName: 'Compass',
-    requiredCount: 10,
-    currentCount: 8,
-    isUnlocked: false,
-    xpReward: 150
-  },
-  {
-    id: 'bdg_foodie_bronze',
-    name: 'Gourmet de Babi',
-    family: 'Foodie',
-    tier: 'bronze',
-    description: 'Check-in dans 5 restaurants et cafés réputés.',
-    iconName: 'Utensils',
-    requiredCount: 5,
-    currentCount: 5,
-    isUnlocked: true,
-    unlockedAt: '2026-10-12T14:20:00Z',
-    xpReward: 100
-  },
-  {
-    id: 'bdg_culture_bronze',
-    name: 'Amateur d\'Art Babi',
-    family: 'Culture Hunter',
-    tier: 'bronze',
-    description: 'Visitez 3 galeries d\'art ou musées à Abidjan.',
-    iconName: 'Palette',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 80
-  },
-  {
-    id: 'bdg_event_bronze',
-    name: 'Noctambule Festif',
-    family: 'Event Hunter',
-    tier: 'bronze',
-    description: 'Confirmez votre présence lors de 3 événements culturels.',
-    iconName: 'CalendarCheck',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 120
-  },
-  {
-    id: 'bdg_pionnier_bronze',
-    name: 'Éclaireur Urbain',
-    family: 'Pionnier',
-    tier: 'bronze',
-    description: 'Soyez parmi les 5 premiers explorateurs à valider un nouveau lieu.',
-    iconName: 'Sparkles',
-    requiredCount: 1,
-    currentCount: 1,
-    isUnlocked: true,
-    unlockedAt: '2026-09-04T18:00:00Z',
-    xpReward: 150
-  },
-  {
-    id: 'bdg_photographe_bronze',
-    name: 'Regard Visuel',
-    family: 'Photographe',
-    tier: 'bronze',
-    description: 'Publiez 5 photographies de lieux vérifiés purgées d\'EXIF.',
-    iconName: 'Camera',
-    requiredCount: 5,
-    currentCount: 3,
-    isUnlocked: false,
-    xpReward: 80
-  },
-  {
-    id: 'bdg_multi_bronze',
-    name: 'Traverseur de Ponts',
-    family: 'Multi-Explorer',
-    tier: 'bronze',
-    description: 'Validez au moins 1 check-in dans 3 communes différentes (Cocody, Plateau, Marcory).',
-    iconName: 'Map',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 200
-  }
-];
+export const INITIAL_BADGES: Badge[] = demoBadges();
 
 export const INITIAL_AD_CAMPAIGNS: AdCampaign[] = [
   {

@@ -1,3 +1,4 @@
+import { ReviewSection } from './ReviewSection';
 import { PlaceShare } from './PlaceShare';
 import { useEffect, useState } from 'react';
 import { ArrowLeft, MapPin, Clock, Bookmark, Star, Tag } from 'lucide-react';
@@ -12,7 +13,7 @@ interface PlaceDetailModalProps {
 }
 
 export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
-  const { savedPlaceIds, toggleSavePlace } = useStore();
+  const { currentUser, savedPlaceIds, toggleSavePlace } = useStore();
   const [activeImage, setActiveImage] = useState(0);
   const [fallback, setFallback] = useState(false);
   useEffect(() => {
@@ -60,6 +61,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
           <h3 className="text-sm font-bold">Illustrations du lieu</h3>
           <div className="flex gap-2 overflow-x-auto pb-2">{images.map((source, index) => <button key={source} type="button" aria-label={`Voir l’illustration ${index + 1}`} aria-pressed={activeImage === index} onClick={() => { setActiveImage(index); setFallback(false); }} className={`shrink-0 w-24 h-20 overflow-hidden rounded-xl border-2 cursor-pointer ${activeImage === index ? 'border-blue-400' : 'border-transparent'}`}><SafeImage src={source} alt="" className="w-full h-full object-cover" /></button>)}</div>
         </section>}
+        <ReviewSection key={`${place.id}:${currentUser.id}`} placeId={place.id} />
         <div className="border-t border-line pt-4 flex flex-wrap justify-between gap-2 text-xs text-muted"><span>{place.totalCheckins} visites · données fictives</span><span>{!fallback && isGeneratedPublicationImage(image) ? 'Illustration générée par IA' : 'Illustration de présentation'}</span></div>
       </div>
     </section>

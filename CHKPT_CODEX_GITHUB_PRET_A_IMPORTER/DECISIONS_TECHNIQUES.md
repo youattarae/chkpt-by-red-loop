@@ -158,3 +158,22 @@ Réutilisation de la campagne initiale existante, sans régie ni dépendance ajo
 Web Share API sans dépendance, avec volet de secours (copie/manuelle, WhatsApp, e-mail). Le lien est reconstruit depuis l’origine et le chemin uniquement, avec un fragment `lieu` validé contre les établissements existants. Aucune query, session ou donnée de visite transmise. Le partage n’ouvre pas le serveur au public.
 
 Réutilisation des check-ins locaux pour le résumé des lieux visités, sans altérer l’ancien journal XP ni les trois onglets du profil. Filtre propriétaire + statut vérifié, regroupement par lieu et tri par dernière date. L’API historique refuse dorénavant toute cible différente de la session, avant consultation des données. Cette décision utilisateur remplace l’ancienne exposition d’historiques de checks publics/abonnés.
+
+## Compléments de présentation et accès distant — 28 octobre 2026
+
+- Bienvenue proposée sans bloquer l’accueil, trois étapes rejouables depuis les réglages. Préférence mémorisée hors du reset de scénario.
+- Recherche Carte insensible aux accents et filtres Sortir combinant catégorie, texte et rayon. Distances à vol d’oiseau depuis la position active ; en attente du GPS réel, aucun rayon simulé n’est présenté comme réel. Les événements restent hors de ces filtres. Aucun club n’est inventé dans le jeu actuel.
+- Récompense liée à un check local validé au maquis, usage fictif mémorisé par utilisateur et visite, sans débit de points ou avantage commercial. Aperçu établissement strictement statique et fictif, sans interrogation d’historiques privés.
+- Consultation d’un profil depuis l’auteur d’une publication. DTO serveur minimal, profils privés/mineurs masqués ; demandes de suivi privé non implémentées. Suivre et ne plus suivre sont authentifiés, idempotents et persistés ; une réponse de profil ancienne ne doit pas annuler une modification récente des abonnements. Ajout du personnage Amara dans le seed et migration additive sans écraser un utilisateur existant.
+- `ReviewSection` dans la fiche. Note entière 1–5, commentaire de 3–1 000 caractères ; auteur imposé par la session, un avis modifiable par utilisateur et lieu. Nouvelle table `reviews` migrée sans remise à zéro ; avis de profils privés ou mineurs non exposés. L’exemple statique est identifié et n’est pas une vraie entrée, les notes fictives historiques restent séparées.
+- Préparation Node 22 et Blueprint Render gratuit, sans achat ou création de service. Barrière HTTPS avant les parsers, API et fichiers : secret visiteur distinct du secret opérateur, hash scrypt, cookie sécurisé HttpOnly/SameSite Strict, sessions de huit heures en mémoire, révocation à la fermeture et limites de tentatives. Confiance limitée au proxy Render ; pas de publication HTTP directe. Cette protection ne remplace pas les permissions métier.
+
+Une offre gratuite peut dormir et perdre sa base locale après redémarrage. La persistance et la synchronisation des publications ne sont pas ajoutées par cet hébergement. Le guide décrit le compte à créer et les vérifications sur un vrai lien HTTPS avant utilisation.
+
+## Leaflet, radar et 40 paliers — barème provisoire autorisé
+
+Leaflet 1.9.4, chargé séparément, réutilise la sélection de lieu et ses filtres. Tuiles OpenStreetMap avec attribution, sans cache massif ; secours SVG lors d’un échec. Rayon visuel de 250 m seulement avec position disponible, position simulée identifiée. Le rayon métier reste contrôlé côté serveur.
+
+Catalogue partagé de huit familles × cinq paliers. Les noms et seuils supplémentaires sont provisoires, les noms de bronze existants sont conservés. Évaluation serveur à partir des visites présentes dans PointsLedger, lieux/communes distincts, preuves d’événement actif au bon lieu et images importées appartenant au compte, liées à une visite valide. Une empreinte de contenu évite le comptage répété d’une photo. L’évaluation crée des entrées BADGE_UNLOCKED idempotentes à zéro XP afin de préserver les 75/50 XP existants. Notifications après les nouveaux déblocages ; le client ne décide plus des seuils atteints. L’avance fictive du personnage de présentation reste déclarée côté serveur.
+
+Un catalogue d’événements serveur et une session fictive du jour permettent d’essayer une présence événementielle, facultative dans le check central. Une intention J’y serai n’est pas une preuve. La vérification d’une image n’est pas une certification antifraude ou EXIF : propriété, liaison et signature de format sont vérifiées ; la transformation des pixels reste dans l’import client existant.

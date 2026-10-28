@@ -15,9 +15,9 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
   const place = places.find(item => item.id === post.linkedPlaceId);
   return <article className="publication-card bg-surface border border-line/70 rounded-3xl overflow-hidden shadow-sm">
     <header className="p-4 flex items-start gap-3">
-      <div className="publication-avatar-ring shrink-0"><SafeImage src={post.authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" /></div>
+      <button type="button" aria-label={`Voir le profil de ${post.authorName}`} onClick={() => window.dispatchEvent(new CustomEvent('chkpt:profile', { detail: post.authorId }))} className="publication-avatar-ring shrink-0 cursor-pointer"><SafeImage src={post.authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" /></button>
       <div className="min-w-0 flex-1">
-        <h3 className="text-sm font-bold text-ink break-words">{post.authorName}</h3>
+        <h3 className="text-sm font-bold text-ink break-words"><button type="button" onClick={() => window.dispatchEvent(new CustomEvent('chkpt:profile', { detail: post.authorId }))} className="text-left cursor-pointer">{post.authorName}</button></h3>
         <p className="text-[11px] text-muted break-words"><span>@{post.authorUsername}</span><span aria-hidden="true"> · </span><span>{post.createdAt}</span></p>
       </div>
       {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}

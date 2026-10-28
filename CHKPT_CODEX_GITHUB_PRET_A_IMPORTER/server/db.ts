@@ -128,7 +128,11 @@ export interface ReportEntity {
   createdAt: string;
 }
 
+export interface ReviewEntity {
+  id: string; placeId: string; userId: string; rating: number; comment: string; updatedAt: string;
+}
 export interface DatabaseSchema {
+  reviews: ReviewEntity[];
   users: UserEntity[];
   sessions: SessionEntity[];
   places: PlaceEntity[];
@@ -261,6 +265,16 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
   }
 ];
 
+function creatorDemoProfile(): UserEntity {
+  const salt = crypto.randomBytes(16).toString('hex');
+  return { id: 'usr_02', username: 'amara_sound', displayName: 'Amara Koné', salt,
+    passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), salt),
+    age: 25, visibility: 'public', role: 'creator', homeZone: 'Cocody, Abidjan',
+    avatarUrl: '/illustrations/admin.svg', bio: 'Art, culture et découvertes à Abidjan · profil fictif.',
+    followersCount: 0, followingCount: 0, checkinsCount: 0, xpPoints: 0, level: 1,
+    createdAt: new Date().toISOString() };
+}
+
 class Database {
   private data: DatabaseSchema;
 
@@ -334,6 +348,7 @@ class Database {
           level: 10,
           createdAt: new Date(Date.now() - 90 * 86400000).toISOString(),
         },
+        creatorDemoProfile(),
       ],
       sessions: [],
       places: CANONICAL_PLACES,
@@ -387,6 +402,7 @@ class Database {
           createdAt: new Date().toISOString(),
         },
       ],
+      reviews: [],
       reports: [],
       version: 2,
     };
@@ -401,7 +417,10 @@ class Database {
         const parsed = JSON.parse(raw);
         const tables = ['users', 'sessions', 'places', 'checkins', 'checkin_proofs', 'points_ledger', 'follows', 'reports'];
         if (!tables.every(table => Array.isArray(parsed[table]))) throw new Error('Invalid database tables');
+        if (parsed.reviews !== undefined && !Array.isArray(parsed.reviews)) throw new Error('Invalid reviews table');
+        parsed.reviews ??= [];
         parsed.places = CANONICAL_PLACES;
+        if (!parsed.users.some((user: UserEntity) => user.id === 'usr_02' || user.username === 'amara_sound')) parsed.users.push(creatorDemoProfile());
         // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
         for (const user of parsed.users) {
           if (!seedUserIds.has(user.id)) continue;
@@ -566,6 +585,34 @@ class Database {
     if (follower) follower.followingCount += 1;
     this.save();
     return true;
+  }
+
+  public unfollowUser(followerId: string, followedId: string): void {
+    if (!this.isFollower(followerId, followedId)) return;
+    this.data.follows = this.data.follows.filter(follow => !(follow.followerId === followerId && follow.followedId === followedId));
+    const followed = this.findUserById(followedId);
+    const follower = this.findUserById(followerId);
+    if (followed) followed.followersCount = Math.max(0, followed.followersCount - 1);
+    if (follower) follower.followingCount = Math.max(0, follower.followingCount - 1);
+    this.save();
+  }
+
+  public recordLedgerEvent(userId:string,sourceAction:string,referenceId:string):boolean {
+    if(this.data.points_ledger.some(entry=>entry.userId===userId&&entry.sourceAction===sourceAction&&entry.referenceId===referenceId)) return false;
+    this.data.points_ledger.push({id:crypto.randomUUID(),userId,sourceAction,referenceId,amount:0,timestamp:new Date().toISOString()});
+    this.save();return true;
+  }
+
+  public getReviews(placeId: string): ReviewEntity[] {
+    return this.data.reviews.filter(review => review.placeId === placeId).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }
+  public saveReview(userId: string, placeId: string, rating: number, comment: string): ReviewEntity {
+    const existing = this.data.reviews.find(review => review.userId === userId && review.placeId === placeId);
+    const review = { id: existing?.id || crypto.randomUUID(), userId, placeId, rating, comment, updatedAt: new Date().toISOString() };
+    if (existing) Object.assign(existing, review);
+    else this.data.reviews.push(review);
+    this.save();
+    return review;
   }
 
   public createReport(report: ReportEntity): ReportEntity {

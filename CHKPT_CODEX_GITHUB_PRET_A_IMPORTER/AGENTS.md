@@ -14,7 +14,8 @@
 - Le bouton de confirmation du check-in porte le texte « Confirmer le check » (demande utilisateur du 27 octobre 2026). La mention de position simulée et de données fictives reste visible en démonstration ; le changement de texte ne modifie pas les contrôles serveur.
 - Le bouton central Check-in est l'unique point d'entrée : sélectionner explicitement un lieu → Confirmer le check → publication facultative. Aucun raccourci de check sur les publications, la carte ou les fiches. Pas de post automatique ; simulation de présentation explicite.
 - Décision du 28 octobre 2026 : historique des lieux visités réservé au propriétaire, même pour un profil ou un check public. Le partage d’un établissement contient seulement sa fiche fictive, sans identité, visite ou coordonnées de preuve.
-- 8 familles de badges ; ne pas inventer que les 40 badges complets sont implémentés.
+- Compléments autorisés du 28 octobre 2026 : bienvenue rejouable, recherche locale, récompense fictive sans paiement, aperçu établissement avec statistiques inventées, préparation d’un hébergement privé HTTPS, profils publics et suivi authentifié, avis 1–5 étoiles avec commentaire et filtres catégorie/distance dans Sortir. Les profils privés/mineurs et les historiques ne deviennent pas publics.
+- Demande du 28 octobre 2026 : carte Leaflet et radar de 250 m ; moteur serveur de 40 paliers dans les huit familles. Barème provisoire documenté explicitement autorisé ; ne pas présenter les noms/seuils provisoires comme officiels. Les preuves de visite, événement et photo doivent être validées côté serveur et les paliers journalisés sans doublon.
 - Publicités non cliquables, avec mention « Publicité » ; aucune publicité sur Carte.
 - Aucun paiement interne, wallet ou billetterie intégrée ; pas de nouvelles fonctionnalités non validées.
 - Couleurs cible : bleu nuit, bleu clair lumineux, bordeaux, noir, blanc. Garder l'emplacement des logos officiels s'ils ne sont pas fournis.

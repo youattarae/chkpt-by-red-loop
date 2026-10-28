@@ -11,10 +11,10 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 25 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 33 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
-Les publications, badges et intentions sont des états de démonstration locaux au navigateur.
+Les publications et intentions restent locales au navigateur. Les badges sont désormais évalués côté serveur et leurs déblocages sont conservés dans le journal.
 La distance, les sessions et les XP de check-in sont vérifiés côté serveur, sans preuve de l'origine physique du GPS.
 Le jeu de départ, les compteurs et la progression préchargée restent fictifs. Les médias importés ne survivent pas au redémarrage serveur.
 Le reset efface la base fictive ; le bouton Démarrer la démo repart avec Koffi après autorisation opérateur.
@@ -75,3 +75,21 @@ Ajout du partage natif ou, en secours, du lien de fiche à copier, WhatsApp et e
 Le profil propose un accès explicite aux lieux visités, regroupés par établissement et triés par dernière visite validée, sans refus ni visites d’un autre compte. L’historique est réservé au propriétaire côté interface et API, même pour les profils/checks publics et les opérateurs. Les données affichées restent celles du navigateur. Voir [PARTAGE_ET_HISTORIQUE.md](docs/PARTAGE_ET_HISTORIQUE.md).
 
 Validation de cette version : `npm run lint`, `npm run build`, puis **25/25 groupes** de la recette navigateur réussis, incluant les 11 tests historiques. Le contrôle API vérifie les refus anonymes, tiers et opérateurs ainsi que l’accès du propriétaire, même après un check public. Le nouveau contrôle navigateur couvre partage natif/annulation, copie/secours, lien direct, regroupement, confidentialité et persistance dans les deux thèmes à 320/390/1280 pixels. PDF et support HTML régénérés ; secours revérifié hors connexion. Le [bilan complet](docs/BILAN_PROTOTYPE.md) récapitule les lots, fonctionnalités et limites.
+
+## Compléments, carte interactive et badges serveur — 28 octobre 2026
+
+- Bienvenue en trois étapes, rejouable ; recherche Carte et filtres Sortir par catégorie, texte et distance. GPS réel en attente distinct du simulateur. Le filtre Clubs peut être vide car aucun club n’est fourni dans le seed.
+- Récompense explicitement fictive après le check du maquis, sans débit de points ; aperçu établissement avec statistiques inventées et sans données privées.
+- Profils consultables et suivi authentifié, idempotent et persistant. Profils privés/mineurs masqués et historique exclusivement réservé au propriétaire. Publications encore locales au navigateur.
+- `ReviewSection` : note entière 1–5 et commentaire de 3–1 000 caractères, exemple fictif non comptabilisé, un avis modifiable par compte et lieu, validation et persistance serveur. Migration additive de la table reviews.
+- Leaflet/OpenStreetMap, recentrage sur cinq zones, cercle de 250 m et filtres existants. Carte illustrée de secours si les tuiles échouent. Aucun check lancé depuis les repères. Le test géométrique utilise une tuile neutre ; la disponibilité réelle d’OSM reste à vérifier sur les appareils. Licence conservée et attribution visible.
+- 40 paliers dans huit familles, barème provisoire autorisé. Visites créditées et preuves événement/photo évaluées côté serveur ; journalisation `BADGE_UNLOCKED` unique sans bonus XP supplémentaire. Le départ fictif de Koffi est explicite. Les images de décor et les intentions d’événement ne constituent pas une preuve de badge.
+- Préparation Render Node.js 22 avec barrière privée avant fichiers et API, deux secrets distincts, HTTPS, cookie sécurisé, fermeture et limitation de tentatives. Test navigateur derrière un proxy TLS temporaire, y compris ouverture d’une fiche partagée après accès. **Aucun compte Render ni service distant créé : pas encore de lien Internet prêt à utiliser.**
+
+Validation exécutée : `npm run lint`, `npm run build` et **33/33 groupes** de la recette complète sous Chromium Linux, incluant les 11 tests historiques. Les nouveaux tests vérifient les 40 paliers atteignables dans un jeu isolé, les doublons, les preuves, les comptes privés, les filtres et le radar. PDF et HTML de secours régénérés et HTML revérifié sans réseau. Tests physiques Mac/Safari/Windows et hébergement réel à compléter après installation.
+
+Le [bilan](docs/BILAN_PROTOTYPE.md), les [évolutions](docs/EVOLUTIONS_DEMO.md), les [règles carte/badges](docs/CARTE_RADAR_ET_40_BADGES.md) et le [guide d’accès distant](docs/ACCES_PRIVE_DISTANCE.md) décrivent les fonctions et limites. Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINALE.md) est prêt à copier dans la conversation de conception.
+
+Complément de compatibilité : sous Node.js 22 en conteneur local sans réseau, vérification TypeScript, compilation Vite et **20/20 groupes serveur** réussis (suite historique comprise). Les dépendances déjà installées ont été montées en lecture seule ; cela ne revendique pas une installation ou un déploiement Render réussis. Le chargement de configuration Vite `runner` a été utilisé pour compiler vers un répertoire temporaire avec les sources en lecture seule.
+
+Accès externe : une requête de tuile OpenStreetMap réelle depuis cet environnement renvoie HTTP 403. Le fond réel n’est donc pas validé ici ; géométrie, interaction et secours sont testés avec des tuiles contrôlées. L’accès à l’API GitHub pour modifier la description de la PR renvoie également Forbidden ; le code et les documents sont publiés par Git sur la branche existante.

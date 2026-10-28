@@ -6,6 +6,9 @@
  * prevents XP duplicate farming via daily idempotency, and records isolated proofs.
  */
 
+import { evaluateBadges } from './badgeEngine';
+import { eligibleEvent } from './events';
+import type { Badge } from '../src/types';
 import crypto from 'crypto';
 import { privateDemoEnabled } from './demoConfig';
 import { db, UserEntity, PlaceEntity, CheckInEntity, CheckInProofEntity, Coordinates } from './db';
@@ -36,6 +39,7 @@ export interface CheckinSubmissionParams {
   accuracyMeters?: number;
   isSimulated?: boolean;
   audience?: 'private' | 'followers' | 'public';
+  eventId?: string;
   environment?: 'demo' | 'production';
 }
 
@@ -46,6 +50,8 @@ export interface CheckinProcessResult {
   distanceMeters: number;
   awardedXp: number;
   checkIn?: CheckInEntity;
+  badges?: Badge[];
+  newlyUnlocked?: Badge[];
   rejectionReason?: string;
 }
 
@@ -99,6 +105,8 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
       rejectionReason: 'distance_exceeded',
     };
   }
+
+  if(params.eventId&&!eligibleEvent(params.eventId,place.id)) return {success:false,status:'rejected',message:'Cet événement ne correspond pas au lieu ou à ses horaires actifs.',distanceMeters:distance,awardedXp:0,rejectionReason:'event_not_active'};
 
   // 5. Daily Idempotency Key: User can only earn XP once per place per calendar day
   const todayKey = new Date().toISOString().split('T')[0];
@@ -159,6 +167,8 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   };
 
   db.createCheckin(newCheckin, newProof, awardedXp);
+  if(params.eventId) db.recordLedgerEvent(user.id,'EVENT_ATTENDED',params.eventId);
+  const gamification=evaluateBadges(user.id);
 
   return {
     success: true,
@@ -171,5 +181,7 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
     distanceMeters: distance,
     awardedXp,
     checkIn: newCheckin,
+    badges:gamification.badges,
+    newlyUnlocked:gamification.newlyUnlocked,
   };
 }

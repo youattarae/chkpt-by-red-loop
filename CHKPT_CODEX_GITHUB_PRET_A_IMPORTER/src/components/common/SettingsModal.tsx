@@ -1,10 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { X, Shield } from 'lucide-react';
 import { useStore } from '../../services/store';
 import { LocationControls } from './LocationControls';
 import { ThemeToggle } from './ThemeToggle';
 
-export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+export function SettingsModal({ isOpen, onClose, onOpenBusiness }: { isOpen: boolean; onClose: () => void; onOpenBusiness: () => void }) {
+  const [remote, setRemote] = useState(false);
+  useEffect(() => { if (isOpen) fetch('/api/demo/access-mode').then(response => response.json()).then(data => setRemote(data.remote === true)).catch(() => setRemote(false)); }, [isOpen]);
   const { currentUser, selectedZone, setSelectedZone, isOperatorView, setIsOperatorView } = useStore();
   useEffect(() => {
     if (!isOpen) return;
@@ -33,6 +35,9 @@ export function SettingsModal({ isOpen, onClose }: { isOpen: boolean; onClose: (
         <h3 className="text-xs font-bold text-muted uppercase tracking-wider">Position</h3>
         <LocationControls />
       </section>
+      <button type="button" onClick={() => { onClose(); window.dispatchEvent(new Event('chkpt:welcome')); }} className="w-full rounded-xl bg-soft p-3 text-sm font-semibold cursor-pointer">Revoir les 3 étapes CHKPT</button>
+      <button type="button" onClick={() => { onClose(); onOpenBusiness(); }} className="w-full rounded-xl bg-soft p-3 text-sm font-semibold cursor-pointer">Aperçu établissement · fictif</button>
+      {remote && <form method="post" action="/demo-access/logout"><button type="submit" className="text-xs text-muted w-full p-2 cursor-pointer">Fermer l’accès privé à distance</button></form>}
       {operator && <button type="button" onClick={() => { setIsOperatorView(!isOperatorView); onClose(); }} className="w-full flex items-center justify-center gap-2 bg-soft rounded-xl p-3 text-sm font-semibold cursor-pointer"><Shield className="w-4 h-4" />Console opérateur</button>}
     </div>
   </div>;

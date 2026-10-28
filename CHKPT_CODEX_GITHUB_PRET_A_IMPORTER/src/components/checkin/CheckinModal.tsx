@@ -44,6 +44,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
 }) => {
   const { 
     places,
+    events,
     badges,
     userCurrentCoordinates, 
     submitCheckIn, 
@@ -57,6 +58,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
   );
   
   const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
+  const [eventId,setEventId]=useState('');
   const [audience, setAudience] = useState<CheckInAudience>('private');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
@@ -98,7 +100,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     setStep('verifying');
 
     try {
-      const res = await submitCheckIn(currentPlace.id, audience);
+      const res = await submitCheckIn(currentPlace.id, audience,eventId||undefined);
       setVerificationResult(res);
       setIsVerifying(false);
       setStep('result');
@@ -182,6 +184,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
         {step === 'select_place' && (
           <div className="pt-4 space-y-4">
             
+            {currentPlace && events.some(event=>event.placeId===currentPlace.id&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt||'')>=Date.now()) && <label className="block text-xs font-semibold">Événement au même lieu (facultatif)<select value={eventId} onChange={event=>setEventId(event.target.value)} className="block w-full mt-2 p-2 rounded-xl border border-line bg-canvas text-ink"><option value="">Visite du lieu uniquement</option>{events.filter(event=>event.placeId===currentPlace.id&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt||'')>=Date.now()).map(event=><option key={event.id} value={event.id}>{event.title}</option>)}</select></label>}
             {/* GPS Status pill */}
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-canvas/80 border border-line text-xs">
               <div className="flex items-center gap-2 text-body">
@@ -209,7 +212,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   return (
                     <button
                       key={place.id}
-                      onClick={() => setSelectedPlaceId(place.id)}
+                      onClick={() => {setSelectedPlaceId(place.id);setEventId('');}}
                       aria-pressed={isSelected}
                       className={`w-full p-3 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
@@ -377,6 +380,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   </div>
                 </div>
 
+                {verificationResult.checkIn?.placeId === 'plc_maquis_etoile' && <p className="text-xs text-blue-400">Récompense fictive débloquée : retrouve-la dans Profil.</p>}
                 <div className="p-3 bg-canvas/80 border border-line rounded-xl text-left text-xs text-body space-y-1">
                   <p className="font-semibold text-ink">{activeLocationMode === 'simulation' ? 'Démonstration — visite fictive comptabilisée.' : 'Votre visite est comptabilisée.'}</p>
                   <p className="text-[11px] text-muted">

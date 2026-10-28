@@ -4,6 +4,9 @@
  * CHKPT by RED LOOP — Main Application Shell
  */
 
+import { OtherProfile } from './components/profile/OtherProfile';
+import { BusinessPreview } from './components/demo/BusinessPreview';
+import { Welcome } from './components/demo/Welcome';
 import React, { useEffect, useState } from 'react';
 import { StoreProvider, useStore } from './services/store';
 import { Header } from './components/common/Header';
@@ -22,7 +25,7 @@ import { OperatorConsole } from './components/operator/OperatorConsole';
 import { SettingsModal } from './components/common/SettingsModal';
 
 const AppContent: React.FC = () => {
-  const { isOperatorView, setIsOperatorView, places, dismissToastNotification } = useStore();
+  const { isOperatorView, setIsOperatorView, places, currentUser, dismissToastNotification } = useStore();
 
   const [activeTab, setActiveTab] = useState<MainTab>('feed');
   const [isCheckinOpen, setIsCheckinOpen] = useState(false);
@@ -30,6 +33,8 @@ const AppContent: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesViewOpen, setIsBadgesViewOpen] = useState(false);
+  const [profileId, setProfileId] = useState<string | null>(null);
+  const [businessOpen, setBusinessOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
   useEffect(() => {
@@ -48,6 +53,17 @@ const AppContent: React.FC = () => {
     }
   };
 
+  useEffect(() => {
+    const open = (event: Event) => {
+      const id = (event as CustomEvent).detail;
+      if (typeof id !== 'string') return;
+      if (id === currentUser.id) { setProfileId(null); setActiveTab('profile'); }
+      else setProfileId(id);
+    };
+    window.addEventListener('chkpt:profile', open);
+    return () => window.removeEventListener('chkpt:profile', open);
+  }, [currentUser.id]);
+
   const selectedPlace = places.find(p => p.id === selectedPlaceIdForDetail) || null;
 
 
@@ -58,15 +74,16 @@ const AppContent: React.FC = () => {
       {/* Contractual Header */}
       <Header
         onOpenNotifications={() => setIsNotificationsOpen(true)}
-        onGoHome={() => { dismissToastNotification(); setIsOperatorView(false); setIsBadgesViewOpen(false); setActiveTab('feed'); }}
+        onGoHome={() => { setBusinessOpen(false); setProfileId(null); dismissToastNotification(); setIsOperatorView(false); setIsBadgesViewOpen(false); setActiveTab('feed'); }}
       />
 
       {/* In-App Toast Notification */}
       <InAppNotificationToast />
 
+      <Welcome visible={activeTab === 'feed' && !isOperatorView} />
       {/* Main View Area */}
       <main className="flex-1 w-full max-w-4xl mx-auto">
-        {isOperatorView ? (
+        {businessOpen ? <BusinessPreview onClose={() => { setBusinessOpen(false); setActiveTab('profile'); }} /> : isOperatorView ? (
           <OperatorConsole />
         ) : isBadgesViewOpen ? (
           <BadgesView onBack={() => setIsBadgesViewOpen(false)} />
@@ -109,6 +126,7 @@ const AppContent: React.FC = () => {
           activeTab={activeTab}
           onSelectTab={(tab) => {
             dismissToastNotification();
+            setBusinessOpen(false);
             setActiveTab(tab);
             setIsBadgesViewOpen(false);
           }}
@@ -119,6 +137,7 @@ const AppContent: React.FC = () => {
       )}
 
       {/* Modals & Dialogs */}
+      {profileId && <OtherProfile key={`${currentUser.id}:${profileId}`} id={profileId} onClose={() => setProfileId(null)} onSelectPlace={setSelectedPlaceIdForDetail} />}
       {isCheckinOpen && <CheckinModal
         isOpen={isCheckinOpen}
         onClose={() => {
@@ -142,7 +161,7 @@ const AppContent: React.FC = () => {
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
       />
-      <SettingsModal isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
+      <SettingsModal onOpenBusiness={() => setBusinessOpen(true)} isOpen={isSettingsOpen} onClose={() => setIsSettingsOpen(false)} />
 
     </div>
   );

@@ -46,6 +46,7 @@ interface StoreContextType {
   currentUser: UserProfile;
   setCurrentUser: React.Dispatch<React.SetStateAction<UserProfile>>;
   followingIds: string[];
+  setFollowingIds: React.Dispatch<React.SetStateAction<string[]>>;
   authSessionToken: string;
   setAuthSessionToken: (token: string) => void;
   appEnvironment: 'demo' | 'production';
@@ -68,11 +69,12 @@ interface StoreContextType {
   currentSimulatedSpot: SimulatedSpot;
   setCurrentSimulatedSpot: (spot: SimulatedSpot) => void;
   userCurrentCoordinates: Coordinates;
+  locationReady: boolean;
   // Operator Mode
   isOperatorView: boolean;
   setIsOperatorView: (val: boolean) => void;
   // Actions
-  submitCheckIn: (placeId: string, audience: CheckInAudience) => Promise<{
+  submitCheckIn: (placeId: string, audience: CheckInAudience, eventId?: string) => Promise<{
     success: boolean;
     checkIn?: CheckIn;
     message: string;
@@ -122,10 +124,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
 
   const statsRevision = useRef(0);
-  const [followingIds, setFollowingIds] = useState<string[]>([]);
+  const followingRevision = useRef(0);
+  const [followingIds, setFollowingIdsState] = useState<string[]>([]);
+  const setFollowingIds: React.Dispatch<React.SetStateAction<string[]>> = value => {
+    followingRevision.current += 1;
+    setFollowingIdsState(value);
+  };
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
 
   const setAuthSessionToken = (token: string) => {
+    setFollowingIds([]);
     setAuthSessionTokenState(token);
     localStorage.setItem('chkpt_session_token', token);
   };
@@ -169,6 +177,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     const controller = new AbortController();
     const requestedStatsRevision = statsRevision.current;
+    const requestedFollowingRevision = followingRevision.current;
     fetch('/api/auth/me', {
       signal: controller.signal,
       headers: { Authorization: `Bearer ${authSessionToken}` },
@@ -176,8 +185,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       .then((res) => res.json())
       .then((data) => {
         if (controller.signal.aborted) return;
-        setFollowingIds(Array.isArray(data.followingIds) ? data.followingIds : []);
+        if (requestedFollowingRevision === followingRevision.current) setFollowingIdsState(Array.isArray(data.followingIds) ? data.followingIds : []);
         if (data.authenticated && data.user) {
+          if (requestedStatsRevision === statsRevision.current && Array.isArray(data.badges)) setBadges(data.badges);
           setCurrentUser((prev) => ({
             ...prev,
             id: data.user.id,
@@ -193,7 +203,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             avatarUrl: data.user.avatarUrl,
             bio: data.user.bio,
             followersCount: data.user.followersCount,
-            followingCount: data.user.followingCount,
+            followingCount: requestedFollowingRevision === followingRevision.current ? data.user.followingCount : prev.followingCount,
           }));
         } else {
           setCurrentUser(CURRENT_USER);
@@ -376,6 +386,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem(`${STORAGE_PREFIX}notif_prefs`, JSON.stringify(notificationPreferences));
   }, [notificationPreferences]);
 
+  useEffect(()=>{
+    const controller=new AbortController();
+    fetch('/api/events',{signal:controller.signal}).then(response=>response.json()).then(data=>{
+      if(Array.isArray(data.events)) setEvents(previous=>data.events.map((event:EventItem)=>({...event,userIntent:previous.find(item=>item.id===event.id)?.userIntent||null})));
+    }).catch(()=>{});
+    return()=>controller.abort();
+  },[]);
+
   // Request browser GPS if mode is active
   useEffect(() => {
     let cancelled = false;
@@ -468,7 +486,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    */
   const submitCheckIn = async (
     placeId: string, 
-    audience: CheckInAudience
+    audience: CheckInAudience,
+    eventId?: string
   ): Promise<{
     success: boolean;
     checkIn?: CheckIn;
@@ -500,6 +519,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           isSimulated: activeLocationMode === 'simulation',
           audience,
           environment: appEnvironment,
+          eventId,
         }),
       });
 
@@ -561,39 +581,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setCheckins(prev => [newCheckIn, ...prev]);
       setPlaces(prev => prev.map(p => p.id === placeId ? { ...p, totalCheckins: p.totalCheckins + 1 } : p));
 
-      // Dynamic Gamification Engine: Evaluate and Unlock Badges
-      let newlyUnlockedBadgeName: string | undefined;
-
-      const nextBadges = badges.map((badge) => {
-          let updatedCount = badge.currentCount;
-
-          if (badge.family === 'Explorateur' && !badge.isUnlocked) {
-            updatedCount += 1;
-          }
-          if (badge.family === 'Maquis Master' && place.category === 'maquis' && !badge.isUnlocked) {
-            updatedCount += 1;
-          }
-          if (badge.family === 'Foodie' && (place.category === 'restaurants' || place.category === 'cafes_boulangeries') && !badge.isUnlocked) {
-            updatedCount += 1;
-          }
-          if (badge.family === 'Culture Hunter' && place.category === 'culture_art' && !badge.isUnlocked) {
-            updatedCount += 1;
-          }
-
-          const shouldUnlock = updatedCount >= badge.requiredCount && !badge.isUnlocked;
-
-          if (shouldUnlock) {
-            newlyUnlockedBadgeName = badge.name;
-          }
-
-          return {
-            ...badge,
-            currentCount: updatedCount,
-            isUnlocked: badge.isUnlocked || shouldUnlock,
-            unlockedAt: shouldUnlock ? new Date().toISOString() : badge.unlockedAt,
-          };
-      });
-      setBadges(nextBadges);
+      // Only the server evaluates badge rules and ledger evidence.
+      const newlyUnlocked:Badge[] = Array.isArray(serverData.newlyUnlocked) ? serverData.newlyUnlocked : [];
+      const newlyUnlockedBadgeName = (newlyUnlocked.find(badge=>badge.family==='Maquis Master') || newlyUnlocked[0])?.name;
+      if(Array.isArray(serverData.badges)) setBadges(serverData.badges);
 
       // Synchronize user XP directly with server award
       setCurrentUser(prev => ({
@@ -614,18 +605,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       };
       setPointsLedger(prev => [ledgerEntry, ...prev]);
 
-      if (newlyUnlockedBadgeName) {
-        dispatchNotification(
-          {
-            recipientId: currentUser.id,
-            category: 'progression',
-            title: 'Badge débloqué ! 🏆',
-            body: `Félicitations ! Vous venez de débloquer le badge "${newlyUnlockedBadgeName}" grâce à votre check-in.`,
-            targetType: 'badge',
-          },
-          true
-        );
-      }
+      for(const badge of newlyUnlocked) dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family} — palier validé par le serveur.`,targetType:'badge'},true);
 
       return {
         success: true,
@@ -677,6 +657,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     };
 
     setPosts(prev => [newPost, ...prev]);
+    if(data.linkedCheckinId&&data.mediaUrl?.startsWith('/api/media/')) {
+      const token=authSessionToken;
+      const revision=statsRevision.current;
+      fetch('/api/badges/photo',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({checkinId:data.linkedCheckinId,mediaUrl:data.mediaUrl})})
+        .then(async response=>{if(!response.ok)return null;return response.json();})
+        .then(result=>{if(!result||revision!==statsRevision.current||localStorage.getItem('chkpt_session_token')!==token)return;setBadges(result.badges);for(const badge of result.newlyUnlocked||[])dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family}`,targetType:'badge'},true);})
+        .catch(()=>{});
+    }
     // Publishing is optional and does not award visit XP.
   };
 
@@ -904,6 +892,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       currentUser,
       setCurrentUser,
       followingIds,
+      setFollowingIds,
       authSessionToken,
       setAuthSessionToken,
       appEnvironment,
@@ -925,6 +914,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       currentSimulatedSpot,
       setCurrentSimulatedSpot,
       userCurrentCoordinates,
+      locationReady: activeLocationMode === 'simulation' || browserCoordinates !== null,
       isOperatorView,
       setIsOperatorView,
       submitCheckIn,

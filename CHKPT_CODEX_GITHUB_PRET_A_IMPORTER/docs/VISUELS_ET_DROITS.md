@@ -20,3 +20,5 @@ Les captures de `docs/captures` montrent le navigateur pendant la recette automa
 Le fichier de secours contient ces mêmes captures ; il ne simule pas une session interactive.
 
 `banque-demo.png` est un visuel publicitaire généré par IA pour **Banque Boucle**, une banque imaginaire. Cette publicité de démonstration apparaît en tête du fil d’accueil, sans lien, bouton, formulaire ou offre financière. Elle indique Publicité, Exemple fictif, Non cliquable et l’absence de partenariat réel. Aucune banque réelle n’est représentée.
+
+La carte interactive utilise Leaflet 1.9.4 (licence BSD-2-Clause conservée dans `public/licenses/leaflet.txt`) et des tuiles OpenStreetMap avec attribution visible. Les repères demeurent fictifs. `radar-test-390.png` est une capture de test géométrique avec tuiles neutres simulées, pas une capture du fond géographique réel. La carte illustrée reste le secours sans tuiles externes.

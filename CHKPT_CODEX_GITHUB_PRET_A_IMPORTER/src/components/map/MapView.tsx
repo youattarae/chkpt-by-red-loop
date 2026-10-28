@@ -19,14 +19,20 @@ import {
   Filter 
 } from 'lucide-react';
 
+const DynamicMap = React.lazy(()=>import('./DynamicMap').then(module=>({default:module.DynamicMap})));
+
 interface MapViewProps {
   onSelectPlace: (placeId: string) => void;
 }
 
 export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
-  const { places } = useStore();
+  const { places, userCurrentCoordinates, locationReady, activeLocationMode } = useStore();
+  const [mapUnavailable, setMapUnavailable] = useState(false);
+  const [interactive, setInteractive] = useState(true);
 
   // Local state to store selected categories (Chip-based multi-toggle)
+  const [query, setQuery] = useState('');
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const [selectedCategories, setSelectedCategories] = useState<PlaceCategory[]>([]);
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(places[0]?.id || null);
 
@@ -44,13 +50,14 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   // Reset to display all places
   const handleResetFilters = () => {
     setSelectedCategories([]);
+    setQuery('');
   };
 
   // Filtered places according to active category chips
   const filteredPlaces = useMemo(() => {
-    if (selectedCategories.length === 0) return places;
-    return places.filter((p) => selectedCategories.includes(p.category as PlaceCategory));
-  }, [places, selectedCategories]);
+    const words = normalize(query).trim().split(/\s+/).filter(Boolean);
+    return places.filter(place => (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && words.every(word => normalize(`${place.name} ${place.commune} ${place.neighborhood} ${place.categoryLabel}`).includes(word)));
+  }, [places, selectedCategories, query]);
 
   // Selected place for bottom card preview
   const activePlace = useMemo(() => {
@@ -69,11 +76,17 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   }, [places]);
 
   return (
-    <div className="relative w-full h-[calc(100dvh-145px)] min-h-[560px] bg-canvas overflow-hidden flex flex-col">
+    <div className="relative w-full h-[calc(100dvh-145px)] min-h-[720px] bg-canvas overflow-hidden flex flex-col">
       
-      <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">Carte illustrée · positions de démonstration</span>
+      <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">{interactive ? 'Repères de lieux fictifs' : 'Carte illustrée · positions de démonstration'}</span>
+      <div className="p-3 bg-canvas relative z-20">
+        <label className="text-xs font-bold block">Rechercher un établissement<input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Nom, commune ou catégorie…" className="block w-full mt-1 p-3 rounded-xl border border-line bg-surface text-sm text-ink" /></label>
+        <p role="status" className="text-[10px] text-muted mt-1">{filteredPlaces.length} lieu{filteredPlaces.length > 1 ? 'x' : ''} trouvé{filteredPlaces.length > 1 ? 's' : ''} · données fictives</p>
+      </div>
+      <div className="px-3 pb-2 flex gap-2"><button type="button" aria-pressed={interactive} onClick={()=>setInteractive(true)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={()=>setInteractive(false)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte illustrée</button></div>
+      {mapUnavailable && !interactive && <p role="status" className="px-3 text-[10px] text-muted">Fond de carte indisponible : carte illustrée de secours active.</p>}
       {/* Floating Chip-Based Category Filter Bar */}
-      <div className="absolute top-3 left-3 right-3 z-20">
+      <div className="relative px-3 z-20">
         <CategoryFilterBar
           selectedCategories={selectedCategories}
           onToggleCategory={handleToggleCategory}
@@ -88,6 +101,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
         />
       </div>
 
+      {interactive ? <React.Suspense fallback={<p className="p-4 text-xs text-muted">Chargement de la carte interactive…</p>}><DynamicMap places={filteredPlaces} position={userCurrentCoordinates} ready={locationReady} simulated={activeLocationMode==='simulation'} selectedId={activePlace?.id || null} onSelect={setSelectedPlaceId} onFallback={()=>{setInteractive(false);setMapUnavailable(true);}} /></React.Suspense> : <>
       {/* Stylized Vector Map of Abidjan Canvas */}
       <div className="relative flex-1 w-full bg-canvas flex items-center justify-center p-4 pt-16">
         
@@ -165,9 +179,9 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
             <div className="w-12 h-12 rounded-2xl bg-surface border border-line text-muted flex items-center justify-center mb-3">
               <Filter className="w-6 h-6" />
             </div>
-            <h3 className="text-sm font-bold text-ink">Aucun lieu ne correspond aux catégories</h3>
+            <h3 className="text-sm font-bold text-ink">Aucun lieu ne correspond à votre recherche</h3>
             <p className="text-xs text-muted max-w-xs mt-1">
-              Modifiez la sélection des types de lieux ci-dessus pour afficher les repères certifiés.
+              Modifiez le nom ou les catégories pour retrouver les lieux fictifs.
             </p>
             <button
               onClick={handleResetFilters}
@@ -227,6 +241,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
 
       </div>
 
+      </>}
       {/* Selected Place Bottom Preview Card */}
       {activePlace && (
         <div className="absolute bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-lg mx-auto z-30">

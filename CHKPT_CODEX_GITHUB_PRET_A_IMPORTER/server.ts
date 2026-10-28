@@ -14,6 +14,9 @@
  *  - Vite middleware integration
  */
 
+import { evaluateBadges } from './server/badgeEngine';
+import { getEventCatalog } from './server/events';
+import { installRemoteAccess } from './server/remoteAccess';
 import express, { Request, Response } from 'express';
 import { createServer as createViteServer } from 'vite';
 import { GoogleGenAI } from '@google/genai';
@@ -34,6 +37,7 @@ import { processCheckinSubmission } from './server/checkinEngine';
 dotenv.config();
 
 const app = express();
+installRemoteAccess(app);
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Increase JSON body parser limit for base64 media payloads up to 20MB
@@ -42,6 +46,7 @@ app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // Global authentication middleware to resolve session on every request
 app.use(authenticateUser);
+app.get('/api/demo/access-mode', (_req, res) => res.json({ remote: process.env.CHKPT_REMOTE_ACCESS === 'true' }));
 
 // Initialize Gemini client with aistudio-build telemetry header
 const ai = new GoogleGenAI({
@@ -261,7 +266,53 @@ app.get('/api/auth/me', (req: Request, res: Response) => {
     return;
   }
   const { passwordHash: _, salt: __, ...safeUser } = req.user;
-  res.json({ authenticated: true, user: safeUser, followingIds: db.getFollowing(req.user.id) });
+  res.json({ authenticated: true, user: safeUser, followingIds: db.getFollowing(req.user.id), badges:evaluateBadges(req.user.id).badges });
+});
+
+// Public profile metadata only: never expose age, roles, credentials or visit history.
+app.get('/api/profiles/:id', requireAuth, (req: Request, res: Response) => {
+  const user = db.findUserById(req.params.id as string);
+  if (!user) { res.status(404).json({ error: 'profile_not_found' }); return; }
+  const hidden = user.visibility === 'private' || user.age < 18;
+  const profile = { id: user.id, displayName: user.displayName, username: user.username,
+    avatarUrl: user.avatarUrl, visibility: hidden ? 'private' : 'public',
+    ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
+  res.json({ profile, following: db.isFollower(req.user!.id, user.id) });
+});
+app.post('/api/profiles/:id/follow', requireAuth, (req: Request, res: Response) => {
+  const id = req.params.id as string;
+  const target = db.findUserById(id);
+  if (!target) { res.status(404).json({ error: 'profile_not_found' }); return; }
+  if (id === req.user!.id || typeof req.body.following !== 'boolean') { res.status(400).json({ error: 'invalid_follow' }); return; }
+  if (req.body.following && (target.visibility === 'private' || target.age < 18)) {
+    res.status(403).json({ error: 'private_profile', message: 'Les demandes de suivi privé ne sont pas disponibles dans cette démonstration.' }); return;
+  }
+  if (req.body.following) db.followUser(req.user!.id, id);
+  else db.unfollowUser(req.user!.id, id);
+  res.json({ following: db.isFollower(req.user!.id, id), followingIds: db.getFollowing(req.user!.id),
+    followersCount: target.followersCount, followingCount: db.findUserById(req.user!.id)!.followingCount });
+});
+
+app.get('/api/places/:id/reviews', (req: Request, res: Response) => {
+  const placeId = req.params.id as string;
+  if (!db.getPlaces().some(place => place.id === placeId)) { res.status(404).json({ error: 'place_not_found' }); return; }
+  const reviews = db.getReviews(placeId).flatMap(review => {
+    const author = db.findUserById(review.userId);
+    if (!author || author.visibility === 'private' || author.age < 18) return [];
+    return [{ id: review.id, userId: author.id, authorName: author.displayName, rating: review.rating, comment: review.comment, updatedAt: review.updatedAt }];
+  });
+  res.json({ reviews });
+});
+app.post('/api/places/:id/reviews', requireAuth, (req: Request, res: Response) => {
+  const placeId = req.params.id as string;
+  if (!db.getPlaces().some(place => place.id === placeId)) { res.status(404).json({ error: 'place_not_found' }); return; }
+  if (req.user!.visibility === 'private' || req.user!.age < 18) { res.status(403).json({ error: 'private_profile', message: 'Les avis publics ne sont pas proposés pour les profils privés dans cette démo.' }); return; }
+  const { rating, comment } = req.body;
+  if (!Number.isInteger(rating) || rating < 1 || rating > 5 || typeof comment !== 'string' || comment.trim().length < 3 || comment.trim().length > 1000) {
+    res.status(400).json({ error: 'invalid_review', message: 'Choisissez de 1 à 5 étoiles et un commentaire de 3 à 1 000 caractères.' }); return;
+  }
+  db.saveReview(req.user!.id, placeId, rating, comment.trim());
+  res.json({ success: true });
 });
 
 // ==========================================
@@ -271,6 +322,19 @@ app.get('/api/auth/me', (req: Request, res: Response) => {
 /**
  * Get all certified places in the official repository
  */
+app.get('/api/events', (_req,res)=>res.json({events:getEventCatalog()}));
+app.get('/api/badges',requireAuth,(req,res)=>res.json(evaluateBadges(req.user!.id)));
+app.post('/api/badges/photo',requireAuth,(req,res)=>{
+  const check=db.findCheckinById(req.body.checkinId);
+  const asset=mediaRegistry.get(String(req.body.mediaUrl||'').replace(/^\/api\/media\//,''));
+  if(!check||check.userId!==req.user!.id||check.status!=='verified'||!asset||asset.ownerId!==req.user!.id||db.findPlaceById(check.placeId)?.verificationStatus!=='verified'){res.status(403).json({error:'invalid_photo_proof'});return;}
+  const bytes=Buffer.from(asset.dataBase64.split(',')[1]||'', 'base64');
+  const imageHeader=(asset.mimeType==='image/png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))||(asset.mimeType==='image/jpeg'&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)||(asset.mimeType==='image/webp'&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP');
+  if(!imageHeader){res.status(400).json({error:'invalid_image'});return;}
+  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
+  db.recordLedgerEvent(req.user!.id,'PHOTO_PUBLISHED',digest);
+  res.json(evaluateBadges(req.user!.id));
+});
 app.get('/api/places', (_req: Request, res: Response) => {
   res.json({
     success: true,
@@ -306,6 +370,7 @@ app.post('/api/checkins', requireAuth, (req: Request, res: Response) => {
       isSimulated: Boolean(isSimulated),
       audience,
       environment,
+      eventId: typeof req.body.eventId === 'string' ? req.body.eventId : undefined,
     });
 
     if (!result.success) {

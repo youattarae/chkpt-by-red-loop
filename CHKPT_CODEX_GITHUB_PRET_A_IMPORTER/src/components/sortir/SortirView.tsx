@@ -1,3 +1,5 @@
+import { calculateDistanceMeters } from '../../services/geoService';
+import { publicationImage } from '../../data/publicationMedia';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -7,14 +9,14 @@ import { SafeImage } from '../common/SafeImage';
 
 import React, { useState } from 'react';
 import { useStore } from '../../services/store';
-import { 
-  Compass, 
-  Calendar, 
-  MapPin, 
-  Search, 
-  Sparkles, 
-  Check, 
-  CheckCheck, 
+import {
+  Compass,
+  Calendar,
+  MapPin,
+  Search,
+  Sparkles,
+  Check,
+  CheckCheck,
   ExternalLink,
   ChevronRight,
   Flame,
@@ -28,14 +30,27 @@ interface SortirViewProps {
 }
 
 export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
-  const { 
-    places, 
-    events, 
-    toggleEventIntent, 
-    adCampaigns, 
+  const {
+    places,
+    events,
+    toggleEventIntent,
+    adCampaigns,
     selectedZone,
-    userCurrentCoordinates 
+    userCurrentCoordinates, activeLocationMode, locationReady
   } = useStore();
+
+  const [category, setCategory] = useState('all');
+  const [radius, setRadius] = useState('all');
+  const [localQuery, setLocalQuery] = useState('');
+  const filtering = category !== 'all' || radius !== 'all' || !!localQuery.trim();
+  const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
+  const filteredPlaces = places.map(place => ({ ...place, distance: locationReady ? calculateDistanceMeters(userCurrentCoordinates, place.coordinates) : undefined }))
+    .filter(place => {
+      const club = /club|discoth[eè]que/i.test(place.categoryLabel + ' ' + place.tags.join(' '));
+      return (category === 'all' || (category === 'clubs' ? club : category === 'bars' ? place.category === 'bars_lounges' && !club : place.category === category))
+        && (radius === 'all' || (place.distance !== undefined && place.distance <= Number(radius)))
+        && normalize(`${place.name} ${place.commune} ${place.categoryLabel}`).includes(normalize(localQuery).trim());
+    }).sort((a,b) => (a.distance ?? Infinity) - (b.distance ?? Infinity));
 
   const [groundingQuery, setGroundingQuery] = useState('');
   const [isSearchingGrounding, setIsSearchingGrounding] = useState(false);
@@ -75,13 +90,13 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
     }
   };
 
-  const rooftops = places.filter(p => p.category === 'bars_lounges');
-  const maquis = places.filter(p => p.category === 'maquis');
+  const rooftops = filteredPlaces.filter(p => p.category === 'bars_lounges');
+  const maquis = filteredPlaces.filter(p => p.category === 'maquis');
   const cafes = places.filter(p => p.category === 'cafes_boulangeries');
 
   return (
     <div className="max-w-xl mx-auto px-3 sm:px-4 py-4 space-y-6 pb-24">
-      
+
       {/* Header Banner */}
       <div className="p-4 rounded-3xl bg-gradient-to-r from-blue-950/80 via-surface to-rose-950/60 border border-line">
         <div className="flex items-center gap-2 text-rose-500 text-xs font-bold uppercase tracking-wider mb-1">
@@ -95,6 +110,22 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
           Une sélection fictive pour imaginer vos prochaines sorties à Cocody.
         </p>
       </div>
+
+      <section aria-label="Filtres des sorties" className="bg-surface border border-line rounded-3xl p-4 space-y-3">
+        <h3 className="text-sm font-bold">Trouver une adresse</h3>
+        <label className="block text-xs font-semibold">Nom ou commune<input type="search" value={localQuery} onChange={event => setLocalQuery(event.target.value)} placeholder="Un lieu, une commune…" className="block w-full mt-1 p-3 rounded-xl border border-line bg-canvas text-sm" /></label>
+        <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3">
+          <label className="text-xs font-semibold">Catégorie de sortie<select value={category} onChange={event => setCategory(event.target.value)} className="block w-full mt-1 p-3 rounded-xl border border-line bg-canvas text-sm"><option value="all">Toutes les catégories</option><option value="bars">Bars</option><option value="restaurants">Restaurants</option><option value="clubs">Clubs</option><option value="maquis">Maquis</option><option value="cafes_boulangeries">Cafés</option><option value="culture_art">Culture</option></select></label>
+          <label className="text-xs font-semibold">Distance maximale<select value={radius} onChange={event => setRadius(event.target.value)} className="block w-full mt-1 p-3 rounded-xl border border-line bg-canvas text-sm"><option value="all">Toutes les distances</option><option value="1000">1 km</option><option value="5000">5 km</option><option value="10000">10 km</option><option value="20000">20 km</option></select></label>
+        </div>
+        <p className="text-[11px] text-muted">{activeLocationMode === 'simulation' ? 'Distances simulées depuis la position choisie dans le GPS.' : locationReady ? 'Distances estimées depuis votre GPS réel.' : 'Position GPS réelle en attente : aucun rayon ne peut être appliqué.'} Distances à vol d’oiseau, pas des itinéraires. Ces filtres concernent les établissements ; l’agenda reste affiché.</p>
+        {filtering && <button type="button" onClick={() => { setCategory('all'); setRadius('all'); setLocalQuery(''); }} className="text-xs text-blue-400 font-bold py-2 cursor-pointer">Réinitialiser les filtres de sortie</button>}
+        <p role="status" className="text-xs text-muted">{filteredPlaces.length} établissement{filteredPlaces.length > 1 ? 's' : ''} correspondant{filteredPlaces.length > 1 ? 's' : ''}</p>
+      </section>
+      {filtering && <section aria-label="Résultats des sorties" className="space-y-3">
+        {filteredPlaces.length === 0 && <p className="p-4 bg-soft rounded-2xl text-sm text-muted">Aucun établissement correspondant dans les données fictives. Élargissez la distance ou changez de catégorie.</p>}
+        {filteredPlaces.map(place => <button type="button" key={place.id} onClick={() => onSelectPlace(place.id)} className="w-full rounded-2xl border border-line bg-surface p-3 flex gap-3 text-left items-center cursor-pointer"><SafeImage src={publicationImage(place.coverImage)} alt="" className="w-16 h-16 rounded-xl object-cover shrink-0" /><span className="min-w-0 flex-1"><strong className="block text-sm break-words">{place.name}</strong><span className="block text-xs text-muted">{place.categoryLabel} · {place.commune}</span>{place.distance !== undefined && <span className="block text-xs text-blue-400">{(place.distance / 1000).toLocaleString('fr-FR',{maximumFractionDigits:1})} km {activeLocationMode === 'simulation' ? '· simulés' : '· estimés'}</span>}</span><ChevronRight className="w-4 h-4 shrink-0 text-muted" /></button>)}
+      </section>}
 
       {/* Google Maps Grounding Search (Gemini 3.8 Flash) */}
       <div className="bg-surface border border-line rounded-3xl p-3.5 sm:p-4 shadow-sm space-y-3">
@@ -192,7 +223,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
                   </div>
 
                   <h4 className="text-xs font-bold text-ink">{evt.title}</h4>
-                  
+
                   <div className="flex items-center gap-1 text-[11px] text-muted mt-0.5">
                     <MapPin className="w-3 h-3 text-muted" />
                     <span>{evt.locationName} ({evt.commune})</span>
@@ -240,6 +271,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
         </div>
       </div>
 
+      {!filtering && <>
       {/* Editorial Section 1: Rooftops & Bars Panoramiques */}
       <div className="space-y-3">
         <div className="flex items-center gap-2">
@@ -314,6 +346,7 @@ export const SortirView: React.FC<SortirViewProps> = ({ onSelectPlace }) => {
         </div>
       </div>
 
+      </>}
     </div>
   );
 };

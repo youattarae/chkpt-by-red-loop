@@ -1,3 +1,4 @@
+import { RewardDemo } from '../demo/RewardDemo';
 import { VisitedPlaces } from './VisitedPlaces';
 import React, { useId, useState } from 'react';
 import { MapPin, ChevronRight, Sparkles, UserRound, Settings, Lock, ChevronDown } from 'lucide-react';
@@ -52,6 +53,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
       <button type="button" onClick={onOpenAuth} title="Profil & Compte Démo" className="w-full py-3 rounded-2xl bg-soft hover:bg-raised text-ink font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"><UserRound className="w-4 h-4" />Gérer mon compte</button>
 
       <VisitedPlaces onSelectPlace={onSelectPlace} />
+      <RewardDemo key={currentUser.id} />
 
       <div className="space-y-2">
         <button type="button" aria-label="Afficher mon activité" onClick={() => setActivityOpen(!activityOpen)} aria-expanded={activityOpen} aria-controls={`${profileId}-activity`}

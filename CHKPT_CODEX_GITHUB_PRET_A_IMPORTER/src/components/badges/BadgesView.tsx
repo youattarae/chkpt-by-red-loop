@@ -29,6 +29,7 @@ interface BadgesViewProps {
 
 export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false }) => {
   const { badges, currentUser } = useStore();
+  const [family,setFamily] = useState('all');
   const [leaderboardTab, setLeaderboardTab] = useState<'friends' | 'national'>('friends');
 
   const getBadgeIcon = (iconName: string) => {
@@ -79,14 +80,15 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false
             8 Familles Officielles CHKPT
           </h3>
           <p className="text-[11px] text-body mt-0.5 leading-relaxed">
-            Chaque check-in vérifié à Cocody et Abidjan fait progresser vos jauges pour débloquer des statuts de renom.
+            40 paliers · barème provisoire. Progression calculée côté serveur avec les visites créditées et les preuves admissibles. Le personnage de présentation conserve une progression de départ fictive.
           </p>
         </div>
       </div>
 
+      <div aria-label="Familles de badges" className="flex flex-wrap gap-2">{['all',...new Set(badges.map(badge=>badge.family))].map(item=><button type="button" key={item} aria-pressed={family===item} onClick={()=>setFamily(item)} className={`text-xs rounded-xl px-3 py-2 cursor-pointer ${family===item?'bg-blue-950 text-blue-400':'bg-soft text-muted'}`}>{item==='all'?`Tous (${badges.length})`:item}</button>)}</div>
       {/* Badges Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {badges.map((badge) => {
+        {badges.filter(badge=>family==='all'||badge.family===family).map((badge) => {
           const progressPct = Math.min(100, Math.round((badge.currentCount / badge.requiredCount) * 100));
 
           return (

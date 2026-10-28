@@ -18,6 +18,14 @@ Le [partage des établissements et l’historique personnel](docs/PARTAGE_ET_HIS
 
 Voir aussi le [bilan complet du prototype](docs/BILAN_PROTOTYPE.md).
 
+Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue, recherche, filtres Sortir, récompense fictive, aperçu établissement, profils suivis et avis.
+
+L’[accès privé à distance](docs/ACCES_PRIVE_DISTANCE.md) est préparé pour Render avec un mot de passe visiteur distinct de l’opérateur. Aucun hébergement n’est créé automatiquement.
+
+La [carte interactive et les 40 paliers](docs/CARTE_RADAR_ET_40_BADGES.md) utilisent un radar de 250 m et un barème de prototype calculé côté serveur.
+
+Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINALE.md) peut être copié dans la conversation de conception pour préparer le prototype et la version finale.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.
