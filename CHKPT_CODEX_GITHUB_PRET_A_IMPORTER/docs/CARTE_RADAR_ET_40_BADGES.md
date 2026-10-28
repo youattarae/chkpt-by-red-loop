@@ -12,7 +12,11 @@ L’attribution OpenStreetMap reste visible ; Leaflet est sous licence BSD-2-Cla
 
 La capture automatisée `radar-test-390.png` utilise une tuile neutre de test : elle vérifie la géométrie et l’interaction, pas la disponibilité réelle du fournisseur. La carte en ligne doit être répétée sur les appareils de présentation.
 
-## Catalogue de 40 badges
+## Catalogue technique conservé pour la suite
+
+Décision suivante du porteur : le prototype ne doit pas présenter tous les badges. L’écran affiche maintenant au maximum six cartes sélectionnées ; le catalogue étendu ci-dessous reste une base technique provisoire, sans arbitrage sur la structure finale des badges et degrés.
+
+### Ancien catalogue de 40 paliers
 
 Huit familles, cinq paliers chacune : **Bronze, Argent, Or, Platine, Diamant**. Les familles sont celles de la conception ; les noms supplémentaires et les seuils ci-dessous sont **provisoires**, autorisés pour le prototype, pas un barème officiel déjà validé.
 
@@ -45,7 +49,7 @@ Les paliers élevés sont disponibles dans le moteur, mais ne sont pas tous atte
 
 Le serveur fournit le catalogue des événements et leurs lieux/horaires. Un événement actif du même lieu peut être choisi **facultativement** dans le parcours central de check-in. « J’y serai » reste une intention et ne débloque rien. Une session fictive du jour au maquis est fournie uniquement en démo privée pour essayer Event Hunter ; elle ne représente pas un événement réel.
 
-Pour Photographe, une image SVG de décor, une URL externe, une image de couverture ou un simple compteur local ne suffit pas. Le serveur vérifie le compte, le check et la propriété du média importé ; les doublons de contenu sont comptés une fois. Le fichier doit présenter une signature PNG/JPEG/WebP admissible. Le client transmet la demande lors d’une publication liée à un check. Les photos sont redessinées par le composant d’import existant ; ce mécanisme n’est pas une expertise antifraude ou une certification EXIF côté serveur. Les médias restent en mémoire serveur jusqu’à son redémarrage, tandis que l’événement de progression est conservé dans le journal.
+Pour Photographe, une image SVG de décor, une URL externe, une image de couverture ou un simple compteur local ne suffit pas. Le serveur vérifie le compte, le check et la propriété du média importé ; les doublons de contenu sont comptés une fois. Le fichier doit présenter une signature PNG/JPEG/WebP admissible. Le serveur crédite cette progression lors d’une publication effectivement enregistrée et liée à un check. Un import abandonné ne suffit pas. Les photos sont redessinées par le composant d’import existant ; ce mécanisme n’est pas une expertise antifraude ou une certification EXIF côté serveur. Les médias sont désormais enregistrés dans la base serveur, sous réserve de la conservation du disque ; l’événement de progression reste dans le journal.
 
 ## Vérifications
 

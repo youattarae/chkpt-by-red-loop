@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import { BADGE_CATALOG, DEMO_PROGRESS } from '../shared/badgeCatalog';
 import { db } from './db';
 import { privateDemoEnabled } from './demoConfig';
@@ -31,4 +32,16 @@ export function evaluateBadges(userId:string){
     return {...badge,currentCount:counters[badge.family],isUnlocked:!!existing||baseline||reached,unlockedAt:existing?.timestamp};
   });
   return {badges,newlyUnlocked,provisionalRules:true,demonstrationBaseline:demo};
+}
+
+export function awardPublishedPhoto(userId:string,checkinId:string,mediaUrl:string){
+  const check=db.findCheckinById(checkinId);
+  const asset=db.getRawData().media.find(asset=>'/api/media/'+asset.assetId===mediaUrl&&asset.ownerId===userId);
+  const published=db.getRawData().posts.some(post=>post.authorId===userId&&post.linkedCheckinId===checkinId&&post.mediaUrl===mediaUrl);
+  if(!check||check.userId!==userId||check.status!=='verified'||!asset||!published||db.findPlaceById(check.placeId)?.verificationStatus!=='verified')return null;
+  const bytes=Buffer.from(asset.dataBase64.split(',')[1]||'','base64');
+  const valid=(asset.mimeType==='image/png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))||(asset.mimeType==='image/jpeg'&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)||(asset.mimeType==='image/webp'&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP');
+  if(!valid)return null;
+  db.recordLedgerEvent(userId,'PHOTO_PUBLISHED',crypto.createHash('sha256').update(bytes).digest('hex'));
+  return evaluateBadges(userId);
 }

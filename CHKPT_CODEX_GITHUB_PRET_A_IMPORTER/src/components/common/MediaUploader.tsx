@@ -92,12 +92,13 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
             if (data.success && data.readUrl) {
               onMediaUploaded(data.readUrl);
             } else {
-              // Fallback to sanitized client base64 preview
-              onMediaUploaded(sanitizedBase64);
+              setErrorMsg(data.message||'L’image n’a pas été enregistrée. Réessayez.');
+              setPreviewUrl('');
             }
           })
           .catch(() => {
-            onMediaUploaded(sanitizedBase64);
+            setErrorMsg('Import interrompu. Réessayez avant de publier.');
+            setPreviewUrl('');
           })
           .finally(() => {
             setIsProcessing(false);

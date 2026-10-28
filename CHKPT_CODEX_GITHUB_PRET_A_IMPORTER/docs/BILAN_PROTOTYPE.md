@@ -95,12 +95,22 @@ Visuels locaux générés pour le maquis, la terrasse, la cour culturelle et la 
 - **Profils de communauté** : ouvrir l’auteur d’une publication, voir son profil public et ses publications accessibles, suivre ou ne plus suivre. La relation est enregistrée côté serveur et alimente Amis. Les profils privés/mineurs et l’historique restent protégés ; les demandes de suivi privé ne sont pas ajoutées.
 - **Avis** : composant `ReviewSection`, note de 1 à 5 étoiles et commentaire, exemple fictif visible, un avis modifiable par compte et lieu. Validation serveur, enregistrement dans la base et absence d’exposition des avis de profils privés/mineurs. Les notes fictives initiales de la fiche restent distinctes.
 - **Carte et radar** : Leaflet/OpenStreetMap, zoom et déplacement, recentrage sur cinq zones d’Abidjan et cercle de présence de 250 m ; secours illustré si le fond est inaccessible.
-- **40 badges** : cinq paliers dans chacune des huit familles, barème provisoire autorisé et calcul serveur fondé sur le journal et les preuves. Déblocages idempotents, notifications, preuves d’événement et de photo, sans bonus XP de badge ajouté. La progression de départ de Koffi reste fictive. Voir [les règles et limites](CARTE_RADAR_ET_40_BADGES.md).
+- **Sélection de badges** : le prototype affiche au maximum six cartes ; le catalogue technique plus large est conservé pour la suite. La structure finale des badges et degrés reste à arbitrer. Le calcul serveur est fondé sur le journal et les preuves. Déblocages idempotents, notifications, preuves d’événement et de photo, sans bonus XP de badge ajouté. La progression de départ de Koffi reste fictive. Voir [les règles et limites](CARTE_RADAR_ET_40_BADGES.md).
 - **Accès privé à distance** : configuration Node.js et Render, barrière HTTPS avec mot de passe visiteur distinct de l’opérateur, protection des fichiers et API, cookie sécurisé, déconnexion et limitation des tentatives. Le compte Render et le service restent à créer : aucun lien hébergé actif n’est revendiqué.
 
 Captures et mode d’emploi : [EVOLUTIONS_DEMO.md](EVOLUTIONS_DEMO.md). Installation de l’hébergement : [ACCES_PRIVE_DISTANCE.md](ACCES_PRIVE_DISTANCE.md).
 
-## 6. Lot D — supports et répétition
+## 6. Synchronisation et budget gratuit
+
+Le même compte retrouve ses nouvelles publications, photos, favoris, visites, XP et badges sur ses appareils. Les réactions et commentaires sont persistés. La confidentialité est vérifiée côté serveur, y compris pour les photos privées ; les anciennes réponses ne doivent pas réafficher les données du compte précédent.
+
+La reprise d’une publication après une réponse réseau perdue utilise le même identifiant pour éviter un doublon. Une erreur conserve le texte dans le formulaire. Les médias ne reposent plus seulement sur la mémoire du processus.
+
+Le budget retenu reste **strictement gratuit**. L’offre Render préparée peut effacer son disque ; aucune permanence gratuite sur Internet n’est garantie. Une sauvegarde chiffrée et sa restauration sont disponibles pour les administrateurs de la démo. Elles incluent les données et photos, mais pas les sessions actives. Une restauration remplace le jeu de données et impose une reconnexion.
+
+Voir [SYNCHRONISATION_ET_SAUVEGARDE.md](SYNCHRONISATION_ET_SAUVEGARDE.md). Les anciennes données locales ne sont pas publiées ou importées automatiquement.
+
+## 7. Lot D — supports et répétition
 
 - Guide de présentation et scénario court pour Ingrid.
 - Checklist de préparation et de répétition.
@@ -109,7 +119,7 @@ Captures et mode d’emploi : [EVOLUTIONS_DEMO.md](EVOLUTIONS_DEMO.md). Installa
 - Documentation du lancement sur Mac et Windows.
 - Essai accompagné sur le Mac et accès depuis le téléphone sur le même réseau.
 
-## 7. Comment accéder à la démonstration
+## 8. Comment accéder à la démonstration
 
 Sur l’ordinateur, depuis le dossier contenant `package.json`, après configuration locale du fichier `.env` :
 
@@ -132,26 +142,26 @@ Le GPS réel du navigateur nécessite généralement HTTPS. Le mode Simulateur c
 
 Ne jamais envoyer ni versionner le fichier `.env`, son mot de passe ou les données `.data/`.
 
-## 8. Vérifications et limites
+## 9. Vérifications et limites
 
 Les contrôles couvrent la sécurité des accès, la confidentialité, les XP et doublons, le parcours complet et sa répétition, les réponses asynchrones, le rechargement, les images locales et leur secours, la navigation au clavier, les réglages, les deux thèmes et les écrans de 320, 390 et 1 280 pixels. Le partage et l’historique personnel font l’objet de contrôles supplémentaires.
 
-**Dernière validation :** compilation, vérification des types et **33/33 groupes** de contrôles réussis sous Chromium Linux ; les 11 tests historiques sont inclus. Les supports ont été actualisés et le HTML de secours revérifié hors connexion.
+**Dernière validation :** compilation, vérification des types et **35/35 groupes** de contrôles réussis sous Chromium Linux ; les 11 tests historiques sont inclus. Les supports ont été actualisés et le HTML de secours revérifié hors connexion.
 
-Les résultats exacts de la dernière exécution sont consignés dans [IMPLEMENTATION_STATUS.md](../IMPLEMENTATION_STATUS.md). Les contrôles serveur et la compilation passent également sous Node.js 22. Les tests navigateur sont exécutés sous Chromium Linux ; ils ne remplacent pas la répétition sur le Mac, Safari du téléphone et Windows d’Ingrid.
+Les résultats exacts de la dernière exécution sont consignés dans [IMPLEMENTATION_STATUS.md](../IMPLEMENTATION_STATUS.md). Les 21 groupes serveur et la compilation passent également sous Node.js 22. Les tests navigateur sont exécutés sous Chromium Linux ; ils ne remplacent pas la répétition sur le Mac, Safari du téléphone et Windows d’Ingrid.
 
 Limites à connaître :
 
 - Prototype privé, pas application prête pour la production.
 - Données, statistiques de départ, personnes et lieux fictifs ; aucune traction ou partenariat revendiqué.
-- Publications, intentions et résumé de l’historique conservés localement dans le navigateur ; pas de synchronisation complète entre appareils. Les badges sont désormais calculés et conservés côté serveur.
+- Publications, médias, favoris, réactions, commentaires et historique personnel sont désormais partagés via le serveur. Les intentions, notifications locales et utilisation de récompense fictive restent propres au navigateur.
 - Sessions, distance et XP contrôlés côté serveur ; absence de preuve de l’origine physique du GPS.
 - Avis et relations de suivi enregistrés sur le serveur, sous réserve de la conservation de sa base ; un hébergement gratuit peut réinitialiser cette base.
-- Médias importés non conservés après redémarrage du serveur.
+- Médias importés conservés dans la base serveur tant que le disque est conservé ; une offre gratuite peut perdre ce disque.
 - Recherche externe Gemini facultative et non nécessaire au scénario ; intégration externe non validée pour la présentation.
 - Pas de paiement, billetterie, application mobile native ou backend de production.
 
-## 9. Documents utiles
+## 10. Documents utiles
 
 - [Accès privé à distance](ACCES_PRIVE_DISTANCE.md)
 - [Compléments et captures](EVOLUTIONS_DEMO.md)
@@ -164,6 +174,6 @@ Limites à connaître :
 - [Démonstration illustrée PDF](DEMONSTRATION_PAS_A_PAS.pdf)
 - [Support autonome de secours](DEMO_SECOURS.html)
 
-## 10. Prochaine étape
+## 11. Prochaine étape
 
 Créer le compte Render et déployer la configuration préparée, puis vérifier le lien HTTPS avec un téléphone en données mobiles. Installer la version actualisée, vérifier les nouveaux éléments sur le Mac et le téléphone, puis installer la même version sur l’ordinateur Windows d’Ingrid. Répéter le scénario complet avec les appareils de présentation avant toute fusion finale ou utilisation devant le jury.

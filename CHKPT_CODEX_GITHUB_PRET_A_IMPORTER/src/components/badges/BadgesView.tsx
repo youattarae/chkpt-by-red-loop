@@ -29,6 +29,8 @@ interface BadgesViewProps {
 
 export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false }) => {
   const { badges, currentUser } = useStore();
+  const featuredIds=['bdg_maquis_bronze','bdg_explorateur_bronze','bdg_foodie_bronze'];
+  const featured=[...badges.filter(badge=>badge.isUnlocked),...badges.filter(badge=>featuredIds.includes(badge.id))].filter((badge,index,items)=>items.findIndex(item=>item.id===badge.id)===index).slice(0,6);
   const [family,setFamily] = useState('all');
   const [leaderboardTab, setLeaderboardTab] = useState<'friends' | 'national'>('friends');
 
@@ -65,7 +67,7 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false
             Badges & Titres d'Abidjan
           </h2>
           <span className="text-xs text-muted">
-            {unlockedCount} sur {badges.length} trophées débloqués
+            {unlockedCount} badges débloqués · sélection du prototype
           </span>
         </div>
       </div>}
@@ -77,18 +79,18 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false
         </div>
         <div>
           <h3 className="text-xs font-bold text-ink uppercase tracking-wider">
-            8 Familles Officielles CHKPT
+            Badges de démonstration
           </h3>
           <p className="text-[11px] text-body mt-0.5 leading-relaxed">
-            40 paliers · barème provisoire. Progression calculée côté serveur avec les visites créditées et les preuves admissibles. Le personnage de présentation conserve une progression de départ fictive.
+            Quelques badges pour découvrir la progression · barème provisoire. Progression calculée côté serveur avec les visites créditées et les preuves admissibles. Le personnage de présentation conserve une progression de départ fictive.
           </p>
         </div>
       </div>
 
-      <div aria-label="Familles de badges" className="flex flex-wrap gap-2">{['all',...new Set(badges.map(badge=>badge.family))].map(item=><button type="button" key={item} aria-pressed={family===item} onClick={()=>setFamily(item)} className={`text-xs rounded-xl px-3 py-2 cursor-pointer ${family===item?'bg-blue-950 text-blue-400':'bg-soft text-muted'}`}>{item==='all'?`Tous (${badges.length})`:item}</button>)}</div>
+      <div aria-label="Familles de badges" className="flex flex-wrap gap-2">{['all',...new Set(featured.map(badge=>badge.family))].map(item=><button type="button" key={item} aria-pressed={family===item} onClick={()=>setFamily(item)} className={`text-xs rounded-xl px-3 py-2 cursor-pointer ${family===item?'bg-blue-950 text-blue-400':'bg-soft text-muted'}`}>{item==='all'?`Sélection (${featured.length})`:item}</button>)}</div>
       {/* Badges Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {badges.filter(badge=>family==='all'||badge.family===family).map((badge) => {
+        {featured.filter(badge=>family==='all'||badge.family===family).map((badge) => {
           const progressPct = Math.min(100, Math.round((badge.currentCount / badge.requiredCount) * 100));
 
           return (

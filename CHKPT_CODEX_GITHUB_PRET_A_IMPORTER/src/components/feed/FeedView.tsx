@@ -40,6 +40,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const [newPostText, setNewPostText] = useState('');
   const [newPostMediaUrl, setNewPostMediaUrl] = useState('');
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [publishing,setPublishing]=useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   // Toggle category visibility
@@ -87,7 +88,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   };
 
   const accessiblePosts = useMemo(() => posts.filter(post =>
-    (post.audience === 'public' || post.authorId === currentUser.id) &&
+    (post.audience === 'public' || post.authorId === currentUser.id || (post.audience === 'followers' && followingIds.includes(post.authorId))) &&
     (feedFilter !== 'friends' || followingIds.includes(post.authorId))
   ), [posts, currentUser.id, feedFilter, followingIds]);
 
@@ -113,16 +114,19 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
     return counts;
   }, [accessiblePosts, places]);
 
-  const handlePublishPost = (e: React.FormEvent) => {
+  const handlePublishPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPostText.trim()) return;
 
-    createPost({
+    setPublishing(true);
+    const published=await createPost({
       text: newPostText.trim(),
       mediaUrl: newPostMediaUrl || undefined,
       isVerifiedVisit: false,
     });
 
+    setPublishing(false);
+    if(!published)return;
     setNewPostText('');
     setNewPostMediaUrl('');
     setIsCreatingPost(false);
@@ -204,7 +208,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
               
               <button
                 type="submit"
-                disabled={!newPostText.trim()}
+                disabled={publishing || !newPostText.trim()}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 Publier

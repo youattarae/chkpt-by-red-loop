@@ -32,7 +32,7 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { 
-    currentUser, 
+    currentUser, isServerAuthenticated,
     setCurrentUser, 
     setAuthSessionToken,
     authSessionToken,
@@ -205,6 +205,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           </button>
         </div>
 
+        {isServerAuthenticated && <button type="button" disabled={isLoading} onClick={async()=>{setIsLoading(true);try{await fetch('/api/auth/logout',{method:'POST',headers:{Authorization:`Bearer ${authSessionToken}`}});}catch{/* Clear this device even when the server is unreachable. */}finally{setAuthSessionToken('');setIsLoading(false);onClose();}}} className="mx-4 my-2 text-xs text-rose-400 underline cursor-pointer">Se déconnecter de cet appareil</button>}
         <div className="bg-canvas/80 border-b border-line/80 px-4 py-2.5 text-xs text-amber-300">
           Prototype de démonstration — données fictives
         </div>

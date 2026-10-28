@@ -4,3 +4,9 @@ dist/
 .env*
 !.env.example
 *.log
+
+# Private data and backups, including a custom data directory.
+chkpt_db.json*
+*.chkpt
+restore-safety/
+CHKPT-anciennes-donnees-locales*.json

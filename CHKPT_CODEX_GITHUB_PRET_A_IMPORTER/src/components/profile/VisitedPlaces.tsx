@@ -18,7 +18,7 @@ export function VisitedPlaces({ onSelectPlace }: { onSelectPlace: (id: string) =
       <ChevronDown className={`w-4 h-4 shrink-0 ${open ? 'rotate-180' : ''}`} />
     </button>
     {open && <section id={id} aria-label="Historique des lieux visités" className="p-3 space-y-3">
-      <p className="text-xs text-muted">Visible uniquement par vous, du plus récent au plus ancien. Les checks refusés n’y figurent pas. Données de démonstration conservées dans ce navigateur.</p>
+      <p className="text-xs text-muted">Visible uniquement par vous, du plus récent au plus ancien. Les checks refusés n’y figurent pas. Visites enregistrées sur le serveur de démonstration.</p>
       {placeIds.length === 0 && <p className="text-sm text-body py-3">Aucun lieu visité pour le moment. Vos checks validés apparaîtront ici.</p>}
       {placeIds.map(placeId => {
         const entries = visits.filter(visit => visit.placeId === placeId);

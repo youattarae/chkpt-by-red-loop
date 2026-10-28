@@ -67,7 +67,7 @@ export async function checkProfile(url: string, password: string) {
       await page.getByRole('button', { name: 'Afficher mon activité', exact: true }).click();
       await page.getByRole('region', { name: 'Mon activité', exact: true }).getByRole('heading', { name: 'Lagon Bleu Rooftop Lounge', exact: true }).waitFor();
       await page.getByRole('button', { name: 'Journal XP', exact: true }).click();
-      await page.getByText('Visite vérifiée au Lagon Bleu Rooftop (+50 XP)', { exact: true }).waitFor();
+      await page.getByText(/Visite validée à Lagon Bleu Rooftop Lounge.*50 XP/).waitFor();
       assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Volet activité sans débordement ${width}px`);
       await page.getByRole('button', { name: 'Gérer mon compte', exact: true }).click();
       await page.getByRole('heading', { name: 'Compte & Environnement', exact: true }).waitFor();

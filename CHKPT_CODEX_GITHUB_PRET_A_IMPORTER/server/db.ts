@@ -6,6 +6,8 @@
  * check-ins, isolated proofs, points ledger, follows, and reports.
  */
 
+import { INITIAL_POSTS } from '../src/data/mockData';
+import type { Post } from '../src/types';
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
@@ -131,7 +133,15 @@ export interface ReportEntity {
 export interface ReviewEntity {
   id: string; placeId: string; userId: string; rating: number; comment: string; updatedAt: string;
 }
+export interface StoredPost extends Post { likedBy: string[]; baseLikesCount: number; baseCommentsCount: number }
+export interface StoredMedia { assetId:string; ownerId:string; ownerUsername:string; audience:'private'|'followers'|'public'; mimeType:string; sizeBytes:number; dataBase64:string; createdAt:string; token:string }
+export interface SavedPlace { userId:string; placeId:string }
+function seedPosts():StoredPost[]{return INITIAL_POSTS.map(post=>({...post,likedBy:post.isLikedByCurrentUser?['usr_01']:[],baseLikesCount:Math.max(0,post.likesCount-(post.isLikedByCurrentUser?1:0)),baseCommentsCount:Math.max(0,post.commentsCount-post.comments.length)}));}
+
 export interface DatabaseSchema {
+  posts: StoredPost[];
+  saved_places: SavedPlace[];
+  media: StoredMedia[];
   reviews: ReviewEntity[];
   users: UserEntity[];
   sessions: SessionEntity[];
@@ -144,7 +154,8 @@ export interface DatabaseSchema {
   version: number;
 }
 
-const DB_DIR = path.resolve(process.cwd(), '.data');
+const DB_DIR = path.resolve(process.env.CHKPT_DATA_DIR || path.join(process.cwd(), '.data'));
+export const databaseDirectory = DB_DIR;
 const DB_FILE = path.join(DB_DIR, 'chkpt_db.json');
 
 // Canonical certified places for Abidjan (Shared front-end & back-end)
@@ -402,6 +413,9 @@ class Database {
           createdAt: new Date().toISOString(),
         },
       ],
+      posts: seedPosts(),
+      saved_places: [{userId:'usr_01',placeId:'plc_cocody_lounge'}],
+      media: [],
       reviews: [],
       reports: [],
       version: 2,
@@ -419,6 +433,10 @@ class Database {
         if (!tables.every(table => Array.isArray(parsed[table]))) throw new Error('Invalid database tables');
         if (parsed.reviews !== undefined && !Array.isArray(parsed.reviews)) throw new Error('Invalid reviews table');
         parsed.reviews ??= [];
+        for(const table of ['posts','saved_places','media']) if(parsed[table]!==undefined&&!Array.isArray(parsed[table])) throw new Error('Invalid shared data table');
+        parsed.posts ??= seedPosts();
+        parsed.saved_places ??= [{userId:'usr_01',placeId:'plc_cocody_lounge'}];
+        parsed.media ??= [];
         parsed.places = CANONICAL_PLACES;
         if (!parsed.users.some((user: UserEntity) => user.id === 'usr_02' || user.username === 'amara_sound')) parsed.users.push(creatorDemoProfile());
         // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
@@ -601,6 +619,29 @@ class Database {
     if(this.data.points_ledger.some(entry=>entry.userId===userId&&entry.sourceAction===sourceAction&&entry.referenceId===referenceId)) return false;
     this.data.points_ledger.push({id:crypto.randomUUID(),userId,sourceAction,referenceId,amount:0,timestamp:new Date().toISOString()});
     this.save();return true;
+  }
+
+  public validateSnapshot(data:unknown):void {
+    if(!data||typeof data!=='object')throw new Error('Invalid snapshot');
+    const value=data as DatabaseSchema;
+    for(const field of ['users','sessions','places','checkins','checkin_proofs','points_ledger','follows','reviews','posts','saved_places','media','reports'] as const)if(!Array.isArray(value[field]))throw new Error('Invalid snapshot table');
+    for(const field of ['users','sessions','places','checkins','checkin_proofs','points_ledger','follows','reviews','posts','saved_places','media','reports'] as const)if(value[field].some(row=>!row||typeof row!=='object'))throw new Error('Invalid snapshot row');
+    if(new Set(value.users.map(user=>user.id)).size!==value.users.length||new Set(value.users.map(user=>user.username)).size!==value.users.length)throw new Error('Duplicate user');
+    for(const post of value.posts)if(typeof post.id!=='string'||typeof post.authorId!=='string'||typeof post.text!=='string'||!Array.isArray(post.comments)||!Array.isArray(post.likedBy))throw new Error('Invalid post');
+    if(!value.users.some(user=>user.id==='usr_admin'))throw new Error('Missing operator');
+    for(const user of value.users)if(typeof user.id!=='string'||typeof user.username!=='string'||typeof user.passwordHash!=='string'||typeof user.salt!=='string')throw new Error('Invalid user');
+  }
+  public restoreSnapshot(snapshot:DatabaseSchema):void {
+    this.validateSnapshot(snapshot);
+    const previous=this.data;
+    try{this.save({...snapshot,sessions:[]});this.data=this.load();}
+    catch(error){this.save(previous);this.data=previous;throw error;}
+  }
+
+  public updateSharedData(next: Partial<Pick<DatabaseSchema,'posts'|'saved_places'|'media'>>):void {
+    const updated={...this.data,...next};
+    this.save(updated);
+    this.data=updated;
   }
 
   public getReviews(placeId: string): ReviewEntity[] {

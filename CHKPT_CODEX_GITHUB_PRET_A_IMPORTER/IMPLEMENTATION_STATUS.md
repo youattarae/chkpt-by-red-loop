@@ -11,12 +11,12 @@ Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la pr
 
 Commandes : `npm ci`, `npm run lint`, `npm run build`,
 `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` (ou Chromium Playwright installé).
-Le lanceur exécute 33 groupes de contrôles, dont la suite historique de 11 tests.
+Le lanceur exécute 35 groupes de contrôles, dont la suite historique de 11 tests.
 Les tests utilisent leurs propres serveurs et bases temporaires, sans toucher aux données de présentation.
 
-Les publications et intentions restent locales au navigateur. Les badges sont désormais évalués côté serveur et leurs déblocages sont conservés dans le journal.
+Les publications, photos, favoris, réactions, commentaires, visites et progressions sont conservés côté serveur et partagés selon les permissions. Les intentions et certaines préférences de démonstration restent locales.
 La distance, les sessions et les XP de check-in sont vérifiés côté serveur, sans preuve de l'origine physique du GPS.
-Le jeu de départ, les compteurs et la progression préchargée restent fictifs. Les médias importés ne survivent pas au redémarrage serveur.
+Le jeu de départ, les compteurs et la progression préchargée restent fictifs. Les nouveaux médias restent disponibles après redémarrage si le dossier de données est conservé. Le disque d’un hébergement gratuit peut être perdu.
 Le reset efface la base fictive ; le bouton Démarrer la démo repart avec Koffi après autorisation opérateur.
 Gemini reste facultatif et son service externe n'a pas été validé. Une planche du symbole CHKPT a été fournie ; son adaptation vectorielle simplifiée est utilisée, le fichier maître reste attendu. Aucune photographie de lieu validée ni vidéo n’a été fournie/créée.
 Aucun pilote réel, résultat de marché, partenariat, déploiement public ou synchronisation multiutilisateur des publications n'est revendiqué.
@@ -93,3 +93,19 @@ Le [bilan](docs/BILAN_PROTOTYPE.md), les [évolutions](docs/EVOLUTIONS_DEMO.md),
 Complément de compatibilité : sous Node.js 22 en conteneur local sans réseau, vérification TypeScript, compilation Vite et **20/20 groupes serveur** réussis (suite historique comprise). Les dépendances déjà installées ont été montées en lecture seule ; cela ne revendique pas une installation ou un déploiement Render réussis. Le chargement de configuration Vite `runner` a été utilisé pour compiler vers un répertoire temporaire avec les sources en lecture seule.
 
 Accès externe : une requête de tuile OpenStreetMap réelle depuis cet environnement renvoie HTTP 403. Le fond réel n’est donc pas validé ici ; géométrie, interaction et secours sont testés avec des tuiles contrôlées. L’accès à l’API GitHub pour modifier la description de la PR renvoie également Forbidden ; le code et les documents sont publiés par Git sur la branche existante.
+
+## Synchronisation et prototype simplifié — suite du 28 octobre 2026
+
+Décisions explicites : avancer sur le partage des données entre appareils ; budget strictement gratuit ; ne pas dérouler tous les badges dans le prototype. Le document de réponses fourni est archivé comme version de travail, sans appliquer automatiquement ses propositions ou ses références à un autre code 0.3.
+
+- Publications, médias, réactions, commentaires et favoris persistés dans la base JSON existante, avec migration additive. Historique et journal propres au compte chargés depuis le serveur, sans données GPS de preuve dans cet état partagé. Actualisation régulière et au retour sur la fenêtre.
+- Auteur, audience, lieu et lien de visite contrôlés côté serveur. Photos privées lues avec authentification et objets temporaires du navigateur, sans jeton dans l’URL. Le contenu d’un profil privé ou mineur ne devient pas public. Les accès par ancien jeton de média ne contournent plus les permissions.
+- Création de publication et commentaire idempotente ; texte gardé lors d’un échec. Les mutations en cours et anciennes réponses ne doivent pas annuler une action récente ou réafficher les données du compte précédent. Le cache personnel ancien n’est pas présenté comme une preuve et une copie locale appartenant au compte peut être exportée après authentification.
+- Photographe n’est crédité qu’après enregistrement d’une publication avec média admissible lié à une visite, pas après un simple import abandonné.
+- Sauvegarde compressée et chiffrée AES-256-GCM avec clé dérivée par scrypt, export/restauration administrateur en démo privée. Aucune session active exportée. Restauration explicitement confirmée, validation avant remplacement et copie de sécurité chiffrée ; toutes les sessions sont fermées après restauration.
+- Page Badges limitée à six cartes au maximum. Catalogue technique conservé pour la suite ; aucun arbitrage sur les 40 badges distincts et leurs degrés n’est appliqué.
+- Configuration gratuite conservée, pas de service ou disque payant créé. `CHKPT_DATA_DIR` permet de choisir le dossier local mais ne transforme pas le disque gratuit Render en stockage permanent. Aucun compte Render ou lien distant n’a été créé.
+
+Validation : `npm run lint`, `npm run build`, **35/35 groupes** navigateur et serveur sous Chromium Linux (suite historique de 11 tests incluse). Deux contextes de navigateur sans cache commun retrouvent une publication, un favori, une visite, les XP et une photo privée. Une réponse perdue est reprise sans doublon ; un compte changé ignore l’ancienne réponse ; l’export chiffré est téléchargé depuis l’interface. Tests serveur de redémarrage, de refus d’accès et de restauration avec mot de passe erroné, puis correcte.
+
+Compatibilité Node.js 22 : TypeScript, compilation et **21/21 groupes serveur** réussis avec données temporaires isolées, y compris lorsqu’un dossier de données est défini dans l’environnement parent. Installation sur Mac/Windows, essais Safari et hébergement réel restent à répéter. Voir [SYNCHRONISATION_ET_SAUVEGARDE.md](docs/SYNCHRONISATION_ET_SAUVEGARDE.md).

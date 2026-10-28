@@ -116,7 +116,7 @@ export async function checkFeed(url: string, password: string) {
       const friends = await friendContext.newPage();
       await friends.goto(url);
       await friends.getByRole('tab', { name: 'Amis', exact: true }).click();
-      await friends.getByText('@koffi_urbex', { exact: true }).waitFor();
+      await friends.getByText('@koffi_urbex', { exact: true }).first().waitFor();
       assert.equal(await friends.getByText('@amara_sound', { exact: true }).count(), 0);
       assert.equal(await friends.getByText('@sarah_dlo', { exact: true }).count(), 0);
       await friendContext.close();

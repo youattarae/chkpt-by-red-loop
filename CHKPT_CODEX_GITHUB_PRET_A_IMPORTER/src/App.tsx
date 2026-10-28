@@ -25,8 +25,9 @@ import { OperatorConsole } from './components/operator/OperatorConsole';
 import { SettingsModal } from './components/common/SettingsModal';
 
 const AppContent: React.FC = () => {
-  const { isOperatorView, setIsOperatorView, places, currentUser, dismissToastNotification } = useStore();
+  const { isOperatorView, setIsOperatorView, places, currentUser, syncError, refreshSharedData, dismissToastNotification } = useStore();
 
+  const [restoreNotice]=useState(()=>{const notice=sessionStorage.getItem('chkpt_restore_notice')||'';sessionStorage.removeItem('chkpt_restore_notice');return notice;});
   const [activeTab, setActiveTab] = useState<MainTab>('feed');
   const [isCheckinOpen, setIsCheckinOpen] = useState(false);
   const [selectedPlaceIdForDetail, setSelectedPlaceIdForDetail] = useState<string | null>(null);
@@ -80,6 +81,8 @@ const AppContent: React.FC = () => {
       {/* In-App Toast Notification */}
       <InAppNotificationToast />
 
+      {restoreNotice && <p role="status" className="p-3 text-xs text-blue-400 bg-soft">{restoreNotice}</p>}
+      {syncError && <div role="alert" className="max-w-2xl mx-auto w-full p-3 text-xs text-rose-400 bg-soft border border-line rounded-xl">{syncError}<button type="button" onClick={()=>void refreshSharedData()} className="ml-2 underline cursor-pointer">Réessayer la synchronisation</button></div>}
       <Welcome visible={activeTab === 'feed' && !isOperatorView} />
       {/* Main View Area */}
       <main className="flex-1 w-full max-w-4xl mx-auto">

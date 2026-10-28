@@ -80,9 +80,8 @@ Vérifiés : protections opérateur, distance et XP côté serveur, refus de dou
 publication facultative dans le fil/profil, conservation après rechargement, événement et répétition après reset.
 Recette navigateur à 390 et 1280 pixels, accès externes bloqués, image indisponible remplacée.
 
-Restent simulés ou limités : GPS de présentation, jeu de départ, compteurs, badges locaux, publications et intentions locales
-au navigateur, carte illustrée. Ce n'est pas un partage synchronisé entre plusieurs utilisateurs.
-Les médias importés restent en mémoire serveur. Une position annoncée comme réelle vient encore du client.
+Restent simulés ou limités : GPS de présentation, jeu de départ, compteurs, petite sélection de badges, intentions locales au navigateur et carte illustrée de secours. Les publications, médias, favoris et visites sont désormais partagés via le serveur selon les permissions ; certaines intentions et notifications restent locales.
+Les médias importés sont conservés dans la base serveur tant que son stockage est conservé. Une position annoncée comme réelle vient encore du client.
 Le symbole est une adaptation vectorielle simplifiée de la planche fournie ; le fichier maître reste attendu. Les illustrations locales, dont une image générée par IA explicitement signalée, représentent des lieux fictifs.
 Le projet reste un prototype privé, pas une application de production ni une validation d'intérêt par le marché.
 
@@ -108,3 +107,7 @@ Il s'agit seulement du mode de service des fichiers compilés : le prototype ne 
 Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.
 
 Les réglages de thème, commune et position sont regroupés dans **Profil → Réglages**. L’en-tête conserve le symbole, le bouton GPS et la cloche de notifications. Le bouton central est l’unique accès au check-in : choisir le lieu, appuyer sur **Confirmer le check**, puis **Créer une publication** si souhaité. Les cartes et les fiches restent consultables sans bouton de check.
+
+## Deux appareils et sauvegarde gratuite
+
+Voir [SYNCHRONISATION_ET_SAUVEGARDE.md](SYNCHRONISATION_ET_SAUVEGARDE.md) pour retrouver les mêmes données sur téléphone et ordinateur, télécharger une sauvegarde chiffrée et la restaurer. Le budget reste gratuit : la configuration Render ne garantit pas la conservation du disque. Aucun hébergement n’est créé automatiquement. Pour conserver une démo existante, se connecter sans lancer Démarrer la démo, qui remet les données fictives à zéro.

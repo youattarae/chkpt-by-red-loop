@@ -14,7 +14,9 @@
  *  - Vite middleware integration
  */
 
-import { evaluateBadges } from './server/badgeEngine';
+import { installBackupRoutes } from './server/backup';
+import { installSocialRoutes } from './server/social';
+import { evaluateBadges, awardPublishedPhoto } from './server/badgeEngine';
 import { getEventCatalog } from './server/events';
 import { installRemoteAccess } from './server/remoteAccess';
 import express, { Request, Response } from 'express';
@@ -38,6 +40,7 @@ dotenv.config();
 
 const app = express();
 installRemoteAccess(app);
+app.use('/api',(_req,res,next)=>{res.setHeader('Cache-Control','private, no-store');next();});
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Increase JSON body parser limit for base64 media payloads up to 20MB
@@ -71,7 +74,13 @@ export interface ServerMediaRecord {
   token: string;
 }
 
-const mediaRegistry = new Map<string, ServerMediaRecord>();
+const mediaRegistry = {
+  get: (id:string) => db.getRawData().media.find(asset=>asset.assetId===id),
+  set: (_id:string,record:ServerMediaRecord) => db.updateSharedData({media:[...db.getRawData().media.filter(asset=>asset.assetId!==record.assetId),record]}),
+  clear: () => db.updateSharedData({media:[]}),
+};
+installSocialRoutes(app);
+installBackupRoutes(app);
 
 // Allowed media types & limits
 const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
@@ -325,15 +334,9 @@ app.post('/api/places/:id/reviews', requireAuth, (req: Request, res: Response) =
 app.get('/api/events', (_req,res)=>res.json({events:getEventCatalog()}));
 app.get('/api/badges',requireAuth,(req,res)=>res.json(evaluateBadges(req.user!.id)));
 app.post('/api/badges/photo',requireAuth,(req,res)=>{
-  const check=db.findCheckinById(req.body.checkinId);
-  const asset=mediaRegistry.get(String(req.body.mediaUrl||'').replace(/^\/api\/media\//,''));
-  if(!check||check.userId!==req.user!.id||check.status!=='verified'||!asset||asset.ownerId!==req.user!.id||db.findPlaceById(check.placeId)?.verificationStatus!=='verified'){res.status(403).json({error:'invalid_photo_proof'});return;}
-  const bytes=Buffer.from(asset.dataBase64.split(',')[1]||'', 'base64');
-  const imageHeader=(asset.mimeType==='image/png'&&bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10])))||(asset.mimeType==='image/jpeg'&&bytes[0]===255&&bytes[1]===216&&bytes[2]===255)||(asset.mimeType==='image/webp'&&bytes.toString('ascii',0,4)==='RIFF'&&bytes.toString('ascii',8,12)==='WEBP');
-  if(!imageHeader){res.status(400).json({error:'invalid_image'});return;}
-  const digest=crypto.createHash('sha256').update(bytes).digest('hex');
-  db.recordLedgerEvent(req.user!.id,'PHOTO_PUBLISHED',digest);
-  res.json(evaluateBadges(req.user!.id));
+  const result=awardPublishedPhoto(req.user!.id,req.body.checkinId,req.body.mediaUrl);
+  if(!result){res.status(403).json({error:'published_photo_proof_required'});return;}
+  res.json(result);
 });
 app.get('/api/places', (_req: Request, res: Response) => {
   res.json({
@@ -459,7 +462,10 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
       return;
     }
 
-    const estimatedSizeBytes = sizeBytes || Math.round((dataBase64.length * 3) / 4);
+    const match=/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(dataBase64);
+    if(!match||match[1]!==mimeType){res.status(400).json({error:'invalid_media'});return;}
+    const estimatedSizeBytes = Buffer.from(match[2],'base64').length;
+    if(db.getRawData().media.reduce((sum,asset)=>sum+asset.sizeBytes,0)+estimatedSizeBytes>50*1024*1024){res.status(413).json({error:'media_storage_full',message:'Le stockage de démonstration est plein (50 Mo). Contactez l’opérateur.'});return;}
     if (estimatedSizeBytes > MAX_MEDIA_SIZE_BYTES) {
       res.status(413).json({
         error: 'payload_too_large',
@@ -472,7 +478,7 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
     const effectiveOwnerUsername = req.user!.username;
 
     const validAudiences = ['private', 'followers', 'public'];
-    const chosenAudience = req.user!.age < 18 ? 'private'
+    const chosenAudience = req.user!.age < 18 || req.user!.visibility === 'private' ? 'private'
       : validAudiences.includes(audience) ? audience : 'private';
 
     const assetId = `med_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
@@ -517,7 +523,6 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
 app.get('/api/media/:assetId', (req: Request, res: Response) => {
   const { assetId } = req.params;
   const requesterId = req.user?.id || null;
-  const providedToken = (req.query.token as string) || (req.headers['x-access-token'] as string);
 
   const asset = mediaRegistry.get(assetId);
 
@@ -529,12 +534,13 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
     return;
   }
 
+  const owner=db.findUserById(asset.ownerId);
+  if(!owner||((owner.visibility==='private'||owner.age<18)&&requesterId!==owner.id)){res.status(403).json({error:'private_resource'});return;}
   // Scenario A: Audience is "private" (Moi uniquement)
   if (asset.audience === 'private') {
     const isOwner = requesterId === asset.ownerId;
-    const hasOwnerToken = providedToken && providedToken === asset.token;
 
-    if (!isOwner && !hasOwnerToken) {
+    if (!isOwner) {
       res.status(403).json({
         error: 'private_resource',
         message: 'Accès refusé : ce média est strictement réservé à son auteur (audience privée).',
@@ -549,9 +555,8 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
   if (asset.audience === 'followers') {
     const isOwner = requesterId === asset.ownerId;
     const isConfirmedFollower = requesterId ? db.isFollower(requesterId, asset.ownerId) : false;
-    const hasToken = providedToken && providedToken === asset.token;
 
-    if (!isOwner && !isConfirmedFollower && !hasToken) {
+    if (!isOwner && !isConfirmedFollower) {
       res.status(403).json({
         error: 'restricted_audience',
         message: 'Accès restreint : ce média est réservé aux abonnés confirmés de l\'auteur.',
@@ -568,7 +573,7 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
 
   res.setHeader('Content-Type', asset.mimeType);
   res.setHeader('Content-Length', imageBuffer.length);
-  res.setHeader('Cache-Control', asset.audience === 'public' ? 'public, max-age=86400' : 'private, no-cache');
+  res.setHeader('Cache-Control', 'private, no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Media-Audience', asset.audience);
   res.setHeader('X-Media-Owner', asset.ownerUsername);

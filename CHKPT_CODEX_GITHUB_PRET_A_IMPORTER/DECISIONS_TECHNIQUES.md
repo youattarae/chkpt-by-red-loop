@@ -177,3 +177,15 @@ Leaflet 1.9.4, chargé séparément, réutilise la sélection de lieu et ses fil
 Catalogue partagé de huit familles × cinq paliers. Les noms et seuils supplémentaires sont provisoires, les noms de bronze existants sont conservés. Évaluation serveur à partir des visites présentes dans PointsLedger, lieux/communes distincts, preuves d’événement actif au bon lieu et images importées appartenant au compte, liées à une visite valide. Une empreinte de contenu évite le comptage répété d’une photo. L’évaluation crée des entrées BADGE_UNLOCKED idempotentes à zéro XP afin de préserver les 75/50 XP existants. Notifications après les nouveaux déblocages ; le client ne décide plus des seuils atteints. L’avance fictive du personnage de présentation reste déclarée côté serveur.
 
 Un catalogue d’événements serveur et une session fictive du jour permettent d’essayer une présence événementielle, facultative dans le check central. Une intention J’y serai n’est pas une preuve. La vérification d’une image n’est pas une certification antifraude ou EXIF : propriété, liaison et signature de format sont vérifiées ; la transformation des pixels reste dans l’import client existant.
+
+## Données partagées sans nouvelle stack — 28 octobre 2026
+
+Réutilisation du moteur de fichiers atomiques existant ; ajout de tables posts, saved_places et media sans supprimer les comptes ou visites déjà valides. Écritures de ces tables préparées avant remplacement de l’état mémoire. Pas de PostgreSQL, service de paiement ou nouvelle dépendance. Les médias base64 sont désormais persistés dans cette base avec quota de démonstration ; un stockage de fichiers/objets adapté à la production reste un futur chantier.
+
+Les routes publiques ne renvoient que les publications accessibles ; l’état personnel est lié exclusivement à la session. Aucun auteur, privilège ou preuve de visite du client n’est pris pour autorité. Les mutations explicites de favoris/réactions et les identifiants de requête évitent les doublons. Les snapshots de synchronisation sont ignorés en cas de changement de session, d’action récente ou de modification des abonnements ; les caches privés ne sont pas utilisés avant authentification pour afficher le profil. Les anciennes données locales ne sont pas importées comme visites ou XP.
+
+Les images privées sont chargées en Blob avec en-tête d’authentification, révoqué à la sortie du composant. Les URLs ne contiennent pas de secret de session. La visibilité du profil et l’audience du média sont vérifiées côté serveur, sans cache public permanent.
+
+La sauvegarde chiffrée est une mesure de reprise manuelle cohérente avec le budget gratuit ; elle ne garantit pas la conservation du disque Render. Aucun fournisseur supplémentaire ni dépense engagée. Sessions exclues des exports et révoquées à la restauration. Source de données configurable par CHKPT_DATA_DIR ; les tests forcent leurs répertoires temporaires pour éviter toute modification du dossier réel de l’utilisateur.
+
+L’écran des badges est volontairement réduit. Le moteur de catalogue existant n’est pas réécrit avant l’arbitrage de conception sur badges distincts et degrés.

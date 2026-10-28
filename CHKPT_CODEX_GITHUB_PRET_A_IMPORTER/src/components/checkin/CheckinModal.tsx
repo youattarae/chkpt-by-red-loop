@@ -71,6 +71,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
   } | null>(null);
 
   // Optional post state
+  const [publishing,setPublishing]=useState(false);
   const [postText, setPostText] = useState('');
   const [postPhotoUrl, setPostPhotoUrl] = useState('');
 
@@ -115,11 +116,12 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     }
   };
 
-  const handlePublishFollowupPost = (e: React.FormEvent) => {
+  const handlePublishFollowupPost = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!verificationResult?.checkIn || !currentPlace) return;
 
-    createPost({
+    setPublishing(true);
+    const published=await createPost({
       text: postText.trim() || `Découverte de ${currentPlace.name} (${currentPlace.commune}) — ${verificationResult.checkIn.isSimulated ? 'visite simulée de démonstration' : 'check-in validé'}. ✨`,
       linkedPlaceId: currentPlace.id,
       linkedCheckinId: verificationResult.checkIn.id,
@@ -127,6 +129,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
       mediaUrl: postPhotoUrl || currentPlace.coverImage
     });
 
+    setPublishing(false);if(!published)return;
     onClose();
     if (onPostPublishedSuccess) onPostPublishedSuccess();
   };
@@ -481,6 +484,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               </button>
               <button
                 type="submit"
+                disabled={publishing}
                 className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
               >
                 Publier le checkpoint

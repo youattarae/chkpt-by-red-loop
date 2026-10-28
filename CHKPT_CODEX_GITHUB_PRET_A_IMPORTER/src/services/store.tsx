@@ -82,15 +82,18 @@ interface StoreContextType {
     earnedXp?: number;
     unlockedBadgeName?: string;
   }>;
+  isServerAuthenticated: boolean;
+  syncError: string;
+  refreshSharedData: () => Promise<void>;
   createPost: (data: {
     text: string;
     mediaUrl?: string;
     linkedPlaceId?: string;
     linkedCheckinId?: string;
     isVerifiedVisit: boolean;
-  }) => void;
+  }) => Promise<boolean>;
   likePost: (postId: string) => void;
-  addComment: (postId: string, text: string) => void;
+  addComment: (postId: string, text: string) => Promise<boolean>;
   toggleSavePlace: (placeId: string) => void;
   toggleEventIntent: (eventId: string, intent: 'interested' | 'going') => void;
   submitPlaceProposal: (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => void;
@@ -123,6 +126,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return localStorage.getItem('chkpt_session_token') || '';
   });
 
+  const [isServerAuthenticated,setIsServerAuthenticated]=useState(false);
+  const [legacyCache]=useState(()=>{
+    const read=(key:string,fallback:any)=>{try{const parsed=JSON.parse(localStorage.getItem(key)||'null')??fallback;return Array.isArray(fallback)&&!Array.isArray(parsed)?fallback:parsed;}catch{return fallback;}};
+    return {user:read(`${STORAGE_PREFIX}user`,null),posts:read(`${STORAGE_PREFIX}posts`,[]),checkins:read(`${STORAGE_PREFIX}checkins`,[]),savedPlaceIds:read(`${STORAGE_PREFIX}saved_places`,[])};
+  });
+  const pendingComments=useRef(new Map<string,string>());
+  const pendingPostRequest=useRef<{key:string;id:string}|null>(null);
+  function requestId(){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from(bytes,value=>value.toString(16).padStart(2,'0')).join('');}
+  const sharedRevision = useRef(0);
+  const writesInFlight = useRef(0);
+  const [syncError,setSyncError] = useState('');
   const statsRevision = useRef(0);
   const followingRevision = useRef(0);
   const [followingIds, setFollowingIdsState] = useState<string[]>([]);
@@ -133,16 +147,14 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [appEnvironment, setAppEnvironment] = useState<'demo' | 'production'>('demo');
 
   const setAuthSessionToken = (token: string) => {
+    setIsServerAuthenticated(false);sharedRevision.current++;setSyncError('');pendingPostRequest.current=null;pendingComments.current.clear();
+    setCurrentUser(CURRENT_USER);setPosts(INITIAL_POSTS);setCheckins([]);setPointsLedger([]);setSavedPlaceIds([]);
     setFollowingIds([]);
     setAuthSessionTokenState(token);
     localStorage.setItem('chkpt_session_token', token);
   };
 
-  const [currentUser, setCurrentUser] = useState<UserProfile>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}user`);
-    return saved ? JSON.parse(saved) : CURRENT_USER;
-  });
-
+  const [currentUser, setCurrentUser] = useState<UserProfile>(CURRENT_USER);
   // Sync places from server canonical database
   const [places, setPlaces] = useState<Place[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_PREFIX}places`);
@@ -184,10 +196,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
       .then((res) => res.json())
       .then((data) => {
-        if (controller.signal.aborted) return;
+        if (controller.signal.aborted || (localStorage.getItem('chkpt_session_token')||'')!==authSessionToken) return;
         if (requestedFollowingRevision === followingRevision.current) setFollowingIdsState(Array.isArray(data.followingIds) ? data.followingIds : []);
         if (data.authenticated && data.user) {
+          setIsServerAuthenticated(true);
           if (requestedStatsRevision === statsRevision.current && Array.isArray(data.badges)) setBadges(data.badges);
+          void refreshSharedState(authSessionToken);
           setCurrentUser((prev) => ({
             ...prev,
             id: data.user.id,
@@ -206,6 +220,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             followingCount: requestedFollowingRevision === followingRevision.current ? data.user.followingCount : prev.followingCount,
           }));
         } else {
+          setIsServerAuthenticated(false);
+          setPosts(INITIAL_POSTS);setCheckins([]);setPointsLedger([]);
+          if(authSessionToken)setAuthSessionToken('');
           setCurrentUser(CURRENT_USER);
           setIsOperatorView(false);
         }
@@ -214,73 +231,16 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => controller.abort();
   }, [authSessionToken]);
 
-  const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}saved_places`);
-    return saved ? JSON.parse(saved) : ['plc_cocody_lounge'];
-  });
-
-  const [checkins, setCheckins] = useState<CheckIn[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}checkins`);
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'chk_demo_01',
-        userId: 'usr_01',
-        userName: 'Koffi Kouamé',
-        userAvatar: CURRENT_USER.avatarUrl,
-        placeId: 'plc_cocody_lounge',
-        placeName: 'Lagon Bleu Rooftop Lounge',
-        placeCategory: 'bars_lounges',
-        timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-        status: 'verified',
-        audience: 'public',
-        idempotencyKey: 'usr_01_plc_cocody_lounge_prev',
-        distanceMeters: 28,
-        gpsAccuracyMeters: 12,
-        verifiedAt: new Date(Date.now() - 3600000 * 24).toISOString(),
-        isFirstVisitForUser: true,
-      }
-    ];
-  });
-
-  const [posts, setPosts] = useState<Post[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}posts`);
-    return saved ? JSON.parse(saved) : INITIAL_POSTS;
-  });
-
+  const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
+  const [checkins, setCheckins] = useState<CheckIn[]>([]);
+  const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [events, setEvents] = useState<EventItem[]>(() => {
     const saved = localStorage.getItem(`${STORAGE_PREFIX}events`);
     return saved ? JSON.parse(saved) : INITIAL_EVENTS;
   });
 
-  const [badges, setBadges] = useState<Badge[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}badges`);
-    return saved ? JSON.parse(saved) : INITIAL_BADGES;
-  });
-
-  const [pointsLedger, setPointsLedger] = useState<PointsLedgerEntry[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}ledger`);
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'ledg_01',
-        userId: 'usr_01',
-        sourceAction: 'CHECKIN_VERIFIED',
-        deltaXp: 50,
-        timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-        referenceId: 'chk_demo_01',
-        label: 'Visite vérifiée au Lagon Bleu Rooftop (+50 XP)'
-      },
-      {
-        id: 'ledg_02',
-        userId: 'usr_01',
-        sourceAction: 'FIRST_VISIT',
-        deltaXp: 50,
-        timestamp: new Date(Date.now() - 3600000 * 24).toISOString(),
-        referenceId: 'plc_cocody_lounge',
-        label: 'Première découverte de spot Cocody (+50 XP)'
-      }
-    ];
-  });
-
+  const [badges, setBadges] = useState<Badge[]>(INITIAL_BADGES);
+  const [pointsLedger,setPointsLedger]=useState<PointsLedgerEntry[]>([]);
   const [adCampaigns] = useState<AdCampaign[]>(INITIAL_AD_CAMPAIGNS);
   
   const [placeProposals, setPlaceProposals] = useState<PlaceProposal[]>(() => {
@@ -394,6 +354,39 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return()=>controller.abort();
   },[]);
 
+  async function refreshSharedState(token=authSessionToken):Promise<void> {
+    if(writesInFlight.current>0)return;
+    const revision=sharedRevision.current;const followingVersion=followingRevision.current;
+    try{
+      const response=await fetch(token?'/api/account/state':'/api/posts',{headers:token?{Authorization:`Bearer ${token}`}:{},cache:'no-store'});
+      if(!response.ok)throw new Error('Les données ne sont pas synchronisées. Reconnectez-vous ou réessayez.');
+      const data=await response.json();
+      if(revision!==sharedRevision.current||followingVersion!==followingRevision.current||writesInFlight.current>0||(localStorage.getItem('chkpt_session_token')||'')!==token)return;
+      if(token){
+        const legacyKey=`chkpt_legacy_backup_${data.userId}`;
+        try{if(legacyCache.user?.id===data.userId&&!localStorage.getItem(legacyKey))localStorage.setItem(legacyKey,JSON.stringify({userId:data.userId,posts:legacyCache.posts.filter((post:Post)=>post&&post.authorId===data.userId),checkins:legacyCache.checkins.filter((visit:CheckIn)=>visit&&visit.userId===data.userId),savedPlaceIds:legacyCache.savedPlaceIds}));}catch{/* A full browser cache must not block the server state. */}
+        setIsServerAuthenticated(true);statsRevision.current++;followingRevision.current++;
+        setSavedPlaceIds(data.savedPlaceIds);setCheckins(data.checkins);setPointsLedger(data.pointsLedger);setBadges(data.badges);setFollowingIdsState(data.followingIds);
+        setCurrentUser(user=>({...user,...data.user}));
+      }
+      setPosts(data.posts);
+    }catch(error){if(revision===sharedRevision.current&&(localStorage.getItem('chkpt_session_token')||'')===token)setSyncError(error instanceof Error?error.message:'Synchronisation indisponible.');}
+  }
+  function beginWrite(){writesInFlight.current++;sharedRevision.current++;setSyncError('');}
+  function endWrite(){writesInFlight.current--;sharedRevision.current++;if(writesInFlight.current===0)void refreshSharedState(localStorage.getItem('chkpt_session_token')||'');}
+  async function sendShared(route:string,body:unknown,token=authSessionToken){
+    let response:Response;try{response=await fetch(route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(body)});}catch{throw new Error('Connexion interrompue. Action non confirmée : réessayez.');}
+    if(!response.ok){const data=await response.json().catch(()=>({}));throw new Error(data.message||'Action non confirmée. Reconnectez-vous ou réessayez.');}
+    return response.json();
+  }
+  useEffect(()=>{
+    const refresh=()=>{if(!document.hidden)void refreshSharedState(authSessionToken);};
+    if(!authSessionToken)refresh();
+    const timer=window.setInterval(refresh,5000);
+    window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',refresh);
+    return()=>{window.clearInterval(timer);window.removeEventListener('focus',refresh);document.removeEventListener('visibilitychange',refresh);};
+  },[authSessionToken]);
+
   // Request browser GPS if mode is active
   useEffect(() => {
     let cancelled = false;
@@ -504,6 +497,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       return { success: false, message: 'Lieu introuvable dans le référentiel.', distanceMeters: 0 };
     }
 
+    beginWrite();statsRevision.current++;
     try {
       const response = await fetch('/api/checkins', {
         method: 'POST',
@@ -622,93 +616,51 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         message: `Erreur de communication avec le serveur de vérification : ${err.message}`,
         distanceMeters: 0,
       };
-    }
+    } finally {endWrite();}
   };
 
-  const createPost = (data: {
-    text: string;
-    mediaUrl?: string;
-    linkedPlaceId?: string;
-    linkedCheckinId?: string;
-    isVerifiedVisit: boolean;
-  }) => {
-    const linkedPlace = data.linkedPlaceId ? places.find(p => p.id === data.linkedPlaceId) : undefined;
-    
-    const newPost: Post = {
-      isSimulated: checkins.find(c => c.id === data.linkedCheckinId)?.isSimulated,
-      id: `pst_${Date.now()}`,
-      authorId: currentUser.id,
-      authorName: currentUser.displayName,
-      authorUsername: currentUser.username,
-      authorAvatar: currentUser.avatarUrl,
-      createdAt: 'À l\'instant',
-      text: data.text,
-      mediaUrl: data.mediaUrl,
-      mediaType: 'image',
-      linkedPlaceId: linkedPlace?.id,
-      linkedPlaceName: linkedPlace?.name,
-      linkedCheckinId: data.linkedCheckinId,
-      isVerifiedVisit: data.isVerifiedVisit,
-      audience: currentUser.visibility === 'private' ? 'private' : 'public',
-      likesCount: 0,
-      isLikedByCurrentUser: false,
-      commentsCount: 0,
-      comments: []
-    };
-
-    setPosts(prev => [newPost, ...prev]);
-    if(data.linkedCheckinId&&data.mediaUrl?.startsWith('/api/media/')) {
-      const token=authSessionToken;
-      const revision=statsRevision.current;
-      fetch('/api/badges/photo',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify({checkinId:data.linkedCheckinId,mediaUrl:data.mediaUrl})})
-        .then(async response=>{if(!response.ok)return null;return response.json();})
-        .then(result=>{if(!result||revision!==statsRevision.current||localStorage.getItem('chkpt_session_token')!==token)return;setBadges(result.badges);for(const badge of result.newlyUnlocked||[])dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family}`,targetType:'badge'},true);})
-        .catch(()=>{});
-    }
-    // Publishing is optional and does not award visit XP.
+  const createPost = async (data: {text:string;mediaUrl?:string;linkedPlaceId?:string;linkedCheckinId?:string;isVerifiedVisit:boolean}):Promise<boolean> => {
+    const token=authSessionToken;
+    if(!token){setSyncError('Connectez-vous dans Gérer mon compte pour publier.');return false;}
+    const key=token+'|'+JSON.stringify(data);
+    if(pendingPostRequest.current?.key!==key)pendingPostRequest.current={key,id:requestId()};
+    beginWrite();
+    try{
+      const result=await sendShared('/api/posts',{...data,clientRequestId:pendingPostRequest.current.id},token);
+      pendingPostRequest.current=null;
+      if(localStorage.getItem('chkpt_session_token')!==token)return false;
+      setPosts(posts=>[result.post,...posts.filter(post=>post.id!==result.post.id)]);
+      if(result.awards){setBadges(result.awards.badges);for(const badge of result.awards.newlyUnlocked||[])dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family}`,targetType:'badge'},true);}
+      return true;
+    }catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Publication non enregistrée.');return false;}
+    finally{endWrite();}
   };
-
-  const likePost = (postId: string) => {
-    setPosts(prev => prev.map(p => {
-      if (p.id === postId) {
-        const isLiked = !p.isLikedByCurrentUser;
-        return {
-          ...p,
-          isLikedByCurrentUser: isLiked,
-          likesCount: isLiked ? p.likesCount + 1 : Math.max(0, p.likesCount - 1)
-        };
-      }
-      return p;
-    }));
+  const likePost = async (postId:string) => {
+    const post=posts.find(post=>post.id===postId);if(!post)return;
+    const liked=!post.isLikedByCurrentUser;
+    setPosts(posts=>posts.map(item=>item.id===postId?{...item,isLikedByCurrentUser:liked,likesCount:Math.max(0,item.likesCount+(liked?1:-1))}:item));
+    if(!authSessionToken)return;
+    const token=authSessionToken;beginWrite();
+    try{await sendShared(`/api/posts/${encodeURIComponent(postId)}/like`,{liked},token);}
+    catch(error){if(localStorage.getItem('chkpt_session_token')===token){setPosts(items=>items.map(item=>item.id===postId?post:item));setSyncError(error instanceof Error?error.message:'Réaction non enregistrée.');}}
+    finally{endWrite();}
   };
-
-  const addComment = (postId: string, text: string) => {
-    if (!text.trim()) return;
-    const newComment = {
-      id: `cmt_${Date.now()}`,
-      authorId: currentUser.id,
-      authorName: currentUser.displayName,
-      authorAvatar: currentUser.avatarUrl,
-      text: text.trim(),
-      createdAt: 'À l\'instant'
-    };
-
-    setPosts(prev => prev.map(p => {
-      if (p.id === postId) {
-        return {
-          ...p,
-          commentsCount: p.commentsCount + 1,
-          comments: [...p.comments, newComment]
-        };
-      }
-      return p;
-    }));
+  const addComment = async (postId:string,text:string):Promise<boolean> => {
+    if(!text.trim())return false;
+    if(!authSessionToken){setSyncError('Connectez-vous pour commenter.');return false;}
+    const token=authSessionToken;const key=token+'|'+postId+'|'+text.trim();if(!pendingComments.current.has(key))pendingComments.current.set(key,requestId());beginWrite();
+    try{const result=await sendShared(`/api/posts/${encodeURIComponent(postId)}/comments`,{text:text.trim(),clientRequestId:pendingComments.current.get(key)},token);pendingComments.current.delete(key);if(localStorage.getItem('chkpt_session_token')!==token)return false;setPosts(items=>items.map(item=>item.id===postId?result.post:item));return true;}
+    catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Commentaire non enregistré.');return false;}
+    finally{endWrite();}
   };
-
-  const toggleSavePlace = (placeId: string) => {
-    setSavedPlaceIds(prev => 
-      prev.includes(placeId) ? prev.filter(id => id !== placeId) : [...prev, placeId]
-    );
+  const toggleSavePlace = async (placeId:string) => {
+    const saved=!savedPlaceIds.includes(placeId);
+    setSavedPlaceIds(items=>saved?[...items.filter(id=>id!==placeId),placeId]:items.filter(id=>id!==placeId));
+    if(!authSessionToken)return;
+    const token=authSessionToken;beginWrite();
+    try{await sendShared('/api/account/saved-places',{placeId,saved},token);}
+    catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Favori non enregistré.');}
+    finally{endWrite();}
   };
 
   const toggleEventIntent = (eventId: string, intent: 'interested' | 'going') => {
@@ -889,6 +841,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   return (
     <StoreContext.Provider value={{
+      isServerAuthenticated,
+      syncError,
+      refreshSharedData: ()=>{setSyncError('');return refreshSharedState();},
       currentUser,
       setCurrentUser,
       followingIds,

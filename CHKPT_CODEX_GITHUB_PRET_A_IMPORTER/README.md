@@ -22,9 +22,11 @@ Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue
 
 L’[accès privé à distance](docs/ACCES_PRIVE_DISTANCE.md) est préparé pour Render avec un mot de passe visiteur distinct de l’opérateur. Aucun hébergement n’est créé automatiquement.
 
-La [carte interactive et les 40 paliers](docs/CARTE_RADAR_ET_40_BADGES.md) utilisent un radar de 250 m et un barème de prototype calculé côté serveur.
+La [carte interactive et le moteur de progression](docs/CARTE_RADAR_ET_40_BADGES.md) utilisent un radar de 250 m et un barème de prototype calculé côté serveur. Seule une petite sélection de badges est affichée.
 
 Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINALE.md) peut être copié dans la conversation de conception pour préparer le prototype et la version finale.
+
+La [synchronisation entre appareils et la sauvegarde chiffrée](docs/SYNCHRONISATION_ET_SAUVEGARDE.md) permettent de retrouver les publications, photos, favoris et visites avec le même compte. Le budget reste gratuit ; la persistance du disque de l’hébergeur n’est pas garantie.
 
 ## Voir la démonstration sans lire le code
 

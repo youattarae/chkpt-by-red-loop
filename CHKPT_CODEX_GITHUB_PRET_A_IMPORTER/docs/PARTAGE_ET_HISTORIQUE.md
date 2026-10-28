@@ -21,7 +21,7 @@ L’historique appartient uniquement au propriétaire du profil. Le serveur refu
 
 Chaque lieu apparaît une fois, du dernier visité au plus ancien, avec le nombre de visites, la dernière date et la mention simulée le cas échéant. Toucher le lieu ouvre sa fiche. Les tentatives refusées restent dans le volet d’activité technique existant, pas dans la liste des lieux visités.
 
-Cette liste utilise les checks conservés dans ce navigateur. Elle n’est pas synchronisée entre appareils et n’invente pas de visites à partir du compteur fictif du profil.
+Cette liste utilise les checks du compte conservés sur le serveur et les retrouve sur ses différents appareils. Elle n’invente pas de visites à partir du compteur fictif du profil. Les anciens caches locaux ne sont pas considérés comme des preuves de visite.
 
 ![Historique personnel](captures/historique-lieux-light-390.png)
 

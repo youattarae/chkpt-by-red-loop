@@ -19,7 +19,7 @@ Le jeu actuel ne comporte pas de club identifié : le filtre Clubs affiche honn�
 
 ## Récompense concrète, fictive
 
-Dans Profil, une boisson découverte fictive se débloque après un check validé au maquis du scénario dans ce navigateur. Le bouton permet d’essayer l’utilisation fictive ; cet état est mémorisé et les XP ne sont pas dépensés. Le personnage ne bénéficie d’aucune offre réelle et aucun coupon commercial n’est émis.
+Dans Profil, une boisson découverte fictive se débloque après un check validé au maquis du scénario avec ce compte. Le bouton permet d’essayer l’utilisation fictive ; cet état est mémorisé et les XP ne sont pas dépensés. Le personnage ne bénéficie d’aucune offre réelle et aucun coupon commercial n’est émis.
 
 ![Récompense](captures/recompense-390.png)
 
@@ -33,7 +33,7 @@ Profil → Réglages → **Aperçu établissement · fictif** montre deux établ
 
 Toucher l’avatar ou le nom d’un auteur ouvre son profil. Un compte connecté peut suivre un profil public, ne plus le suivre et retrouver ses publications accessibles dans **Amis**. La relation est enregistrée côté serveur, sans doublon. Le compteur préchargé reste un compteur fictif de démonstration, ajusté par ces actions.
 
-Les profils privés et mineurs ne donnent pas accès à leurs publications ; les demandes de suivi privé ne sont pas simulées comme acceptées. Aucun historique personnel ne figure sur un profil consulté. Les publications restent locales au navigateur : le suivi est partagé par le serveur mais la synchronisation des publications entre appareils n’est pas ajoutée.
+Les profils privés et mineurs ne donnent pas accès à leurs publications ; les demandes de suivi privé ne sont pas simulées comme acceptées. Aucun historique personnel ne figure sur un profil consulté. Les publications et médias sont désormais conservés sur le serveur et partagés entre les appareils du compte selon leur audience. Voir [synchronisation et sauvegarde](SYNCHRONISATION_ET_SAUVEGARDE.md).
 
 ![Profil de communauté](captures/profil-communaute-390.png)
 

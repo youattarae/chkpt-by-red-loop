@@ -18,7 +18,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       <button type="button" aria-label={`Voir le profil de ${post.authorName}`} onClick={() => window.dispatchEvent(new CustomEvent('chkpt:profile', { detail: post.authorId }))} className="publication-avatar-ring shrink-0 cursor-pointer"><SafeImage src={post.authorAvatar} alt="" className="w-10 h-10 rounded-full object-cover" /></button>
       <div className="min-w-0 flex-1">
         <h3 className="text-sm font-bold text-ink break-words"><button type="button" onClick={() => window.dispatchEvent(new CustomEvent('chkpt:profile', { detail: post.authorId }))} className="text-left cursor-pointer">{post.authorName}</button></h3>
-        <p className="text-[11px] text-muted break-words"><span>@{post.authorUsername}</span><span aria-hidden="true"> · </span><span>{post.createdAt}</span></p>
+        <p className="text-[11px] text-muted break-words"><span>@{post.authorUsername}</span><span aria-hidden="true"> · </span><span>{Number.isFinite(Date.parse(post.createdAt))?new Date(post.createdAt).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):post.createdAt}</span></p>
       </div>
       {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}
     </header>
@@ -47,7 +47,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
     {commentsOpen && <div className="border-t border-line bg-soft/50 p-4 space-y-3">
       {post.comments.map(item => <p key={item.id} className="text-xs text-body break-words"><strong className="text-ink">{item.authorName} : </strong><span>{item.text}</span></p>)}
       {post.comments.length === 0 && <p className="text-xs text-muted">Aucun commentaire pour le moment.</p>}
-      <form className="flex flex-wrap gap-2" onSubmit={event => { event.preventDefault(); if (!comment.trim()) return; addComment(post.id, comment); setComment(''); }}>
+      <form className="flex flex-wrap gap-2" onSubmit={async event => { event.preventDefault(); if (!comment.trim()) return; if(await addComment(post.id, comment))setComment(''); }}>
         <input aria-label="Ton commentaire" value={comment} onChange={event => setComment(event.target.value)} placeholder="Ajouter un commentaire…"
           className="min-w-0 flex-1 bg-surface border border-line rounded-xl p-2 text-xs text-ink" />
         <button type="submit" disabled={!comment.trim()} className="bg-blue-600 text-white rounded-xl px-3 py-2 text-xs font-semibold disabled:opacity-40 cursor-pointer">Envoyer</button>

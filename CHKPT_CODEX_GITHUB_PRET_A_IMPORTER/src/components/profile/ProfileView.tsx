@@ -15,7 +15,7 @@ interface ProfileViewProps {
 }
 
 export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelectPlace, onOpenAuth, onOpenSettings }) => {
-  const { currentUser, checkins, places, savedPlaceIds, badges, pointsLedger, posts } = useStore();
+  const { currentUser, authSessionToken, isServerAuthenticated, checkins, places, savedPlaceIds, badges, pointsLedger, posts } = useStore();
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'badges'>('posts');
   const [activityOpen, setActivityOpen] = useState(false);
   const [activityTab, setActivityTab] = useState<'checkins' | 'ledger'>('checkins');
@@ -27,6 +27,8 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
   const xpInCurrentLevel = currentUser.xpPoints % 300;
   const progressPct = Math.min(100, Math.round(xpInCurrentLevel / 300 * 100));
   const tabs = [{id: 'posts', label: 'Publications'}, {id: 'saved', label: 'Lieux enregistrés'}, {id: 'badges', label: 'Badges'}] as const;
+
+  if(authSessionToken && !isServerAuthenticated)return <p role="status" className="p-6 text-sm text-muted">Chargement de votre profil…</p>;
 
   return <div className="profile-social max-w-2xl mx-auto pb-24">
     <section aria-label="Mon profil" className="bg-canvas p-4 sm:p-6 space-y-5">

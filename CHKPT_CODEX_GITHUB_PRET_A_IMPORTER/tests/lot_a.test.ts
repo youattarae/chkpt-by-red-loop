@@ -28,7 +28,7 @@ async function start(name: string, demo: boolean, presentation = false, extraEnv
   await mkdir(cwd, { recursive: true });
   // Production asset serving keeps API tests independent of the frontend build.
   const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, presentation ? 'scripts/present.mjs' : 'server.ts')], {
-    cwd, env: { ...process.env, PORT: '0', HOST: '127.0.0.1', NODE_ENV: presentation ? 'development' : 'production',
+    cwd, env: { ...process.env, CHKPT_DATA_DIR:path.join(cwd,'.data'), PORT: '0', HOST: '127.0.0.1', NODE_ENV: presentation ? 'development' : 'production',
       CHKPT_PRIVATE_DEMO: String(demo), CHKPT_DEMO_ADMIN_PASSWORD: demo ? password : '', CHKPT_REMOTE_ACCESS: 'false', ...extraEnv },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
@@ -221,6 +221,7 @@ try {
       const dataBase64='data:image/png;base64,'+(await readFile(path.join(project,'public/illustrations',file))).toString('base64');
       const media=await (await request(demo.url,'/api/media/upload',{mimeType:'image/png',dataBase64,audience:'private'},actor.token)).json();
       assert.equal((await request(demo.url,'/api/badges/photo',{checkinId:saved.checkIn.id,mediaUrl:media.readUrl},outsider.token)).status,403);
+      assert.equal((await request(demo.url,'/api/posts',{text:'Photo publiée pour la démonstration.',mediaUrl:media.readUrl,linkedPlaceId:place.id,linkedCheckinId:saved.checkIn.id,audience:'private',clientRequestId:'proof_'+file.replace(/[.-]/g,'_')},actor.token)).status,201);
       const photo=await (await request(demo.url,'/api/badges/photo',{checkinId:saved.checkIn.id,mediaUrl:media.readUrl},actor.token)).json();
       assert.ok(photo.badges.find((badge:any)=>badge.id==='bdg_photographe_bronze').currentCount<=5);
       const repeated=await (await request(demo.url,'/api/badges/photo',{checkinId:saved.checkIn.id,mediaUrl:media.readUrl},actor.token)).json();
@@ -230,7 +231,7 @@ try {
   });
   await check('Catalogue complet : les 40 paliers sont atteignables et journalisés une seule fois', async () => {
     const cwd=path.join(runtime,'badge-catalog');await mkdir(cwd);
-    const child=spawn(process.execPath,['--import',path.join(project,'node_modules/tsx/dist/loader.mjs'),path.join(project,'tests/badge_catalog_test.ts')],{cwd,env:{...process.env,CHKPT_PRIVATE_DEMO:'false'},stdio:['ignore','pipe','pipe']});
+    const child=spawn(process.execPath,['--import',path.join(project,'node_modules/tsx/dist/loader.mjs'),path.join(project,'tests/badge_catalog_test.ts')],{cwd,env:{...process.env,CHKPT_DATA_DIR:path.join(cwd,'.data'),CHKPT_PRIVATE_DEMO:'false'},stdio:['ignore','pipe','pipe']});
     let output='';child.stdout.on('data',chunk=>output+=chunk);child.stderr.on('data',chunk=>output+=chunk);
     assert.equal((await once(child,'exit'))[0],0,output);
   });
@@ -299,7 +300,7 @@ try {
     const cwd = path.join(runtime, 'no-secret');
     await mkdir(cwd);
     const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, 'server.ts')], {
-      cwd, env: { ...process.env, CHKPT_PRIVATE_DEMO: 'true', CHKPT_DEMO_ADMIN_PASSWORD: '' }, stdio: ['ignore', 'pipe', 'pipe'],
+      cwd, env: { ...process.env, CHKPT_DATA_DIR:path.join(cwd,'.data'), CHKPT_PRIVATE_DEMO: 'true', CHKPT_DEMO_ADMIN_PASSWORD: '' }, stdio: ['ignore', 'pipe', 'pipe'],
     });
     processes.add(child);
     let output = '';
@@ -315,7 +316,7 @@ try {
       const file = path.join(cwd, '.data/chkpt_db.json');
       await writeFile(file, contents);
       const child = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(project, 'server.ts')], {
-        cwd, env: {...process.env, CHKPT_PRIVATE_DEMO:'false'}, stdio:['ignore','pipe','pipe']
+        cwd, env: {...process.env, CHKPT_DATA_DIR:path.join(cwd,'.data'), CHKPT_PRIVATE_DEMO:'false'}, stdio:['ignore','pipe','pipe']
       });
       let output = '';
       child.stderr!.on('data', chunk => {output += chunk;});
@@ -324,6 +325,8 @@ try {
       assert.equal(await readFile(file, 'utf8'), contents);
     }
   });
+  const {checkSharedState}=await import('./shared_state_test');
+  await check('Données partagées, médias persistants, confidentialité et sauvegarde chiffrée restaurable',()=>checkSharedState(start,stop,password));
   if (process.argv.includes('--browser')) {
     await symlink(path.join(project, 'dist'), path.join(demo.cwd, 'dist'));
     await check('Lancement présentation : assets compilés sans Vite, accès démo toujours fermés par défaut', async () => {
@@ -360,6 +363,8 @@ try {
     await check('Bienvenue, recherche, récompense, aperçu établissement et profils suivis', () => checkNextFeatures(demo.url, password));
     const { checkRadarMap } = await import('./radar_browser');
     await check('Carte interactive, radar de 250 m, catégories et secours hors connexion', () => checkRadarMap(demo.url));
+    const {checkSharedBrowsers}=await import('./shared_state_browser');
+    await check('Deux navigateurs : publications, favoris, visites et photo privée, reprise sans doublon',()=>checkSharedBrowsers(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

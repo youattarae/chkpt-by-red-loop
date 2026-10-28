@@ -11,6 +11,11 @@ export async function checkShareHistory(url: string, password: string) {
     const admin = await login.json();
     const reset = await fetch(url + '/api/demo/start', { method: 'POST', headers: { Authorization: `Bearer ${admin.token}` } });
     const persona = await reset.json();
+    const places=await (await fetch(url+'/api/places')).json();
+    const roof=places.places.find((place:any)=>place.id==='plc_cocody_lounge');
+    const visitResponse=await fetch(url+'/api/checkins',{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${persona.token}`},body:JSON.stringify({placeId:roof.id,latitude:roof.coordinates.lat,longitude:roof.coordinates.lng,isSimulated:true,audience:'private'})});
+    assert.equal(visitResponse.status,201);
+
     for (const width of [320, 390, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 950 }, reducedMotion: 'reduce' });
       await context.addInitScript(({ token, user }) => {
@@ -32,10 +37,11 @@ export async function checkShareHistory(url: string, password: string) {
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
       await page.getByRole('button', { name: /Historique des lieux visités/ }).click();
       const history = page.getByRole('region', { name: 'Historique des lieux visités', exact: true });
+      await history.getByText(/2 visites/).waitFor();
       assert.equal(await history.getByRole('button').count(), 1, 'Deux visites du même lieu donnent une fiche');
       await history.getByText(/2 visites/).waitFor();
       assert.equal(await history.getByText(/Historique autre personne|Tentative refusée/).count(), 0);
-      assert.match(await history.innerText(), /28 oct/);
+      assert.equal(await history.getByText(/Maquis L'Étoile/).count(),0,'Les visites forgées dans le cache local ne sont pas synchronisées');
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await toggleTheme(page);
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
@@ -45,11 +51,11 @@ export async function checkShareHistory(url: string, password: string) {
         }
       }
       await history.getByRole('button').click();
-      const venue = page.getByRole('dialog', { name: "Maquis L'Étoile d'Abidjan", exact: true });
+      const venue = page.getByRole('dialog', { name: 'Lagon Bleu Rooftop Lounge', exact: true });
       await venue.getByRole('button', { name: 'Partager cet établissement', exact: true }).click();
       const share = venue.getByRole('region', { name: 'Partager le lieu', exact: true });
       const link = await share.getByRole('textbox', { name: 'Lien de la fiche', exact: true }).inputValue();
-      assert.equal(link, url + '/#lieu=plc_maquis_etoile');
+      assert.equal(link, url + '/#lieu=plc_cocody_lounge');
       assert.ok(!link.includes(persona.token));
       await page.evaluate("Object.defineProperty(navigator, 'clipboard', { configurable: true, value: { writeText: async text => { window.__copied = text; } } })");
       await share.getByRole('button', { name: 'Copier le lien', exact: true }).click();

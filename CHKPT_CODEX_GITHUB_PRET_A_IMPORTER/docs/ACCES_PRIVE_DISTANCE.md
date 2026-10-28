@@ -4,7 +4,7 @@
 
 Le dépôt contient un fichier `render.yaml` pour héberger le serveur existant sur Render. Le téléphone et l’ordinateur d’Ingrid pourront utiliser une adresse HTTPS sans dépendre du Mac, **après création du service et validation du déploiement**.
 
-Aucun compte Render, service, abonnement ou lien public actif n’a été créé depuis cet environnement. La configuration est prête à examiner ; elle ne vaut pas déploiement réussi.
+Aucun compte Render, service, abonnement ou lien public actif n’a été créé depuis cet environnement. La configuration est prête à examiner ; elle ne vaut pas déploiement réussi. Le budget retenu est strictement gratuit : ne pas activer de disque ou d’offre payante.
 
 ![Écran d’accès privé, capture de test local HTTPS](captures/acces-prive-390.png)
 
@@ -49,11 +49,13 @@ Le cookie d’accès est sécurisé, non accessible au JavaScript et expire au b
 
 ## Gratuit et répétition devant le jury
 
-Une offre gratuite peut se mettre en veille et demander un délai au premier accès. Son stockage local peut être perdu lors d’un redémarrage ou d’un redéploiement : comptes ajoutés, avis et visites serveur peuvent alors repartir du jeu fictif initial. Les médias importés ne survivent déjà pas au redémarrage.
+Une offre gratuite peut se mettre en veille et demander un délai au premier accès. Son stockage local peut être perdu lors d’un redémarrage ou d’un redéploiement : comptes ajoutés, avis et visites serveur peuvent alors repartir du jeu fictif initial. Les nouveaux médias sont enregistrés dans la base : ils restent disponibles uniquement si ce stockage est conservé.
+
+Le budget retenu est strictement gratuit. Utiliser la [sauvegarde chiffrée](SYNCHRONISATION_ET_SAUVEGARDE.md) avant une présentation et avant un redéploiement. Elle permet de restaurer le dernier état téléchargé ; ce n’est pas une sauvegarde automatique.
 
 Pour une présentation importante, ouvrir et répéter la démo en avance. Une offre avec instance active et stockage persistant pourra être étudiée avec son prix ; elle n’est pas configurée ni souscrite ici. Garder le support de secours et la copie locale.
 
-Les publications, intentions et résumé des visites restent propres au navigateur ; les badges sont désormais calculés côté serveur. Se connecter sur le Windows d’Ingrid ne copie pas automatiquement les publications préparées sur le Mac. Les relations de suivi et les avis, eux, sont enregistrés dans la base du serveur, sous réserve de la persistance de cet hébergement.
+Les publications, photos, favoris, commentaires, réactions et historique personnel sont désormais partagés via le serveur. Les intentions et l’utilisation de la récompense fictive restent locales au navigateur. Avec le même compte sur le même serveur, le Windows d’Ingrid retrouve les nouvelles publications préparées sur le Mac. Les relations de suivi et les avis, eux, sont enregistrés dans la base du serveur, sous réserve de la persistance de cet hébergement.
 
 ## Limites de la protection
 

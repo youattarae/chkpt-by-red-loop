@@ -26,7 +26,7 @@ export async function checkDevStability() {
       `server: { fs: { allow: [${JSON.stringify(runtime)}, ${JSON.stringify(path.join(project, 'node_modules'))}] },`));
     const password = randomBytes(24).toString('hex');
     server = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(runtime, 'server.ts')], {
-      cwd: runtime, env: { ...process.env, NODE_ENV: 'development', DISABLE_HMR: 'false', PORT: '0', HOST: '127.0.0.1',
+      cwd: runtime, env: { ...process.env, CHKPT_DATA_DIR:path.join(runtime,'.data'), CHKPT_REMOTE_ACCESS:'false', NODE_ENV: 'development', DISABLE_HMR: 'false', PORT: '0', HOST: '127.0.0.1',
         CHKPT_PRIVATE_DEMO: 'true', CHKPT_DEMO_ADMIN_PASSWORD: password }, stdio: ['ignore', 'pipe', 'pipe'],
     });
     let logs = '';
