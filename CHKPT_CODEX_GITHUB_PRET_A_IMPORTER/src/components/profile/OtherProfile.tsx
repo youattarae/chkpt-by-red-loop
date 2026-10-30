@@ -20,10 +20,11 @@ export function OtherProfile({ id, onClose, onSelectPlace, isVisible=true }: { i
   useEffect(() => {active.current=true;return()=>{active.current=false;};},[]);
   useEffect(() => {
     if(!isVisible)return;
+    setError('');
     const controller = new AbortController();
     fetch(`/api/profiles/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${authSessionToken}` }, signal: controller.signal })
       .then(async response => { if (!response.ok) throw new Error(response.status === 401 ? 'Connectez-vous dans Gérer mon compte pour consulter les profils.' : 'Profil indisponible.'); return response.json(); })
-      .then(data => setProfile(data.profile))
+      .then(data => {if(!controller.signal.aborted){setProfile(data.profile);setError('');}})
       .catch(error => { if (!controller.signal.aborted) setError(error.message); });
     return () => { controller.abort(); };
   }, [id, authSessionToken,isVisible]);

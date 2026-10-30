@@ -1,3 +1,5 @@
+import {readStorage,writeStorage,readCache,objectList} from './browserStorage';
+import {fetchWithTimeout} from './http';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -53,6 +55,7 @@ interface StoreContextType {
   setAppEnvironment: (env: 'demo' | 'production') => void;
   places: Place[];
   savedPlaceIds: string[];
+  pendingSavedPlaceIds: string[];
   checkins: CheckIn[];
   posts: Post[];
   events: EventItem[];
@@ -81,7 +84,10 @@ interface StoreContextType {
     distanceMeters: number;
     earnedXp?: number;
     unlockedBadgeName?: string;
+    recovered?: boolean;
+    uncertain?: boolean;
   }>;
+  recoverCheckIn: (placeId:string) => Promise<{success:boolean;checkIn?:CheckIn;message:string;distanceMeters:number;earnedXp?:number;recovered?:boolean;uncertain?:boolean}>;
   isServerAuthenticated: boolean;
   syncError: string;
   refreshSharedData: () => Promise<void>;
@@ -92,6 +98,7 @@ interface StoreContextType {
     linkedPlaceId?: string;
     linkedCheckinId?: string;
     isVerifiedVisit: boolean;
+    audience?: CheckInAudience;
   }) => Promise<boolean>;
   likePost: (postId: string) => void;
   addComment: (postId: string, text: string) => Promise<boolean>;
@@ -124,12 +131,12 @@ const STORAGE_PREFIX = 'chkpt_abidjan_v1_';
 
 export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authSessionToken, setAuthSessionTokenState] = useState<string>(() => {
-    return localStorage.getItem('chkpt_session_token') || '';
+    return readStorage('chkpt_session_token') || '';
   });
 
   const [isServerAuthenticated,setIsServerAuthenticated]=useState(false);
   const [legacyCache]=useState(()=>{
-    const read=(key:string,fallback:any)=>{try{const parsed=JSON.parse(localStorage.getItem(key)||'null')??fallback;return Array.isArray(fallback)&&!Array.isArray(parsed)?fallback:parsed;}catch{return fallback;}};
+    const read=(key:string,fallback:any)=>{try{const parsed=JSON.parse(readStorage(key)||'null')??fallback;return Array.isArray(fallback)&&!Array.isArray(parsed)?fallback:parsed;}catch{return fallback;}};
     return {user:read(`${STORAGE_PREFIX}user`,null),posts:read(`${STORAGE_PREFIX}posts`,[]),checkins:read(`${STORAGE_PREFIX}checkins`,[]),savedPlaceIds:read(`${STORAGE_PREFIX}saved_places`,[])};
   });
   const pendingComments=useRef(new Map<string,string>());
@@ -150,16 +157,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const setAuthSessionToken = (token: string) => {
     setIsServerAuthenticated(false);sharedRevision.current++;setSyncError('');pendingPostRequest.current=null;pendingComments.current.clear();
     setCurrentUser(CURRENT_USER);setPosts(INITIAL_POSTS);setCheckins([]);setPointsLedger([]);setSavedPlaceIds([]);
-    setFollowingIds([]);
+    setFollowingIds([]);setNotifications([]);setActiveToastNotification(null);setEvents(INITIAL_EVENTS);setNotificationPreferences(DEFAULT_NOTIFICATION_PREFERENCES);setLocalOwner('');setPendingSavedPlaceIds([]);savingPlaces.current.clear();
+    if(!writeStorage('chkpt_session_token',token)){setSyncError('Le stockage de cet appareil est indisponible. Autorisez le stockage pour vous connecter.');setAuthSessionTokenState('');return;}
     setAuthSessionTokenState(token);
-    localStorage.setItem('chkpt_session_token', token);
   };
 
   const [currentUser, setCurrentUser] = useState<UserProfile>(CURRENT_USER);
   // Sync places from server canonical database
   const [places, setPlaces] = useState<Place[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}places`);
-    return saved ? JSON.parse(saved) : INITIAL_PLACES;
+    return INITIAL_PLACES;
   });
 
   useEffect(() => {
@@ -189,6 +195,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   useEffect(() => {
     const controller = new AbortController();
+    const authTimer=setTimeout(()=>{setSyncError('La connexion prend trop de temps. Réessayez la synchronisation ou reconnectez-vous.');controller.abort();},12000);
     const requestedStatsRevision = statsRevision.current;
     const requestedFollowingRevision = followingRevision.current;
     fetch('/api/auth/me', {
@@ -197,7 +204,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     })
       .then((res) => res.json())
       .then((data) => {
-        if (controller.signal.aborted || (localStorage.getItem('chkpt_session_token')||'')!==authSessionToken) return;
+        if (controller.signal.aborted || (readStorage('chkpt_session_token')||'')!==authSessionToken) return;
         if (requestedFollowingRevision === followingRevision.current) setFollowingIdsState(Array.isArray(data.followingIds) ? data.followingIds : []);
         if (data.authenticated && data.user) {
           setIsServerAuthenticated(true);
@@ -228,16 +235,17 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
           setIsOperatorView(false);
         }
       })
-      .catch((err) => { if (err.name !== 'AbortError') console.warn('Sync /api/auth/me error:', err); });
-    return () => controller.abort();
+      .catch((err) => { if (err.name !== 'AbortError')setSyncError('Connexion indisponible. Réessayez la synchronisation ou reconnectez-vous.'); }).finally(()=>clearTimeout(authTimer));
+    return () => {clearTimeout(authTimer);controller.abort();};
   }, [authSessionToken]);
 
+  const [pendingSavedPlaceIds,setPendingSavedPlaceIds]=useState<string[]>([]);
+  const savingPlaces=useRef(new Set<string>());
   const [savedPlaceIds, setSavedPlaceIds] = useState<string[]>([]);
   const [checkins, setCheckins] = useState<CheckIn[]>([]);
   const [posts, setPosts] = useState<Post[]>(INITIAL_POSTS);
   const [events, setEvents] = useState<EventItem[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}events`);
-    return saved ? JSON.parse(saved) : INITIAL_EVENTS;
+    return INITIAL_EVENTS;
   });
 
   const [badges, setBadges] = useState<Badge[]>(INITIAL_BADGES);
@@ -245,50 +253,31 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [adCampaigns] = useState<AdCampaign[]>(INITIAL_AD_CAMPAIGNS);
   
   const [placeProposals, setPlaceProposals] = useState<PlaceProposal[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}proposals`);
-    return saved ? JSON.parse(saved) : INITIAL_PLACE_PROPOSALS;
+    return readCache(`${STORAGE_PREFIX}proposals`,INITIAL_PLACE_PROPOSALS,value=>objectList(value)&&value.every(item=>['name','category','commune','address','landmark','contributorId','contributorName','submittedAt','status'].every(key=>typeof item[key]==='string')&&!!item.coordinates&&typeof item.coordinates==='object'&&Number.isFinite((item.coordinates as any).lat)&&Number.isFinite((item.coordinates as any).lng)));
   });
 
   const [moderationCases, setModerationCases] = useState<ModerationCase[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}moderation`);
-    return saved ? JSON.parse(saved) : INITIAL_MODERATION_CASES;
+    return readCache(`${STORAGE_PREFIX}moderation`,INITIAL_MODERATION_CASES,value=>objectList(value)&&value.every(item=>['targetType','targetId','targetAuthorName','reportedReason','severity','snippet','status','reportedAt'].every(key=>typeof item[key]==='string')));
   });
 
   // Local Push Notifications State
-  const [notifications, setNotifications] = useState<AppNotification[]>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}notifications`);
-    return saved ? JSON.parse(saved) : [
-      {
-        id: 'notif_01',
-        recipientId: 'usr_01',
-        category: 'friends_checkin',
-        title: 'Check-in d\'ami vérifié 📍',
-        body: 'Ingrid N’Goan vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
-        targetType: 'place',
-        targetId: 'plc_cocody_lounge',
-        isRead: false,
-        createdAt: 'Il y a 12 min',
-        avatarUrl: '/illustrations/profil-sarah.webp',
-      },
-      {
-        id: 'notif_02',
-        recipientId: 'usr_01',
-        category: 'nearby_event',
-        title: 'Événement ce soir à Cocody ✨',
-        body: 'Nuit Urbaine Abidjan & Live Beats commence à 19h aux Vallons. 72 amis y seront !',
-        targetType: 'event',
-        targetId: 'evt_01',
-        isRead: true,
-        createdAt: 'Il y a 3h',
-        avatarUrl: '/illustrations/night.svg',
-      }
-    ];
-  });
-
-  const [notificationPreferences, setNotificationPreferences] = useState<NotificationPreferences>(() => {
-    const saved = localStorage.getItem(`${STORAGE_PREFIX}notif_prefs`);
-    return saved ? JSON.parse(saved) : DEFAULT_NOTIFICATION_PREFERENCES;
-  });
+  const [notifications,setNotifications]=useState<AppNotification[]>([]);
+  const [notificationPreferences,setNotificationPreferences]=useState<NotificationPreferences>(DEFAULT_NOTIFICATION_PREFERENCES);
+  const [localOwner,setLocalOwner]=useState('');
+  const eventCatalog=useRef(INITIAL_EVENTS);
+  const validEvents=(value:unknown)=>objectList(value)&&value.every(item=>typeof item.title==='string'&&typeof item.utcDate==='string'&&typeof item.description==='string'&&typeof item.locationName==='string'&&typeof item.commune==='string'&&typeof item.coverImage==='string'&&typeof item.goingCount==='number'&&typeof item.interestedCount==='number'&&['going','interested',null,undefined].includes(item.userIntent as any));
+  const validNotifications=(value:unknown)=>objectList(value)&&value.every(item=>typeof item.recipientId==='string'&&typeof item.title==='string'&&typeof item.body==='string'&&typeof item.isRead==='boolean'&&typeof item.createdAt==='string');
+  const validPreferences=(value:unknown)=>!!value&&typeof value==='object'&&Object.entries(DEFAULT_NOTIFICATION_PREFERENCES).every(([key,sample])=>typeof (value as any)[key]===typeof sample);
+  useEffect(()=>{
+    if(!isServerAuthenticated){setLocalOwner('');return;}
+    const owner=currentUser.id;const legacyOwner=legacyCache.user?.id===owner;
+    const oldEvents=legacyOwner?readCache(`${STORAGE_PREFIX}events`,eventCatalog.current,validEvents):eventCatalog.current;
+    setEvents(readCache(`${STORAGE_PREFIX}events_${owner}`,oldEvents,validEvents));
+    const oldNotifications=readCache<AppNotification[]>(`${STORAGE_PREFIX}notifications`,[],validNotifications).filter(item=>item.recipientId===owner);
+    setNotifications(readCache(`${STORAGE_PREFIX}notifications_${owner}`,oldNotifications,validNotifications).filter(item=>item.recipientId===owner));
+    setNotificationPreferences(readCache(`${STORAGE_PREFIX}notif_prefs_${owner}`,DEFAULT_NOTIFICATION_PREFERENCES,validPreferences));
+    setActiveToastNotification(null);setLocalOwner(owner);
+  },[isServerAuthenticated,currentUser.id]);
 
   const [activeToastNotification, setActiveToastNotification] = useState<AppNotification | null>(null);
 
@@ -299,58 +288,60 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [browserCoordinates, setBrowserCoordinates] = useState<Coordinates | null>(null);
   const [isOperatorView, setIsOperatorView] = useState<boolean>(false);
 
+  useEffect(()=>{const changed=(event:StorageEvent)=>{if(event.key==='chkpt_session_token'&&event.newValue!==authSessionToken)setAuthSessionToken(event.newValue||'');};window.addEventListener('storage',changed);return()=>window.removeEventListener('storage',changed);},[authSessionToken]);
+
   // Sync to localStorage
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}ledger`, JSON.stringify(pointsLedger));
+    writeStorage(`${STORAGE_PREFIX}ledger`, JSON.stringify(pointsLedger));
   }, [pointsLedger]);
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}user`, JSON.stringify(currentUser));
+    writeStorage(`${STORAGE_PREFIX}user`, JSON.stringify(currentUser));
   }, [currentUser]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}places`, JSON.stringify(places));
+    writeStorage(`${STORAGE_PREFIX}places`, JSON.stringify(places));
   }, [places]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}checkins`, JSON.stringify(checkins));
+    writeStorage(`${STORAGE_PREFIX}checkins`, JSON.stringify(checkins));
   }, [checkins]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}posts`, JSON.stringify(posts));
+    writeStorage(`${STORAGE_PREFIX}posts`, JSON.stringify(posts));
   }, [posts]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}events`, JSON.stringify(events));
-  }, [events]);
+    if(isServerAuthenticated&&localOwner===currentUser.id)writeStorage(`${STORAGE_PREFIX}events_${localOwner}`, JSON.stringify(events));
+  }, [events,localOwner,currentUser.id,isServerAuthenticated]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}saved_places`, JSON.stringify(savedPlaceIds));
+    writeStorage(`${STORAGE_PREFIX}saved_places`, JSON.stringify(savedPlaceIds));
   }, [savedPlaceIds]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}badges`, JSON.stringify(badges));
+    writeStorage(`${STORAGE_PREFIX}badges`, JSON.stringify(badges));
   }, [badges]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}proposals`, JSON.stringify(placeProposals));
+    writeStorage(`${STORAGE_PREFIX}proposals`, JSON.stringify(placeProposals));
   }, [placeProposals]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}moderation`, JSON.stringify(moderationCases));
+    writeStorage(`${STORAGE_PREFIX}moderation`, JSON.stringify(moderationCases));
   }, [moderationCases]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}notifications`, JSON.stringify(notifications));
-  }, [notifications]);
+    if(isServerAuthenticated&&localOwner===currentUser.id)writeStorage(`${STORAGE_PREFIX}notifications_${localOwner}`, JSON.stringify(notifications));
+  }, [notifications,localOwner,currentUser.id,isServerAuthenticated]);
 
   useEffect(() => {
-    localStorage.setItem(`${STORAGE_PREFIX}notif_prefs`, JSON.stringify(notificationPreferences));
-  }, [notificationPreferences]);
+    if(isServerAuthenticated&&localOwner===currentUser.id)writeStorage(`${STORAGE_PREFIX}notif_prefs_${localOwner}`, JSON.stringify(notificationPreferences));
+  }, [notificationPreferences,localOwner,currentUser.id,isServerAuthenticated]);
 
   useEffect(()=>{
     const controller=new AbortController();
     fetch('/api/events',{signal:controller.signal}).then(response=>response.json()).then(data=>{
-      if(Array.isArray(data.events)) setEvents(previous=>data.events.map((event:EventItem)=>({...event,userIntent:previous.find(item=>item.id===event.id)?.userIntent||null})));
+      if(validEvents(data.events)){eventCatalog.current=data.events;setEvents(previous=>data.events.map((event:EventItem)=>({...event,userIntent:previous.find(item=>item.id===event.id)?.userIntent||null})));}
     }).catch(()=>{});
     return()=>controller.abort();
   },[]);
@@ -362,21 +353,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const response=await fetch(token?'/api/account/state':'/api/posts',{headers:token?{Authorization:`Bearer ${token}`}:{},cache:'no-store'});
       if(!response.ok)throw new Error('Les données ne sont pas synchronisées. Reconnectez-vous ou réessayez.');
       const data=await response.json();
-      if(revision!==sharedRevision.current||followingVersion!==followingRevision.current||writesInFlight.current>0||(localStorage.getItem('chkpt_session_token')||'')!==token)return;
+      if(revision!==sharedRevision.current||followingVersion!==followingRevision.current||writesInFlight.current>0||(readStorage('chkpt_session_token')||'')!==token)return;
       if(token){
         const legacyKey=`chkpt_legacy_backup_${data.userId}`;
-        try{if(legacyCache.user?.id===data.userId&&!localStorage.getItem(legacyKey))localStorage.setItem(legacyKey,JSON.stringify({userId:data.userId,posts:legacyCache.posts.filter((post:Post)=>post&&post.authorId===data.userId),checkins:legacyCache.checkins.filter((visit:CheckIn)=>visit&&visit.userId===data.userId),savedPlaceIds:legacyCache.savedPlaceIds}));}catch{/* A full browser cache must not block the server state. */}
+        try{if(legacyCache.user?.id===data.userId&&!readStorage(legacyKey))writeStorage(legacyKey,JSON.stringify({userId:data.userId,posts:legacyCache.posts.filter((post:Post)=>post&&post.authorId===data.userId),checkins:legacyCache.checkins.filter((visit:CheckIn)=>visit&&visit.userId===data.userId),savedPlaceIds:legacyCache.savedPlaceIds}));}catch{/* A full browser cache must not block the server state. */}
         setIsServerAuthenticated(true);statsRevision.current++;followingRevision.current++;
         setSavedPlaceIds(data.savedPlaceIds);setCheckins(data.checkins);setPointsLedger(data.pointsLedger);setBadges(data.badges);setFollowingIdsState(data.followingIds);
         setCurrentUser(user=>({...user,...data.user}));
       }
       setPosts(data.posts);
-    }catch(error){if(revision===sharedRevision.current&&(localStorage.getItem('chkpt_session_token')||'')===token)setSyncError(error instanceof Error?error.message:'Synchronisation indisponible.');}
+    }catch(error){if(revision===sharedRevision.current&&(readStorage('chkpt_session_token')||'')===token)setSyncError(error instanceof Error?error.message:'Synchronisation indisponible.');}
   }
   function beginWrite(){writesInFlight.current++;sharedRevision.current++;setSyncError('');}
-  function endWrite(){writesInFlight.current--;sharedRevision.current++;if(writesInFlight.current===0)void refreshSharedState(localStorage.getItem('chkpt_session_token')||'');}
+  function endWrite(){writesInFlight.current--;sharedRevision.current++;if(writesInFlight.current===0)void refreshSharedState(readStorage('chkpt_session_token')||'');}
   async function sendShared(route:string,body:unknown,token=authSessionToken){
-    let response:Response;try{response=await fetch(route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(body)});}catch{throw new Error('Connexion interrompue. Action non confirmée : réessayez.');}
+    let response:Response;try{response=await fetchWithTimeout(route,{method:'POST',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(body)});}catch{throw new Error('Connexion interrompue. Action non confirmée : réessayez.');}
     if(!response.ok){const data=await response.json().catch(()=>({}));throw new Error(data.message||'Action non confirmée. Reconnectez-vous ou réessayez.');}
     return response.json();
   }
@@ -478,6 +469,19 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
    * Server computes Haversine distance, enforces anti-spoofing & awards atomic XP.
    * Dynamically evaluates Badge unlocks!
    */
+  const recoverCheckIn=async(placeId:string)=>{
+    const token=authSessionToken;
+    try{
+      const response=await fetchWithTimeout('/api/checkins/history',{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});
+      if(!response.ok)throw Error('History unavailable');const data=await response.json();
+      if(readStorage('chkpt_session_token')!==token)throw Error('Session changed');
+      const today=new Date().toISOString().slice(0,10);
+      const visit=(data.checkins as CheckIn[]).find(item=>item.placeId===placeId&&item.status==='verified'&&item.timestamp.slice(0,10)===today);
+      if(visit){void refreshSharedState(token);return {success:true,checkIn:visit,message:'Visite déjà enregistrée. Vous pouvez reprendre la publication ; aucun nouveau point n’est ajouté.',distanceMeters:0,earnedXp:0,recovered:true};}
+      return {success:false,message:'Aucune visite enregistrée aujourd’hui pour ce lieu. Vous pouvez réessayer la validation.',distanceMeters:0,uncertain:true};
+    }catch{return {success:false,message:'Résultat encore inconnu : vérifiez l’enregistrement avant de recommencer.',distanceMeters:0,uncertain:true};}
+  };
+
   const submitCheckIn = async (
     placeId: string, 
     audience: CheckInAudience,
@@ -489,6 +493,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     distanceMeters: number;
     earnedXp?: number;
     unlockedBadgeName?: string;
+    recovered?: boolean;
+    uncertain?: boolean;
   }> => {
     if (activeLocationMode === 'browser_gps' && !browserCoordinates) {
       return { success: false, message: 'Position GPS en cours de recherche. Patientez ou choisissez explicitement le simulateur.', distanceMeters: 0 };
@@ -500,7 +506,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     beginWrite();statsRevision.current++;
     try {
-      const response = await fetch('/api/checkins', {
+      const response = await fetchWithTimeout('/api/checkins', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -520,7 +526,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       const serverData = await response.json();
 
+      if(readStorage('chkpt_session_token')!==authSessionToken)return {success:false,message:'La session a changé.',distanceMeters:0};
       if (!response.ok || !serverData.success) {
+        if(serverData.rejectionReason==='duplicate_daily_checkin')return await recoverCheckIn(placeId);
         const rejectedCheckIn: CheckIn = {
           id: serverData.checkIn?.id || `chk_rej_${Date.now()}`,
           userId: currentUser.id,
@@ -611,16 +619,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         unlockedBadgeName: newlyUnlockedBadgeName,
       };
     } catch (err: any) {
-      console.error('Server checkin fetch error:', err);
-      return {
-        success: false,
-        message: `Erreur de communication avec le serveur de vérification : ${err.message}`,
-        distanceMeters: 0,
-      };
+      return await recoverCheckIn(placeId);
     } finally {endWrite();}
   };
 
-  const createPost = async (data: {text:string;mediaUrl?:string;media?:import('../types').PostMedia[];linkedPlaceId?:string;linkedCheckinId?:string;isVerifiedVisit:boolean}):Promise<boolean> => {
+  const createPost = async (data: {text:string;mediaUrl?:string;media?:import('../types').PostMedia[];linkedPlaceId?:string;linkedCheckinId?:string;isVerifiedVisit:boolean;audience?:CheckInAudience}):Promise<boolean> => {
     const token=authSessionToken;
     if(!token){setSyncError('Connectez-vous dans Gérer mon compte pour publier.');return false;}
     const key=token+'|'+JSON.stringify(data);
@@ -629,11 +632,11 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try{
       const result=await sendShared('/api/posts',{...data,clientRequestId:pendingPostRequest.current.id},token);
       pendingPostRequest.current=null;
-      if(localStorage.getItem('chkpt_session_token')!==token)return false;
+      if(readStorage('chkpt_session_token')!==token)return false;
       setPosts(posts=>[result.post,...posts.filter(post=>post.id!==result.post.id)]);
       if(result.awards){setBadges(result.awards.badges);for(const badge of result.awards.newlyUnlocked||[])dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family}`,targetType:'badge'},true);}
       return true;
-    }catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Publication non enregistrée.');return false;}
+    }catch(error){if(readStorage('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Publication non enregistrée.');return false;}
     finally{endWrite();}
   };
   const likePost = async (postId:string) => {
@@ -643,25 +646,26 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     if(!authSessionToken)return;
     const token=authSessionToken;beginWrite();
     try{await sendShared(`/api/posts/${encodeURIComponent(postId)}/like`,{liked},token);}
-    catch(error){if(localStorage.getItem('chkpt_session_token')===token){setPosts(items=>items.map(item=>item.id===postId?post:item));setSyncError(error instanceof Error?error.message:'Réaction non enregistrée.');}}
+    catch(error){if(readStorage('chkpt_session_token')===token){setPosts(items=>items.map(item=>item.id===postId?post:item));setSyncError(error instanceof Error?error.message:'Réaction non enregistrée.');}}
     finally{endWrite();}
   };
   const addComment = async (postId:string,text:string):Promise<boolean> => {
     if(!text.trim())return false;
     if(!authSessionToken){setSyncError('Connectez-vous pour commenter.');return false;}
     const token=authSessionToken;const key=token+'|'+postId+'|'+text.trim();if(!pendingComments.current.has(key))pendingComments.current.set(key,requestId());beginWrite();
-    try{const result=await sendShared(`/api/posts/${encodeURIComponent(postId)}/comments`,{text:text.trim(),clientRequestId:pendingComments.current.get(key)},token);pendingComments.current.delete(key);if(localStorage.getItem('chkpt_session_token')!==token)return false;setPosts(items=>items.map(item=>item.id===postId?result.post:item));return true;}
-    catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Commentaire non enregistré.');return false;}
+    try{const result=await sendShared(`/api/posts/${encodeURIComponent(postId)}/comments`,{text:text.trim(),clientRequestId:pendingComments.current.get(key)},token);pendingComments.current.delete(key);if(readStorage('chkpt_session_token')!==token)return false;setPosts(items=>items.map(item=>item.id===postId?result.post:item));return true;}
+    catch(error){if(readStorage('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Commentaire non enregistré.');return false;}
     finally{endWrite();}
   };
   const toggleSavePlace = async (placeId:string) => {
-    const saved=!savedPlaceIds.includes(placeId);
+    if(savingPlaces.current.has(placeId))return;
+    const wasSaved=savedPlaceIds.includes(placeId);const saved=!wasSaved;
     setSavedPlaceIds(items=>saved?[...items.filter(id=>id!==placeId),placeId]:items.filter(id=>id!==placeId));
     if(!authSessionToken)return;
-    const token=authSessionToken;beginWrite();
+    const token=authSessionToken;savingPlaces.current.add(placeId);setPendingSavedPlaceIds(items=>[...items,placeId]);beginWrite();
     try{await sendShared('/api/account/saved-places',{placeId,saved},token);}
-    catch(error){if(localStorage.getItem('chkpt_session_token')===token)setSyncError(error instanceof Error?error.message:'Favori non enregistré.');}
-    finally{endWrite();}
+    catch(error){if(readStorage('chkpt_session_token')===token){setSavedPlaceIds(items=>wasSaved?[...items.filter(id=>id!==placeId),placeId]:items.filter(id=>id!==placeId));setSyncError(error instanceof Error?error.message:'Favori non enregistré.');}}
+    finally{if(readStorage('chkpt_session_token')===token){savingPlaces.current.delete(placeId);setPendingSavedPlaceIds(items=>items.filter(id=>id!==placeId));}endWrite();}
   };
 
   const toggleEventIntent = (eventId: string, intent: 'interested' | 'going') => {
@@ -758,7 +762,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   // Notification Methods
-  const unreadNotificationsCount = notifications.filter(n => !n.isRead).length;
+  const unreadNotificationsCount = notifications.filter(n => isServerAuthenticated&&n.recipientId===currentUser.id&&!n.isRead).length;
 
   const dispatchNotification = (
     data: Omit<AppNotification, 'id' | 'createdAt' | 'isRead'>,
@@ -855,6 +859,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setAppEnvironment,
       places,
       savedPlaceIds,
+      pendingSavedPlaceIds,
       checkins,
       posts,
       events,
@@ -874,6 +879,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       isOperatorView,
       setIsOperatorView,
       submitCheckIn,
+      recoverCheckIn,
       createPost,
       likePost,
       addComment,
@@ -885,9 +891,9 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       rejectProposal,
       resolveModerationCase,
       togglePlaceVerification,
-      notifications,
+      notifications: notifications.filter(item=>isServerAuthenticated&&item.recipientId===currentUser.id),
       notificationPreferences,
-      activeToastNotification,
+      activeToastNotification: activeToastNotification?.recipientId===currentUser.id&&isServerAuthenticated?activeToastNotification:null,
       unreadNotificationsCount,
       dispatchNotification,
       markNotificationAsRead,

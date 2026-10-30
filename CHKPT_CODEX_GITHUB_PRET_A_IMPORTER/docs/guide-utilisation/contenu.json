@@ -1,0 +1,528 @@
+[
+  {
+    "chapter": "COMMENCER",
+    "title": "CHKPT — guide d’utilisation complet",
+    "steps": [
+      "Sors. Check. Partage.",
+      "Version du prototype actualisée au 30 octobre 2026.",
+      "Un guide pour utiliser l’application, la présenter et retrouver les gestes utiles."
+    ],
+    "note": "Captures de la version testée · personnages, lieux et contenus fictifs · prototype, pas application de production.",
+    "image": "accueil"
+  },
+  {
+    "chapter": "COMMENCER",
+    "title": "Les cinq boutons à connaître",
+    "steps": [
+      "Accueil : publications, stories et recherche générale.",
+      "Carte : trouver et consulter des lieux.",
+      "Symbole central Check-in : choisir un lieu et confirmer une visite.",
+      "Sortir : sélections éditoriales et événements.",
+      "Profil : votre présentation et vos publications ; ☰ ouvre votre menu personnel."
+    ],
+    "note": "Le point bordeaux et la couleur indiquent l’onglet actif. Retour retrouve la page précédente.",
+    "image": "accueil"
+  },
+  {
+    "chapter": "COMMENCER",
+    "title": "Ce que montre cette version",
+    "steps": [
+      "Quatre personnages : Ingrid N’Goan, Grâce Agbomi, Yacoub Ouattara et Georges Armand.",
+      "Cinq publications de départ par personnage, avec des portraits et illustrations fictifs.",
+      "Publicité fictive avant le fil puis après cinq publications visibles : banque, téléphonie, vêtements, mobilité et alcool réservé aux majeurs déclarés.",
+      "Les comptes ajoutés et leurs données ne sont pas des preuves de traction commerciale."
+    ],
+    "note": "Les annonces ne sont pas cliquables et ne représentent aucun partenariat réel. Aucune publicité sur Carte.",
+    "image": "profil-autrui"
+  },
+  {
+    "chapter": "COMMENCER",
+    "title": "Lancer sur Mac ou Windows",
+    "steps": [
+      "Ouvrir le dossier CHKPT_CODEX_GITHUB_PRET_A_IMPORTER contenant package.json dans Terminal (Mac) ou PowerShell (Windows).",
+      "Installer Node.js compatible, puis lancer : npm ci",
+      "Démarrer : npm run demo — garder le terminal ouvert.",
+      "Ouvrir http://localhost:3000, ou le port indiqué par le terminal.",
+      "Au premier lancement, créer .env depuis .env.example ; préserver tout .env et dossier .data existants."
+    ],
+    "note": "Démo opérateur : CHKPT_PRIVATE_DEMO=true et mot de passe local personnel de 16 caractères minimum. Ne jamais publier ce fichier.",
+    "image": "connexion"
+  },
+  {
+    "chapter": "COMMENCER",
+    "title": "Utiliser le téléphone ou le hotspot",
+    "steps": [
+      "Le téléphone et l’ordinateur doivent être sur le même Wi-Fi, ou reliés au même partage de connexion.",
+      "Dans .env, utiliser HOST=0.0.0.0 puis relancer le serveur.",
+      "Sur le téléphone : http://IP_DE_L_ORDINATEUR:3000 — l’adresse peut changer.",
+      "Laisser l’ordinateur allumé, connecté et le terminal ouvert.",
+      "Sans ce réseau commun, il faut un hébergement distant ; aucun lien distant n’est encore activé."
+    ],
+    "note": "Sur le lien HTTP local, utiliser le Simulateur pour la présentation. Ne pas ouvrir directement le port de l’ordinateur sur Internet.",
+    "image": "gps"
+  },
+  {
+    "chapter": "MON COMPTE",
+    "title": "Se connecter ou créer un compte",
+    "steps": [
+      "Ouvrir ☰ → Mon compte / Se connecter, ou Profil → Gérer mon compte.",
+      "Connexion : saisir identifiant et mot de passe.",
+      "Inscription : renseigner nom, identifiant, âge, commune et mot de passe.",
+      "Les moins de 13 ans ne peuvent pas s’inscrire ; les 13–17 ans restent privés.",
+      "Se déconnecter depuis le panneau du compte, sans réinitialiser la démo."
+    ],
+    "note": "Aucune récupération de mot de passe par e-mail ni édition complète du profil n’est proposée dans cette version.",
+    "image": "inscription"
+  },
+  {
+    "chapter": "ACCUEIL",
+    "title": "Pour toi, Amis et publications",
+    "steps": [
+      "Pour toi présente les publications accessibles de la démonstration.",
+      "Amis affiche celles des profils que vous suivez ; ce filtre n’est pas le classement des amis réciproques.",
+      "Filtrer les publications permet de choisir une catégorie de contenu.",
+      "Toucher le nom d’une personne ouvre son profil ; le nom d’un lieu ouvre sa fiche."
+    ],
+    "note": "Un fil Amis vide est normal si vous ne suivez encore personne. Suivre un profil peut le remplir.",
+    "image": "accueil"
+  },
+  {
+    "chapter": "ACCUEIL",
+    "title": "Chercher : suggestions ou résultats",
+    "steps": [
+      "Écrire un nom, un établissement, un événement ou des mots d’une publication.",
+      "Pendant la saisie, les suggestions apparaissent sous la barre.",
+      "Toucher une suggestion ouvre le contenu correspondant.",
+      "Rechercher ou Entrée ouvre une vraie page de résultats.",
+      "Retour retrouve la recherche ou le fil et son défilement."
+    ],
+    "note": "Les suggestions concernent les données accessibles de ce prototype ; ce n’est pas une recherche exhaustive d’Abidjan.",
+    "image": "suggestions"
+  },
+  {
+    "chapter": "ACCUEIL",
+    "title": "Affiner les résultats",
+    "steps": [
+      "Toucher Filtres à côté de Rechercher, avant la recherche ou sur ses résultats.",
+      "Choisir Tout, Profils, Établissements, Événements ou Publications.",
+      "Trier par pertinence ou par nom.",
+      "Pour les établissements, choisir aussi catégorie et distance.",
+      "Appliquer valide les filtres avec la saisie courante ; Réinitialiser prépare les valeurs par défaut."
+    ],
+    "note": "Les distances concernent les lieux uniquement. Fermer le panneau sans Appliquer n’applique pas ses modifications.",
+    "image": "filtres"
+  },
+  {
+    "chapter": "ACCUEIL",
+    "title": "Réagir, commenter et enregistrer",
+    "steps": [
+      "Le cœur permet d’aimer une publication ; le toucher à nouveau retire la réaction.",
+      "Commentaires ouvre la zone de discussion : écrire puis Envoyer.",
+      "Le marque-page enregistre le lieu lié à une publication.",
+      "Retrouver les lieux dans ☰ → Lieux enregistrés.",
+      "Une erreur réseau signifie que l’action n’est pas confirmée ; le favori revient à son état précédent si l’écriture échoue."
+    ],
+    "note": "Les actions partagées nécessitent une connexion. Les favoris anonymes sont temporaires sur cet écran.",
+    "image": "accueil"
+  },
+  {
+    "chapter": "PUBLIER",
+    "title": "Créer une publication",
+    "steps": [
+      "Dans Accueil, toucher « Qu’as-tu découvert… ? ».",
+      "Écrire le texte et ajouter éventuellement des médias.",
+      "Choisir Visibilité de la publication : Moi seul, Abonnés ou Public.",
+      "Appuyer sur Publier et attendre la confirmation dans le fil.",
+      "Annuler ferme le brouillon. Une publication ne valide pas une visite et ne donne pas de points de check."
+    ],
+    "note": "Une publication ordinaire nécessite du texte. Le brouillon ne constitue pas une sauvegarde permanente.",
+    "image": "publication"
+  },
+  {
+    "chapter": "PUBLIER",
+    "title": "Jusqu’à quatre images ou vidéos",
+    "steps": [
+      "Ajouter un mélange de photos et vidéos : quatre fichiers maximum au total.",
+      "Chaque fichier doit faire au maximum 15 Mo ; un quota partagé de stockage s’applique au prototype.",
+      "Images : JPG, PNG ou WebP. Exporter les photos HEIC en JPG si nécessaire.",
+      "Vidéos : MP4 ou WebM ; MP4 H.264 est conseillé pour la présentation.",
+      "Attendre la fin de l’import ; Retirer le média permet de corriger la sélection."
+    ],
+    "note": "Les photos sont réencodées. Les vidéos ne sont pas converties et conservent leurs métadonnées ; lecture à vérifier sur l’appareil réel.",
+    "image": "publication"
+  },
+  {
+    "chapter": "CONFIDENTIALITÉ",
+    "title": "Choisir qui voit votre contenu",
+    "steps": [
+      "Moi seul : contenu réservé à votre compte.",
+      "Abonnés : accessible aux comptes autorisés qui vous suivent.",
+      "Public : accessible selon les règles de visibilité du prototype.",
+      "Après un check privé, la publication reprend une visibilité privée par défaut ; vous pouvez explicitement la modifier si votre compte le permet.",
+      "Un profil privé ou mineur impose des publications privées côté serveur."
+    ],
+    "note": "Même si une publication est publique, votre historique de visites, vos preuves GPS et vos XP totaux restent personnels.",
+    "image": "check-publication"
+  },
+  {
+    "chapter": "CARTE ET LIEUX",
+    "title": "Trouver un lieu sur Carte",
+    "steps": [
+      "Déplacer et zoomer sur la carte interactive, ou utiliser la carte illustrée de secours.",
+      "Les puces sélectionnent les catégories ; Filtres précise catégorie, tri et distance.",
+      "La distance est calculée à vol d’oiseau depuis la position choisie, pas selon un itinéraire.",
+      "Toucher un repère, puis Détails pour ouvrir la page du lieu.",
+      "La recherche intelligente externe est facultative et peut être indisponible sans configuration."
+    ],
+    "note": "Les repères représentent des lieux fictifs. Le radar de 250 m illustre l’éligibilité ; le serveur contrôle la validation finale.",
+    "image": "carte"
+  },
+  {
+    "chapter": "CARTE ET LIEUX",
+    "title": "GPS : Simulateur ou GPS Réel",
+    "steps": [
+      "Toucher le bouton GPS avec la commune dans l’en-tête.",
+      "Simulateur : choisir une position de démonstration, par exemple Cocody Saint-Jean.",
+      "GPS Réel : autoriser la localisation et attendre une position disponible.",
+      "En attente de GPS, un filtre de distance ne peut pas fournir de résultats fiables.",
+      "Avant de confirmer un check, vérifier la mention Simulation GPS ou Position GPS."
+    ],
+    "note": "Un échec du GPS peut faire revenir ce prototype au Simulateur. Le GPS navigateur n’est pas une preuve antifraude ; HTTPS est nécessaire à son usage normal à distance.",
+    "image": "gps"
+  },
+  {
+    "chapter": "CARTE ET LIEUX",
+    "title": "Lire et partager une fiche",
+    "steps": [
+      "La page du lieu présente illustration, description, adresse, horaires s’ils sont connus, catégorie et tags.",
+      "Les miniatures permettent de parcourir les illustrations disponibles.",
+      "Le marque-page ajoute ou retire le lieu des enregistrés.",
+      "Partager propose le menu natif ou un lien à copier, WhatsApp et e-mail.",
+      "Retour retrouve la page précédente. Le check reste au bouton central."
+    ],
+    "note": "Un lien ne rend pas le serveur accessible à distance : le destinataire doit pouvoir ouvrir la même démo. Aucune visite personnelle n’est incluse dans le lien.",
+    "image": "partage"
+  },
+  {
+    "chapter": "CARTE ET LIEUX",
+    "title": "Laisser un avis sur un lieu",
+    "steps": [
+      "Descendre à Les avis de la communauté dans la fiche.",
+      "Choisir une note de 1 à 5 étoiles.",
+      "Écrire un commentaire de 3 à 1 000 caractères puis Publier mon avis.",
+      "Votre avis existant peut être modifié avec Mettre à jour mon avis.",
+      "Les avis publics ne sont pas proposés aux profils privés ou mineurs dans cette démo."
+    ],
+    "note": "Votre nom et votre avis deviennent visibles. L’exemple fictif n’est pas comptabilisé et la note de présentation du lieu est distincte des avis ajoutés.",
+    "image": "avis"
+  },
+  {
+    "chapter": "CARTE ET LIEUX",
+    "title": "Proposer un lieu manquant",
+    "steps": [
+      "Ouvrir le bouton central Check-in, puis « Le lieu n’est pas dans la liste ? Proposer ce spot ».",
+      "Renseigner nom, catégorie, commune et repère utile.",
+      "Envoyer la proposition pour illustrer la contribution communautaire.",
+      "Ce parcours et son traitement opérateur restent une démonstration locale sur l’appareil."
+    ],
+    "note": "Une proposition n’ajoute pas automatiquement un lieu au référentiel du serveur et ne constitue pas une certification réelle.",
+    "image": "proposition"
+  },
+  {
+    "chapter": "CHECK-IN",
+    "title": "Choisir le lieu et confirmer",
+    "steps": [
+      "Toucher le symbole central Check-in, seul point d’entrée de validation.",
+      "Sélectionner explicitement le lieu dans la liste.",
+      "Choisir la visibilité du check ; Moi seul est proposé par défaut.",
+      "Si proposé, sélectionner un événement actif au même lieu.",
+      "Appuyer sur Confirmer le check. La simulation reste clairement signalée."
+    ],
+    "note": "Il faut être à moins de 250 m selon les coordonnées reçues. Une seule visite compte par jour et par lieu ; aucune publication n’est automatique.",
+    "image": "check-selection"
+  },
+  {
+    "chapter": "CHECK-IN",
+    "title": "Comprendre le résultat",
+    "steps": [
+      "Un succès indique que la visite est enregistrée ; les points et badges éventuels sont affichés.",
+      "Dans le scénario du maquis, la première visite de cette journée ajoute 75 XP : 1240 → 1315.",
+      "Plus tard (Terminer) ferme le résultat sans publier.",
+      "Créer une publication ouvre le partage facultatif lié à cette visite.",
+      "Une visite refusée n’attribue pas de points."
+    ],
+    "note": "Les valeurs de départ et le barème sont fictifs et provisoires ; les points totaux ne sont visibles que par leur propriétaire.",
+    "image": "check-confirme"
+  },
+  {
+    "chapter": "CHECK-IN",
+    "title": "Si la connexion se coupe",
+    "steps": [
+      "Une réponse perdue ne signifie pas toujours que la visite a échoué.",
+      "L’application recherche la visite dans votre historique serveur.",
+      "Si elle la retrouve : Visite déjà enregistrée, reprise de publication possible, aucun nouveau point.",
+      "Si le résultat reste inconnu : utiliser Vérifier l’enregistrement avant de recommencer.",
+      "Une seconde tentative sur un check déjà compté permet de retrouver ce résultat sans doubler les XP."
+    ],
+    "note": "Ne pas réinitialiser toute la démo pour résoudre une coupure réseau ou une visite déjà comptabilisée.",
+    "image": "check-confirme"
+  },
+  {
+    "chapter": "CHECK-IN",
+    "title": "Partager après la visite",
+    "steps": [
+      "Le lieu et le check sont déjà liés au brouillon.",
+      "Ajouter un commentaire et, si souhaité, jusqu’à quatre médias.",
+      "Vérifier Visibilité de la publication avant Publier le checkpoint.",
+      "Sans média importé, l’illustration de démonstration du lieu peut être utilisée.",
+      "Fermer un brouillon rédigé demande de confirmer son abandon ; Continuer la rédaction le conserve à l’écran."
+    ],
+    "note": "Publier reste une décision séparée du check. Un changement de compte ferme l’ancien brouillon pour éviter un partage sous la mauvaise identité.",
+    "image": "check-publication"
+  },
+  {
+    "chapter": "STORIES",
+    "title": "Ajouter une story",
+    "steps": [
+      "Depuis l’accueil ou votre profil, toucher le + sur votre avatar.",
+      "Importer une seule image ou vidéo.",
+      "Ajouter éventuellement un texte, puis choisir la visibilité.",
+      "Publier la story après la fin de l’import.",
+      "La story expire après 24 heures selon l’heure du serveur."
+    ],
+    "note": "Une story ne constitue pas une preuve de visite et n’attribue pas de XP. Les règles de profil privé ou mineur s’appliquent.",
+    "image": "story-ajout"
+  },
+  {
+    "chapter": "STORIES",
+    "title": "Lire une story depuis un profil",
+    "steps": [
+      "Un anneau coloré indique qu’une story est disponible.",
+      "Toucher la photo dans l’accueil, une publication ou un profil pour la lire.",
+      "Les flèches passent aux stories précédente et suivante de cette personne.",
+      "Fermer les stories ou Échap revient à l’écran précédent.",
+      "Seul l’auteur voit Supprimer cette story."
+    ],
+    "note": "Un avatar sans story ne permet pas d’en lire une. Pour ouvrir un profil depuis une publication, toucher son nom.",
+    "image": "mon-profil"
+  },
+  {
+    "chapter": "PROFILS",
+    "title": "Votre profil compact",
+    "steps": [
+      "Votre nom, bio, commune et compteurs sont regroupés en haut.",
+      "Les publications apparaissent rapidement sous cette présentation.",
+      "Abonnés et Abonnements ouvrent des pages avec leur propre recherche.",
+      "Votre total XP est accompagné de Visible par vous seul.",
+      "Gérer mon compte ouvre connexion, inscription, déconnexion et, si autorisé, les personnages de démo."
+    ],
+    "note": "Certains compteurs de départ sont fictifs ; les listes contiennent les relations réellement accessibles dans le prototype.",
+    "image": "mon-profil"
+  },
+  {
+    "chapter": "PROFILS",
+    "title": "Voir et suivre une autre personne",
+    "steps": [
+      "Rechercher son profil dans Accueil, ou toucher son nom dans une publication.",
+      "Consulter sa bio, ses badges publics et ses publications autorisées.",
+      "Suivre ajoute le profil à vos abonnements ; Ne plus suivre retire la relation.",
+      "Toucher Abonnés ou Abonnements puis rechercher dans la liste.",
+      "Un profil privé ne dévoile pas ses publications privées dans cette démo."
+    ],
+    "note": "Les XP totaux, l’historique et les preuves de visite d’autrui ne sont pas visibles.",
+    "image": "profil-autrui"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Le menu reste toujours personnel",
+    "steps": [
+      "Toucher ☰ dans l’en-tête, même en consultant quelqu’un d’autre.",
+      "Le nom du menu est celui du compte connecté.",
+      "Accéder aux enregistrés, historique privé, progression, récompenses et classement.",
+      "Ouvrir les réglages/confidentialité ou l’aide.",
+      "Fermer le menu ou choisir une rubrique ; les pages ont leur bouton Retour."
+    ],
+    "note": "Le menu est distinct de la photo de profil, qui conserve son rôle pour les stories.",
+    "image": "menu"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Retrouver vos lieux",
+    "steps": [
+      "☰ → Lieux enregistrés : fiches ajoutées avec le marque-page.",
+      "☰ → Historique privé : lieux associés à vos visites validées.",
+      "L’historique regroupe les visites d’un même lieu et indique la plus récente.",
+      "Toucher un lieu ouvre sa fiche ; Retour retrouve la liste.",
+      "Les tentatives refusées ne remplissent pas l’historique des lieux visités."
+    ],
+    "note": "L’historique est réservé au propriétaire, même si son profil ou certaines publications sont publics.",
+    "image": "historique"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Badges, progression et journal XP",
+    "steps": [
+      "☰ → Badges et progression montre votre niveau et votre total.",
+      "Une petite sélection de badges est affichée dans le prototype.",
+      "Les paliers sont évalués côté serveur à partir des actions validées.",
+      "Le journal XP explique les mouvements enregistrés.",
+      "Les visiteurs voient uniquement vos badges débloqués, sans seuils détaillés, registre ni total XP."
+    ],
+    "note": "Le barème reste provisoire. Le catalogue technique ne signifie pas que tous les badges doivent être présentés au jury.",
+    "image": "progression"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Le classement des explorateurs",
+    "steps": [
+      "Ouvrir ☰ → Classement des explorateurs ; il n’est plus dans Sortir.",
+      "Amis : vous et les suivis réciproques accessibles.",
+      "Global : profils publics accessibles et votre propre compte.",
+      "Le classement utilise les XP des visites enregistrées durant le mois courant.",
+      "Toucher une personne ouvre son profil ; Retour conserve l’onglet choisi."
+    ],
+    "note": "Les XP fictifs préchargés de départ ne sont pas ajoutés artificiellement au mois. Aucun historique de lieux n’est transmis avec ce classement.",
+    "image": "classement"
+  },
+  {
+    "chapter": "SORTIR",
+    "title": "Sélections et événements",
+    "steps": [
+      "Sortir propose un agenda et des adresses choisies éditorialement.",
+      "Sa barre recherche seulement dans ce contenu.",
+      "Ouvrir un événement pour lire date, lieu, description, organisateur et prix fictif.",
+      "Ça m’intéresse et J’y serai expriment une intention ; un second toucher peut la retirer.",
+      "Utiliser Carte pour la recherche de lieux par catégorie ou distance."
+    ],
+    "note": "Les intentions restent locales à cet appareil et sont séparées par compte. Il n’y a ni réservation, achat ni billetterie.",
+    "image": "evenement"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Essayer une récompense fictive",
+    "steps": [
+      "Ouvrir ☰ → Récompenses fictives.",
+      "L’exemple du maquis se débloque après une visite validée à ce lieu.",
+      "Essayer l’utilisation fictive enregistre seulement l’essai.",
+      "Les XP acquis restent conservés.",
+      "Retrouver le message d’utilisation sur ce même appareil."
+    ],
+    "note": "Aucun coupon réel, paiement, remise ou partenariat. Ne pas demander un avantage chez un commerçant à partir de cet écran.",
+    "image": "recompense"
+  },
+  {
+    "chapter": "RÉGLAGES",
+    "title": "Thème, GPS et notifications",
+    "steps": [
+      "☰ → Réglages et confidentialité regroupe thème, position et aides à la présentation.",
+      "Mode sombre change l’apparence ; le choix est mémorisé sur l’appareil.",
+      "Le bouton GPS de l’en-tête garde un accès rapide au mode et à la position simulée.",
+      "La cloche ouvre les notifications et leurs préférences.",
+      "Les notifications et intentions locales sont isolées par compte ; elles ne sont pas un système push complet multiappareil."
+    ],
+    "note": "Les notifications de démonstration ne prouvent pas une fréquentation réelle des établissements.",
+    "image": "reglages"
+  },
+  {
+    "chapter": "CONSERVER",
+    "title": "Partager les données entre appareils",
+    "steps": [
+      "Utiliser le même compte sur le même serveur pour retrouver publications, médias, favoris, avis et visites.",
+      "Deux installations indépendantes ne partagent pas automatiquement leurs bases.",
+      "Le menu conserve l’historique privé et les droits de chaque compte.",
+      "Le thème, les intentions d’événement et l’essai de récompense restent locaux.",
+      "Un hébergement gratuit peut perdre son stockage lors d’un redémarrage ou redéploiement."
+    ],
+    "note": "L’accès distant est préparé mais pas encore activé. La sauvegarde reste nécessaire avant une présentation importante.",
+    "image": "enregistres"
+  },
+  {
+    "chapter": "ÉTABLISSEMENTS",
+    "title": "Voir l’aperçu d’un établissement",
+    "steps": [
+      "Réglages → Aperçu établissement · fictif.",
+      "Choisir un établissement de démonstration.",
+      "Lire les exemples de visites, enregistrements, publications et tendance sur sept jours.",
+      "Retour retrouve l’écran précédent ; aucune activité personnelle d’un visiteur n’est dévoilée."
+    ],
+    "note": "Ces chiffres sont inventés et ne constituent pas un tableau de bord commerçant en production ni une offre d’abonnement.",
+    "image": "apercu-etablissement"
+  },
+  {
+    "chapter": "OPÉRATEUR",
+    "title": "Les outils opérateur",
+    "steps": [
+      "Un rôle autorisé donne accès à Réglages → Console opérateur.",
+      "Les onglets montrent métriques, propositions, modération et lieux.",
+      "Les propositions et actions de modération de cette interface illustrent le fonctionnement futur ; certaines restent locales.",
+      "Le symbole de l’en-tête permet de revenir à l’accueil."
+    ],
+    "note": "Un visiteur ne reçoit pas ce rôle en choisissant un nom. Les actions serveur sensibles restent protégées ; ces écrans ne prouvent pas une exploitation réelle.",
+    "image": "console-operateur"
+  },
+  {
+    "chapter": "OPÉRATEUR",
+    "title": "Sauvegarder et restaurer",
+    "steps": [
+      "Avec un compte opérateur autorisé : Réglages → Sauvegarde privée de la démo.",
+      "Choisir un mot de passe de sauvegarde d’au moins 16 caractères.",
+      "Télécharger le fichier chiffré .chkpt ; conserver son mot de passe séparément.",
+      "Pour restaurer, choisir le fichier et son mot de passe, puis taper REMPLACER LA DÉMO.",
+      "La restauration remplace les données et ferme les sessions : se reconnecter ensuite."
+    ],
+    "note": "Un mot de passe perdu n’est pas récupérable. Ne pas restaurer pendant que des personnes publient.",
+    "image": "sauvegarde"
+  },
+  {
+    "chapter": "OPÉRATEUR",
+    "title": "Changer de personnage ou tout remettre à zéro",
+    "steps": [
+      "Le panneau Profils Démo est réservé aux accès opérateur autorisés.",
+      "Choisir un personnage permet de le montrer sans effacer toute la base.",
+      "Démarrer la démo prépare le scénario de départ, mais remet toute la base fictive à zéro.",
+      "Lire la confirmation : les comptes et contenus ajoutés sont supprimés.",
+      "Annuler conserve le travail ; Confirmer la remise à zéro exécute l’action."
+    ],
+    "note": "Ne pas utiliser cette action pour résoudre un problème de mot de passe, de réseau ou un check déjà compté. Sauvegarder d’abord si les ajouts doivent être gardés.",
+    "image": "reset-confirmation"
+  },
+  {
+    "chapter": "PRÉSENTER",
+    "title": "La répétition d’Ingrid en trois minutes",
+    "steps": [
+      "1. Accueil : montrer découvertes et contenus fictifs.",
+      "2. Carte → fiche du maquis → Retour.",
+      "3. Symbole central → Maquis L’Étoile → Confirmer le check en simulation.",
+      "4. Montrer résultat et badge, puis publier volontairement avec la bonne visibilité.",
+      "5. Profil → souvenir ; Sortir → événement. Garder les questions sur menu et classement pour la fin."
+    ],
+    "note": "Tester le vrai Windows, le téléphone et le projecteur. Préparer le secours HTML et ce PDF hors connexion.",
+    "image": "check-confirme"
+  },
+  {
+    "chapter": "DÉPANNER",
+    "title": "Les blocages les plus fréquents",
+    "steps": [
+      "node introuvable : installer Node.js, fermer puis rouvrir le terminal.",
+      "npm ci / EUSAGE ou script demo absent : vérifier le bon dossier et la version récente du code.",
+      "ECONNRESET : connexion interrompue ; rétablir Internet puis relancer npm ci.",
+      "Téléphone sans accès : même réseau, bonne IP, serveur ouvert et ordinateur éveillé.",
+      "Check refusé : vérifier lieu, position et simulation. Check déjà compté : reprendre la visite sans nouveaux XP."
+    ],
+    "note": "Conserver l’ancien dossier complet avant de remplacer le code ; préserver .env et .data. Ne pas effacer la base pour dépanner l’interface.",
+    "image": "gps"
+  },
+  {
+    "chapter": "À RETENIR",
+    "title": "Avant de partir présenter",
+    "steps": [
+      "Vérifier le compte actif, la bonne version du code et le mode GPS affiché.",
+      "Sauvegarder ce qui doit être conservé ; choisir consciemment une remise à zéro.",
+      "Répéter check, publication, profil et événement sur l’appareil qui sera utilisé.",
+      "Ouvrir à l’avance le support de secours et le PDF sans réseau.",
+      "Les tarifs, publicités, portraits, lieux et scores montrés restent des démonstrations ; aucun engagement réel n’est créé."
+    ],
+    "note": "Ce guide explique l’application actuelle. Son PowerPoint est modifiable ; son PDF est lisible sans logiciel de programmation.",
+    "image": "menu"
+  }
+]

@@ -41,6 +41,7 @@ export async function checkPresentation(url: string, password: string) {
         await openAccount(page);
         await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
         await page.getByRole('button', { name: 'Démarrer la démo', exact: true }).click();
+        await page.getByRole('button',{name:'Confirmer la remise à zéro',exact:true}).click();
         await page.getByRole('button', { name: 'Carte', exact: true }).waitFor();
         assert.equal(await page.locator('html').getAttribute('data-theme'), theme, 'La remise à zéro du scénario conserve le thème');
       }
@@ -65,6 +66,7 @@ export async function checkPresentation(url: string, password: string) {
       const message = `Une soirée à Cocody — recette ${width}`;
       await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
       await capture('publication');
+      await page.getByRole('combobox',{name:'Visibilité de la publication',exact:true}).selectOption('public');
       await page.getByRole('button', { name: 'Publier le checkpoint' }).click();
       await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Profil', exact: true }).click();

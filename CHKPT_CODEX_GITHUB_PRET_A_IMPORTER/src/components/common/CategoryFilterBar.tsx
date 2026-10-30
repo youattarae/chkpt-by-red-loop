@@ -101,6 +101,7 @@ export const CategoryFilterBar: React.FC<CategoryFilterBarProps> = ({
             <button
               key={cat.id}
               type="button"
+              aria-pressed={isSelected}
               onClick={() => onToggleCategory(cat.id)}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap backdrop-blur-md transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border ${
                 isSelected

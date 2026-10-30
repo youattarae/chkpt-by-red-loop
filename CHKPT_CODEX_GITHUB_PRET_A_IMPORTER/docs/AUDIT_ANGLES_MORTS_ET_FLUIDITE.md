@@ -1,3 +1,5 @@
+> Mise à jour après correction : les dix défauts ci-dessous ont été traités et vérifiés dans la suite complète de **44/44 groupes**. Voir [corrections, guide et limites](CORRECTIONS_CAS_LIMITES_ET_GUIDE.md). Ce rapport conserve les reproductions historiques sur le code `541aada` et ne décrit pas l’état corrigé.
+
 # CHKPT — angles morts, logique et fluidité
 
 Revue du 30 octobre 2026, sur le code `541aada`. Objectif : fiabiliser un prototype de présentation, sans nouvelle application ni infrastructure de production.

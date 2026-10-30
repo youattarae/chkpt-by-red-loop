@@ -13,7 +13,7 @@ interface PlaceDetailModalProps {
 }
 
 export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
-  const { currentUser, savedPlaceIds, toggleSavePlace } = useStore();
+  const { currentUser, savedPlaceIds, pendingSavedPlaceIds, toggleSavePlace } = useStore();
   const [activeImage, setActiveImage] = useState(0);
   const [fallback, setFallback] = useState(false);
   const titleId=useId();
@@ -26,7 +26,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
       <div className="sticky top-[65px] z-20 h-0">
         <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
           <button type="button" onClick={onClose} aria-label="Retour" className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><ArrowLeft className="w-5 h-5" /></button>
-          <div className="flex gap-2"><PlaceShare place={place} /><button type="button" onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button></div>
+          <div className="flex gap-2"><PlaceShare place={place} /><button type="button" disabled={pendingSavedPlaceIds.includes(place.id)} aria-busy={pendingSavedPlaceIds.includes(place.id)} onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button></div>
         </div>
       </div>
       <div className="relative h-[34dvh] min-h-52 sm:h-[40dvh] sm:min-h-64 bg-soft">

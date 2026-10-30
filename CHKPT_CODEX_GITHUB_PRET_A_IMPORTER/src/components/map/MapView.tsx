@@ -84,7 +84,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
       
       <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">{interactive ? 'Repères de lieux fictifs' : 'Carte illustrée · positions de démonstration'}</span>
       <div className="p-3 bg-canvas relative z-20">
-        <SearchBar scope="places" filters={{...defaultFilters,category,radius,sort,categories:selectedCategories}} onApply={filters=>{setCategory(filters.category);setRadius(filters.radius);setSort(filters.sort);setSelectedCategories([]);}}/>
+        <SearchBar scope="places" filters={{...defaultFilters,category,radius,sort,categories:selectedCategories}} onApply={filters=>{setCategory(filters.category);setRadius(filters.radius);setSort(filters.sort);setSelectedCategories((filters.categories||[]) as PlaceCategory[]);}}/>
         <p role="status" className="text-[10px] text-muted mt-1">{filteredPlaces.length} lieu{filteredPlaces.length > 1 ? 'x' : ''} trouvé{filteredPlaces.length > 1 ? 's' : ''} · données fictives</p>
       </div>
       <SmartPlaceSearch/>

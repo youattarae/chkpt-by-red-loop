@@ -29,6 +29,7 @@ export async function checkFeed(url: string, password: string) {
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
       const tabs = page.getByRole('tablist', { name: 'Fil d’actualité', exact: true });
+      await tabs.getByRole('tab',{name:'Pour toi',exact:true}).waitFor();
       assert.deepEqual(await tabs.getByRole('tab').allTextContents(), ['Pour toi', 'Amis']);
       await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
       assert.equal(await page.locator('article img[src="/illustrations/rooftop-demo.png"]:not([alt=""])').count(), INITIAL_POSTS.filter(post=>post.mediaUrl==='/illustrations/rooftop-demo.png').length);

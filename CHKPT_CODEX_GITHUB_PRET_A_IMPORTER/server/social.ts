@@ -29,7 +29,7 @@ export function installSocialRoutes(app:Express){
     const place=data.linkedPlaceId?db.findPlaceById(data.linkedPlaceId):undefined;
     const check=data.linkedCheckinId?db.findCheckinById(data.linkedCheckinId):undefined;
     if((data.linkedPlaceId&&!place)||(data.linkedCheckinId&&(!check||check.userId!==user.id||check.status!=='verified'||check.placeId!==place?.id))){res.status(400).json({error:'invalid_visit_link'});return;}
-    const audience=user.visibility==='private'||user.age<18?'private':(data.audience===undefined?'public':data.audience);
+    const audience=user.visibility==='private'||user.age<18?'private':(data.audience===undefined?(check?.audience||'public'):data.audience);
     if(!['public','followers','private'].includes(audience)){res.status(400).json({error:'invalid_audience'});return;}
     const requested=data.media===undefined?(data.mediaUrl?[{url:data.mediaUrl}]:[]):data.media;
     if(!Array.isArray(requested)||requested.length>4||requested.some(item=>!item||typeof item.url!=='string')){res.status(400).json({error:'invalid_media',message:'Quatre images ou vidéos maximum par publication.'});return;}

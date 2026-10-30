@@ -1,3 +1,9 @@
+## Dix corrections et guide complet — 30 octobre 2026
+
+Les dix défauts de la revue sont corrigés : séparation des comptes, audience explicite, confirmation destructive, cache défensif, reprise du check sans double XP, filtres cohérents, favoris et erreurs fiables, clavier/focus. Lint/build réussis et **44/44 groupes complets réussis**, dont les contrôles de cas limites ajoutés. [Détails et limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md).
+
+Guide d’utilisation complet de la version actuelle : [PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) et [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx), 41 pages/diapositives, chacun sous 3 Mo. Synchronisation de la branche GitHub explicitement demandée pour fournir le nouveau code ; passage en privé reporté à la fin du travail. Aucune fusion ni mise en ligne de la démo.
+
 ## Audit des cas limites — 30 octobre 2026
 
 Dix comportements problématiques reproduits sur serveur/base temporaires sous Chromium, sans modification fonctionnelle : états personnels traversant le changement de compte, audience publique implicite après check privé, remise à zéro destructive trop peu explicite, écran blanc sur cache invalide, réponse de check perdue sans reprise, incohérences recherche/filtres, catégorie effacée, favori non confirmé, erreur de profil persistante et fermeture Échap absente. **Correctifs à réaliser** ; les 43 groupes précédemment réussis ne couvrent pas tous ces cas. Voir [reproductions, preuves et ordre de correction](docs/AUDIT_ANGLES_MORTS_ET_FLUIDITE.md). Cette revue n’annonce pas une nouvelle exécution de la suite complète ni une certification de sécurité.

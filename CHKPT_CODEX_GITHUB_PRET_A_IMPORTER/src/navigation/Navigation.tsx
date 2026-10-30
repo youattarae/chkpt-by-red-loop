@@ -33,6 +33,7 @@ export function NavigationProvider({children}:{children:ReactNode}){
  const [initial]=useState<Entry>(()=>({key:window.history.state?.chkptKey||key(),route:readRoute(),depth:Math.max(0,Math.min(100,Number(window.history.state?.chkptDepth)||0))}));
  const [current,setCurrent]=useState(initial),[entries,setEntries]=useState<Entry[]>([initial]);const ref=useRef(current);ref.current=current;
  const positions=useRef(new Map<string,number>([[initial.key,Number(window.history.state?.chkptScroll)||0]]));const focus=useRef(new Map<string,HTMLElement>());
+ useEffect(()=>{const retained=new Set(entries.map(entry=>entry.key));for(const key of focus.current.keys())if(!retained.has(key))focus.current.delete(key);for(const key of positions.current.keys())if(!retained.has(key))positions.current.delete(key);},[entries]);
  const actor=useRef('');if(isServerAuthenticated)actor.current=currentUser.id;
  function save(){positions.current.set(ref.current.key,window.scrollY);if(document.activeElement instanceof HTMLElement)focus.current.set(ref.current.key,document.activeElement);window.history.replaceState({...window.history.state,chkptScroll:window.scrollY},'');}
  function record(entry:Entry,replace=false){
@@ -65,9 +66,9 @@ export function NavigationProvider({children}:{children:ReactNode}){
  useLayoutEffect(()=>{
   let cancelled=false;const top=positions.current.get(current.key)||0;
   const frame=requestAnimationFrame(()=>{window.scrollTo(0,top);const old=focus.current.get(current.key);if(old?.isConnected&&old.getClientRects().length)old.focus({preventScroll:true});else document.querySelector<HTMLElement>(`[data-route-key="${current.key}"]`)?.focus({preventScroll:true});});
-  const cancel=()=>{cancelled=true;};window.addEventListener('pointerdown',cancel,{once:true});window.addEventListener('wheel',cancel,{once:true});
+  const cancel=()=>{cancelled=true;};window.addEventListener('pointerdown',cancel,{once:true});window.addEventListener('wheel',cancel,{once:true});window.addEventListener('keydown',cancel,{once:true});window.addEventListener('input',cancel,{once:true});window.addEventListener('touchstart',cancel,{once:true});
   const retry=setTimeout(()=>{if(!cancelled)window.scrollTo(0,top);},120);
-  return()=>{cancelAnimationFrame(frame);clearTimeout(retry);window.removeEventListener('pointerdown',cancel);window.removeEventListener('wheel',cancel);};
+  return()=>{cancelAnimationFrame(frame);clearTimeout(retry);window.removeEventListener('pointerdown',cancel);window.removeEventListener('wheel',cancel);window.removeEventListener('keydown',cancel);window.removeEventListener('input',cancel);window.removeEventListener('touchstart',cancel);};
  },[current.key]);
  return <Context.Provider value={{current,entries,push,replace,back,goTab}}>{children}</Context.Provider>;
 }

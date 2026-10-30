@@ -1,3 +1,4 @@
+import {AudienceSelect} from '../common/AudienceSelect';
 import {DemoProfileDirectory} from './DemoProfileDirectory';
 import {DemoAdvertisement} from './DemoAdvertisement';
 import {GlobalSearch} from './GlobalSearch';
@@ -41,6 +42,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   // Local state storing selected place categories (Chip-based multi-toggle)
   const [selectedCategories, setSelectedCategories] = useState<PlaceCategory[]>([]);
 
+  const [postAudience,setPostAudience]=useState<import('../../types').CheckInAudience>('public');
   const [newPostText, setNewPostText] = useState('');
   const [newPostMedia, setNewPostMedia] = useState<import('../../types').PostMedia[]>([]);
   const [mediaBusy,setMediaBusy]=useState(false);
@@ -49,7 +51,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const [isCreatingPost, setIsCreatingPost] = useState(false);
 
   // Drafts belong to the authenticated account, never to the next person on this device.
-  useEffect(()=>{setNewPostText('');setNewPostMedia([]);setIsCreatingPost(false);setPublishing(false);setMediaBusy(false);},[authSessionToken]);
+  useEffect(()=>{setNewPostText('');setPostAudience('public');setNewPostMedia([]);setIsCreatingPost(false);setPublishing(false);setMediaBusy(false);},[authSessionToken]);
 
   // Toggle category visibility
   const handleToggleCategory = (catId: PlaceCategory) => {
@@ -131,6 +133,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
       text: newPostText.trim(),
       media: newPostMedia,
       isVerifiedVisit: false,
+      audience:postAudience,
     });
 
     setPublishing(false);
@@ -198,6 +201,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
               className="w-full bg-canvas border border-line rounded-2xl p-3 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
             />
 
+            <AudienceSelect value={postAudience} onChange={setPostAudience} disabled={publishing}/>
             <PostMediaUploader disabled={publishing} value={newPostMedia} onChange={setNewPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex items-center justify-between pt-1">

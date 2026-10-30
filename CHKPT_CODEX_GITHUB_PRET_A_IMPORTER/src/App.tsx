@@ -60,7 +60,7 @@ function AppContent(){
  {syncError&&<div role="alert" className="max-w-2xl mx-auto w-full p-3 text-xs text-rose-400 bg-soft border border-line rounded-xl">{syncError}<button type="button" onClick={()=>void refreshSharedData()} className="ml-2 underline">Réessayer la synchronisation</button></div>}
  <Welcome visible={route.page==='main'&&activeTab==='feed'&&!operatorVisible}/>
  <main key={currentUser.id+':'+isServerAuthenticated} className="flex-1 w-full max-w-4xl mx-auto">
- {operatorVisible?<OperatorConsole/>:<>
+ {authSessionToken&&!isServerAuthenticated?<div className="p-6 space-y-3"><p role="status">Vérification de votre connexion…</p><button type="button" onClick={openAccount} className="p-3 rounded-xl bg-soft text-sm">Gérer mon compte</button></div>:operatorVisible?<OperatorConsole/>:<>
  {tabs.map(tab=><div key={tab} hidden={route.page!=='main'||activeTab!==tab} tabIndex={-1} data-route-key={route.page==='main'&&activeTab===tab?nav.current.key:undefined} className="outline-none">
  {tab==='feed'?<FeedView onSelectPlace={place}/>:tab==='map'?<MapView onSelectPlace={place}/>:tab==='sortir'?<SortirView onSelectPlace={place}/>:<ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:'profile'})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/>}
  </div>)}

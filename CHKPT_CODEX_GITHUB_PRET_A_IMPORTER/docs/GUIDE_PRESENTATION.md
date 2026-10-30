@@ -1,3 +1,5 @@
+> Guide complet de la version actuelle : [PDF de 41 pages](GUIDE_UTILISATION_COMPLET.pdf) et [PowerPoint modifiable](GUIDE_UTILISATION_COMPLET.pptx). Le présent document reste la fiche de répétition courte d’Ingrid.
+
 # CHKPT — guide pour Ingrid
 
 Objectif : une présentation privée de trois minutes à FrancoTech Cocody ou à des financeurs.
@@ -14,7 +16,7 @@ Les lieux, personnes, statistiques, événements et points montrés sont fictifs
 5. Exécuter `npm run demo` et ouvrir l'application locale sur le port indiqué dans le terminal.
 6. Ouvrir **Profil → Gérer mon compte**, puis l’onglet Connexion.
    Se connecter avec `redloop_admin` et le mot de passe défini à l'étape 4.
-7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**.
+7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**, lire les suppressions annoncées puis confirmer seulement si cette base peut être remise à zéro.
    Cette action protégée réinitialise le jeu fictif et connecte Yacoub Ouattara, le personnage de la présentation.
 
 Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstration. Utiliser une base réservée
@@ -28,7 +30,7 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 | 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
 | 0:55–1:25 | Retour → bouton central Check-in → choisir Maquis L’Étoile → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
 | 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
-| 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
+| 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → vérifier la visibilité de la publication → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
 | 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
 | 2:35–2:55 | Sortir → premier événement → J'y serai. | « Je prépare aussi ma prochaine sortie. Cette intention est simulée et enregistrée dans ce navigateur. » |
 | 2:55–3:00 | Revenir à l'accueil ou au profil. | « CHKPT : Sors. Check. Partage. » |
@@ -39,7 +41,7 @@ Publier n'ajoute pas de XP de visite. Les 1240 XP de départ et les quatre visit
 
 ## Recommencer
 
-Se reconnecter comme `redloop_admin`, rouvrir Profils Démo (opérateur), puis Démarrer la démo.
+Se reconnecter comme `redloop_admin`, rouvrir Profils Démo (opérateur), puis Démarrer la démo et confirmer la remise à zéro après sauvegarde si nécessaire.
 Le scénario revient au maquis Saint-Jean, badge à 4/5, aucune publication ajoutée et aucune intention d'événement.
 Une deuxième visite au même lieu sans redémarrage ne donne pas de XP supplémentaires dans la même journée : c'est normal.
 Un rechargement conserve publications, badge et intentions dans le même navigateur.
@@ -60,7 +62,7 @@ Un rechargement conserve publications, badge et intentions dans le même navigat
 
 - **Connexion refusée** : vérifier l'activation privée et le mot de passe local ; les anciens identifiants de seed sont désactivés.
 - **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans ☰ → Réglages et confidentialité → Position, rouvrir la fiche du maquis.
-- **Visite déjà validée** : recommencer via l'opérateur, pas en insistant sur Confirmer.
+- **Visite déjà validée** : retrouver la confirmation existante et reprendre la publication si souhaité, sans nouveau XP. Ne pas effacer toute la base pour ce motif.
 - **Serveur indisponible** : passer au fichier de secours. Dire : « Voici des captures du parcours testé ; ce n'est pas une session en direct. »
 
 Le fichier de secours est autonome : quatre étapes avec captures réelles actualisées, navigables sans serveur ni réseau.

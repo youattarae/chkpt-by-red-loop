@@ -4,6 +4,12 @@
 
 CHKPT est un réseau social de découverte de lieux et sorties, centré sur Cocody/Abidjan pour la démonstration. RED LOOP désigne l'écosystème et le projet porteur. L'objectif immédiat est de présenter le fonctionnement devant un jury FrancoTech et de potentiels financeurs, **pas** de commercialiser une application finie.
 
+## Guide complet et dernière vérification
+
+[Guide PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx) · [Sommaire](docs/guide-utilisation/README.md).
+
+41 pages illustrées de la version actuelle, fichiers inférieurs à 3 Mo. Les dix cas limites de la revue ont été corrigés et la suite complète compte **44/44 groupes réussis**. Voir [les corrections et les limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md).
+
 ## Direction visuelle actualisée
 
 Interface claire par défaut, mode sombre au choix, symbole CHKPT pour le bouton central. Voir [les choix et les captures réelles](docs/DIRECTION_VISUELLE_2026_10.md).

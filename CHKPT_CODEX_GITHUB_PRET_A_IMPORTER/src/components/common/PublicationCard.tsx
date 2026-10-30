@@ -8,7 +8,7 @@ import { SafeVideo } from './SafeVideo';
 import { publicationImage, isGeneratedPublicationImage } from '../../data/publicationMedia';
 
 export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectPlace: (id: string) => void }) {
-  const { likePost, addComment, savedPlaceIds, toggleSavePlace, places } = useStore();
+  const { likePost, addComment, savedPlaceIds, pendingSavedPlaceIds, toggleSavePlace, places } = useStore();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comment, setComment] = useState('');
   const [mediaFallback, setMediaFallback] = useState(false);
@@ -42,7 +42,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       </button>
       <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-label="Commentaires de cette publication" aria-expanded={commentsOpen}
         className="inline-flex items-center gap-2 py-1 hover:text-blue-400 cursor-pointer"><MessageCircle className="w-5 h-5" /><span>{post.commentsCount}</span></button>
-      {post.linkedPlaceId && <button type="button" onClick={() => toggleSavePlace(post.linkedPlaceId!)} aria-label="Enregistrer le lieu de cette publication" aria-pressed={saved}
+      {post.linkedPlaceId && <button type="button" disabled={pendingSavedPlaceIds.includes(post.linkedPlaceId!)} aria-busy={pendingSavedPlaceIds.includes(post.linkedPlaceId!)} onClick={() => toggleSavePlace(post.linkedPlaceId!)} aria-label="Enregistrer le lieu de cette publication" aria-pressed={saved}
         className="ml-auto py-1 hover:text-blue-400 cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'text-blue-400 fill-current' : ''}`} /></button>}
     </div>
     {commentsOpen && <div className="border-t border-line bg-soft/50 p-4 space-y-3">

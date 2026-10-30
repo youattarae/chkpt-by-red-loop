@@ -61,6 +61,7 @@ export async function checkBrowser(url: string) {
       await openAccount(page);
       await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
       await page.getByRole('button', { name: 'Réinitialiser le scénario Pitch (Démo vierge)' }).click();
+      await page.getByRole('button',{name:'Confirmer la remise à zéro',exact:true}).click();
       await page.getByText(/Erreur lors de la réinitialisation/).waitFor();
       assert.equal(await page.evaluate(() => localStorage.getItem('chkpt_session_token')), token);
       assert.deepEqual(errors, []);

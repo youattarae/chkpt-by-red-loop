@@ -1,3 +1,4 @@
+import {SimpleDialog} from '../common/SimpleDialog';
 import {DEMO_PROFILES} from '../../data/demoProfiles';
 import { SafeImage } from '../common/SafeImage';
 /**
@@ -50,6 +51,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [resetIntent,setResetIntent]=useState<'start'|'reset'|null>(null);
 
   if (!isOpen) return null;
 
@@ -160,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       await resetDemoPitchState(true);
       onClose();
     } catch (err: any) { setErrorMsg(err.message); }
-    finally { setIsLoading(false); }
+    finally { setIsLoading(false);setResetIntent(null); }
   };
 
   const handleResetPitch = async () => {
@@ -174,7 +176,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } catch (err: any) {
       setErrorMsg('Erreur lors de la réinitialisation : ' + err.message);
     } finally {
-      setIsResetting(false);
+      setIsResetting(false);setResetIntent(null);
     }
   };
 
@@ -356,7 +358,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </button>
 
             {['admin', 'superadmin', 'moderator'].includes(currentUser.role) && (
-              <button onClick={handleStartPitch} disabled={isLoading}
+              <button onClick={()=>setResetIntent('start')} disabled={isLoading}
                 className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm">
                 Démarrer la démo
               </button>
@@ -365,7 +367,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div className="pt-3 border-t border-line">
               <button
                 type="button"
-                onClick={handleResetPitch}
+                onClick={()=>setResetIntent('reset')}
                 disabled={isResetting}
                 className="w-full py-2.5 px-3 bg-canvas hover:bg-rose-950/40 text-rose-300 hover:text-ink border border-dashed border-rose-800/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
@@ -373,7 +375,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <span>Réinitialiser le scénario Pitch (Démo vierge)</span>
               </button>
               <span className="block text-[10px] text-muted text-center mt-1">
-                Remet à zéro les check-ins d'aujourd'hui, le fil et les points pour rejouer le scénario.
+                Efface tous les comptes et contenus ajoutés à cette base de démonstration. Une confirmation est requise.
               </span>
             </div>
           </div>
@@ -503,6 +505,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         )}
 
       </div>
+      {resetIntent&&<SimpleDialog title="Remettre toute la démo à zéro ?" onClose={()=>{if(!isLoading&&!isResetting)setResetIntent(null);}}><p className="text-sm">Cette action supprime tous les comptes ajoutés, publications, médias, visites et points de cette base, puis rétablit les personnages fictifs. Elle est irréversible sans sauvegarde.</p><p className="mt-3 text-xs text-muted">Pour continuer votre démo actuelle, annulez. Vous pouvez changer de personnage sans réinitialiser. La sauvegarde chiffrée est disponible dans les réglages de l’opérateur.</p><div className="flex flex-wrap gap-3 mt-5"><button type="button" disabled={isLoading||isResetting} onClick={()=>setResetIntent(null)} className="p-3 rounded-xl bg-soft text-sm">Annuler</button><button type="button" disabled={isLoading||isResetting} onClick={()=>void (resetIntent==='start'?handleStartPitch():handleResetPitch())} className="p-3 rounded-xl bg-rose-700 text-white text-sm font-bold">{isLoading||isResetting?'Remise à zéro…':'Confirmer la remise à zéro'}</button></div></SimpleDialog>}
     </div>
   );
 };

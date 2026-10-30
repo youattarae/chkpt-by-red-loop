@@ -1,3 +1,5 @@
+Mise à jour finale de ce lot : **dix défauts corrigés, 44/44 groupes réussis**. [Guide complet PDF](GUIDE_UTILISATION_COMPLET.pdf) et [PowerPoint](GUIDE_UTILISATION_COMPLET.pptx) de 41 pages/diapositives ; [détails et limites](CORRECTIONS_CAS_LIMITES_ET_GUIDE.md). La demande du porteur autorise la synchronisation de cette branche pour fournir le nouveau code, sans fusion de main.
+
 Dernière revue : **dix défauts de cas limites reproduits et encore à corriger**, malgré les validations précédentes. Voir [l’audit détaillé et les priorités](AUDIT_ANGLES_MORTS_ET_FLUIDITE.md). Les observations concernent une base temporaire ; aucune donnée personnelle n’a été effacée.
 
 Mise à jour de présentation : [guide Ingrid](GUIDE_PRESENTATION.md), [PDF de dix étapes](DEMONSTRATION_PAS_A_PAS.pdf) et [secours HTML autonome](DEMO_SECOURS.html) actualisés avec les nouveaux écrans. Le PDF pèse environ 1,3 Mo. Répétition automatisée 390/1280 px et lecture hors connexion 320/1280 px réussies. Passage du dépôt en privé reporté à la fin du travail ; développement local poursuivi.
