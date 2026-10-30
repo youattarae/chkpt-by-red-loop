@@ -1,3 +1,5 @@
+> Complément ultérieur : le porteur reporte le dépôt privé à la fin du travail et autorise la poursuite locale. Les supports historiques HTML/PDF et le guide Ingrid ont depuis été actualisés ; voir `GUIDE_PRESENTATION.md`. Les constats de décalage des supports ci-dessous sont historiques. L’accès distant n’est pas encore hébergé et les essais sur appareils réels restent à effectuer.
+
 > Mise à jour suivante : les sept écarts de navigation listés dans cet audit ont été traités localement dans le [lot pages et menu](NAVIGATION_PAGES_ET_MENU.md). Lint/build et 43/43 groupes de tests réussis. L’audit ci-dessous garde son état historique antérieur ; la restriction de publication tant que le dépôt reste public est maintenue.
 
 # Revue de cohérence, sécurité et fluidité — 30 octobre 2026

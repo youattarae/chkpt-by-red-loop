@@ -26,6 +26,7 @@ export async function checkPresentation(url: string, password: string) {
         assert.equal(broken, 0, 'Toutes les illustrations doivent charger sans réseau externe');
         if (process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
+          await page.locator('img:visible').evaluateAll(images=>Promise.all(images.map(image=>(image as HTMLImageElement).decode().catch(()=>{}))));
           await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `${name}-${width}.png`) });
         }
       }

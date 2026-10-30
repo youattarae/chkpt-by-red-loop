@@ -1,3 +1,9 @@
+## Supports de présentation actualisés — 30 octobre 2026
+
+Le passage du dépôt en privé est reporté à la fin du travail selon la demande du porteur ; cela ne bloque pas le développement local. Les supports de secours sont régénérés depuis la navigation actuelle : HTML autonome de quatre étapes et PDF de dix pages (environ 1,3 Mo). Le guide Ingrid et le pitch corrigent les anciens noms, la synchronisation et le point d’entrée central du check-in ; ils expliquent menu, profils, classement et lancement Mac/Windows.
+
+Vérification de ce lot : lint réussi ; scénario complet 390/1280 px avec deux répétitions après remise à zéro autorisée, support HTML sans réseau à 320/1280 px, images intégrées et PDF sous 40 Mo. PDF contrôlé : dix pages A4, contenu sans débordement, page du menu relue visuellement. La suite globale 43/43 du lot de navigation reste la dernière exécution complète ; elle n’est pas annoncée comme réexécutée pour ce lot documentaire. Essai sur le Windows d’Ingrid et activation d’un hébergement distant encore nécessaires.
+
 ## Navigation actualisée — 30 octobre 2026
 
 Les pages de consultation, le retour navigateur, les suggestions suivies d’une page de résultats, les filtres rétractables, le menu personnel et le profil compact sont maintenant implémentés localement. Le classement quitte Sortir et se trouve seulement dans le menu. XP totaux et historique restent personnels. Voir [les changements et la recette](docs/NAVIGATION_PAGES_ET_MENU.md). Validation : lint, build et **43/43 groupes de tests réussis** ; essais de navigation sur 320, 390 et 1280 px, retour navigateur/défilement, changement de compte et sortie de console inclus. Aucun push public, déploiement ni fusion.

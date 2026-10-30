@@ -18,6 +18,8 @@ Le [partage des établissements et l’historique personnel](docs/PARTAGE_ET_HIS
 
 Voir aussi le [bilan complet du prototype](docs/BILAN_PROTOTYPE.md).
 
+Pour répéter sans lire de code : [guide Ingrid](docs/GUIDE_PRESENTATION.md), [PDF illustré de dix étapes](docs/DEMONSTRATION_PAS_A_PAS.pdf) et [support de secours hors connexion](docs/DEMO_SECOURS.html), actualisés avec les nouveaux écrans.
+
 Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue, recherche, filtres Carte, récompense fictive, aperçu établissement, profils suivis et avis.
 
 L’[accès privé à distance](docs/ACCES_PRIVE_DISTANCE.md) est préparé pour Render avec un mot de passe visiteur distinct de l’opérateur. Aucun hébergement n’est créé automatiquement.

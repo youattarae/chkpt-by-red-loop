@@ -5,7 +5,7 @@ Les lieux, personnes, statistiques, événements et points montrés sont fictifs
 
 ## Préparer l'ordinateur
 
-1. Récupérer la branche de la pull request, ou `main` après sa fusion.
+1. Utiliser la version effectivement transmise pour la répétition. Les derniers lots locaux ne sont pas encore synchronisés sur GitHub ; ne pas supposer qu’un ZIP de `main` les contient. Le passage du dépôt en privé est reporté à la fin du travail, selon la décision du porteur.
 2. Installer Node.js 22.12 ou plus récent. Ouvrir le terminal dans `CHKPT_CODEX_GITHUB_PRET_A_IMPORTER`.
 3. Exécuter `npm ci`.
 4. Copier `.env.example` vers `.env`. Dans ce fichier local, mettre `CHKPT_PRIVATE_DEMO=true`
@@ -15,7 +15,7 @@ Les lieux, personnes, statistiques, événements et points montrés sont fictifs
 6. Ouvrir **Profil → Gérer mon compte**, puis l’onglet Connexion.
    Se connecter avec `redloop_admin` et le mot de passe défini à l'étape 4.
 7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**.
-   Cette action protégée réinitialise le jeu fictif et connecte Koffi, le personnage de la présentation.
+   Cette action protégée réinitialise le jeu fictif et connecte Yacoub Ouattara, le personnage de la présentation.
 
 Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstration. Utiliser une base réservée
 à la présentation, jamais des données réelles. Le serveur utilise `.data/` dans son dossier de lancement.
@@ -26,7 +26,7 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 |---|---|---|
 | 0:00–0:25 | Montrer l’accueil, les onglets Pour toi / Amis et les publications illustrées. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
 | 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
-| 0:55–1:25 | Fermer la fiche → bouton central Check-in → choisir Maquis L’Étoile → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
+| 0:55–1:25 | Retour → bouton central Check-in → choisir Maquis L’Étoile → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
 | 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
 | 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
 | 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
@@ -34,7 +34,7 @@ Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstra
 | 2:55–3:00 | Revenir à l'accueil ou au profil. | « CHKPT : Sors. Check. Partage. » |
 
 Le maquis doit être sélectionné explicitement dans la fenêtre ouverte par le bouton central Check-in. Le badge attendu s'appelle **Initié du Braisé**,
-dans la famille **Maquis Master** ; il ne faut pas annoncer que quarante badges sont implémentés.
+dans la famille **Maquis Master** ; le moteur comporte davantage de paliers provisoires, mais seule une petite sélection est présentée dans le prototype. Ne pas annoncer un catalogue définitif validé.
 Publier n'ajoute pas de XP de visite. Les 1240 XP de départ et les quatre visites du badge sont des données fictives préchargées.
 
 ## Recommencer
@@ -59,11 +59,11 @@ Un rechargement conserve publications, badge et intentions dans le même navigat
 ## Si quelque chose bloque
 
 - **Connexion refusée** : vérifier l'activation privée et le mot de passe local ; les anciens identifiants de seed sont désactivés.
-- **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans Profil → Réglages → Position, rouvrir la fiche du maquis.
+- **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans ☰ → Réglages et confidentialité → Position, rouvrir la fiche du maquis.
 - **Visite déjà validée** : recommencer via l'opérateur, pas en insistant sur Confirmer.
 - **Serveur indisponible** : passer au fichier de secours. Dire : « Voici des captures du parcours testé ; ce n'est pas une session en direct. »
 
-Le fichier de secours est autonome : quatre étapes avec captures réelles, navigables sans serveur ni réseau.
+Le fichier de secours est autonome : quatre étapes avec captures réelles actualisées, navigables sans serveur ni réseau.
 Il ne s'agit pas d'une vidéo ni d'un prototype interactif hors ligne. Aucune vidéo n'a été produite dans ce lot.
 
 ## Pour les financeurs
@@ -87,7 +87,7 @@ Le projet reste un prototype privé, pas une application de production ni une va
 
 ## Habillage CHKPT actualisé
 
-L’interface s’ouvre sur fond blanc. Profil → Réglages permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
+L’interface s’ouvre sur fond blanc. ☰ → Réglages et confidentialité permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
 
 Voir les [captures réelles et les choix visuels](DIRECTION_VISUELLE_2026_10.md). Les affichages sont contrôlés à 320, 390 et 1280 pixels, dans les deux thèmes. Une répétition reste nécessaire sur le Windows d’Ingrid ; aucun essai sur une machine Windows physique n’est revendiqué.
 
@@ -106,8 +106,41 @@ Il s'agit seulement du mode de service des fichiers compilés : le prototype ne 
 
 Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.
 
-Les réglages de thème, commune et position sont regroupés dans **Profil → Réglages**. L’en-tête conserve le symbole, le bouton GPS et la cloche de notifications. Le bouton central est l’unique accès au check-in : choisir le lieu, appuyer sur **Confirmer le check**, puis **Créer une publication** si souhaité. Les cartes et les fiches restent consultables sans bouton de check.
+Les réglages de thème, commune et position sont regroupés dans **☰ → Réglages et confidentialité**. L’en-tête conserve le symbole, le bouton GPS, la cloche de notifications et le bouton ☰. Le bouton central est l’unique accès au check-in : choisir le lieu, appuyer sur **Confirmer le check**, puis **Créer une publication** si souhaité. Les cartes et les fiches restent consultables sans bouton de check.
 
 ## Deux appareils et sauvegarde gratuite
 
 Voir [SYNCHRONISATION_ET_SAUVEGARDE.md](SYNCHRONISATION_ET_SAUVEGARDE.md) pour retrouver les mêmes données sur téléphone et ordinateur, télécharger une sauvegarde chiffrée et la restaurer. Le budget reste gratuit : la configuration Render ne garantit pas la conservation du disque. Aucun hébergement n’est créé automatiquement. Pour conserver une démo existante, se connecter sans lancer Démarrer la démo, qui remet les données fictives à zéro.
+
+## Visite complémentaire si le jury pose des questions
+
+- **Accueil** : écrire Ingrid → Rechercher → Filtres → Profils → Appliquer → ouvrir Ingrid. Les suggestions restent temporaires ; les résultats et le profil sont des pages.
+- Montrer ses publications et badges publics, puis Abonnés ou Abonnements : liste réelle avec recherche. Ses visites et XP totaux ne sont pas consultables.
+- Ouvrir **☰** : le menu porte toujours le nom du compte connecté, même sur le profil d’Ingrid.
+- **☰ → Classement des explorateurs** : Amis (suivis réciproques + soi) ou Global, XP du mois. Le total fictif préchargé de 1240 XP n’est pas un score du mois.
+- Montrer **Historique privé**, **Enregistrés** et **Badges et progression** depuis le menu. Retour retrouve le contexte.
+- Les quatre personnages ont cinq publications initiales chacun. Publicité fictive avant le fil et après chaque cinq publications visibles ; aucune bannière ne donne accès à une offre réelle. L’alcool est réservé aux comptes majeurs déclarés avec contrôle serveur.
+- Les stories se lisent depuis l’accueil ou la photo de profil ; elles expirent après 24 h. Le + sert à en ajouter une.
+
+## Mac, Windows et téléphone
+
+Sur Mac, ouvrir Terminal ; sur Windows, ouvrir PowerShell dans le dossier contenant `package.json`. Dans les deux cas :
+
+```text
+npm ci
+npm run demo
+```
+
+Pour créer le fichier de configuration au premier lancement seulement : `cp .env.example .env` sur Mac ; `Copy-Item .env.example .env` dans PowerShell. Ne pas écraser un `.env` ou un dossier `.data` existants : conserver la sauvegarde complète, ou utiliser les fonctions de sauvegarde chiffrée autorisées.
+
+Si le téléphone doit accéder au serveur de l’ordinateur, définir `HOST=0.0.0.0` dans le `.env` local, relancer le serveur et utiliser `http://ADRESSE_IP_DE_L_ORDINATEUR:3000` sur le même Wi-Fi ou hotspot. L’ordinateur doit rester allumé et le terminal ouvert ; l’adresse IP peut changer. Sur ce lien HTTP local, employer le Simulateur pour la présentation. Ne pas exposer directement le port de l’ordinateur sur Internet.
+
+Pour montrer le prototype à distance sans le même réseau, voir [la préparation de l’accès privé](ACCES_PRIVE_DISTANCE.md). Aucun lien hébergé n’a encore été créé. L’offre gratuite peut perdre son stockage : exporter une sauvegarde privée avant toute manipulation du scénario.
+
+## Supports à garder sous la main
+
+- `DEMO_SECOURS.html` : quatre écrans intégrés, utilisables sans serveur ni Internet. Ouvrir le fichier dans Edge, Chrome ou Safari. C’est un support de captures, pas une application hors connexion.
+- `DEMONSTRATION_PAS_A_PAS.pdf` : dix étapes illustrées actualisées, avec profils et menu. Ouvrir le PDF dans le navigateur ; aucun logiciel de programmation n’est nécessaire.
+- [Pages, recherche et menu](NAVIGATION_PAGES_ET_MENU.md) : recette détaillée avec dix captures supplémentaires.
+
+Avant de partir, Ingrid doit ouvrir ces deux fichiers sur son propre ordinateur. Les essais automatisés sous Chromium Linux ne remplacent pas ce contrôle sur Windows et Safari.
