@@ -1,3 +1,7 @@
+# Publications multimédias — 30 octobre 2026
+
+Jusqu’à quatre images/vidéos par publication, contrôles serveur et lecture protégée ; anciennes publications conservées. Voir [fonctionnement, limites et proposition de stories](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md). Les stories ne sont pas encore intégrées.
+
 # Accueil, confirmation et illustrations — 27 octobre 2026
 
 - En-tête limité au symbole, au GPS et aux notifications. Thème, commune, position et accès opérateur regroupés dans les réglages du profil ; compte accessible depuis Gérer mon compte. Le bouton central est le seul accès au check-in ; tous les raccourcis des publications, de la carte et des fiches sont supprimés. Le lieu doit être choisi explicitement à chaque ouverture.

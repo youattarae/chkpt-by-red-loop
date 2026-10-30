@@ -103,7 +103,10 @@ export interface PostComment {
   createdAt: string;
 }
 
+export interface PostMedia { url: string; type: 'image' | 'video'; }
+
 export interface Post {
+  media?: PostMedia[];
   isSimulated?: boolean;
   id: string;
   authorId: string;

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 export async function checkSharedState(start:any,stop:any,password:string){
   let server=await start('shared-persistence',true);
@@ -11,6 +12,21 @@ export async function checkSharedState(start:any,stop:any,password:string){
   assert.ok(checked.success);
   const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
   const upload=await (await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'public'},owner.token)).json();
+  const uploaded=[];
+  for(let index=0;index<4;index++)uploaded.push((await (await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'private'},owner.token)).json()).readUrl);
+  const four={text:'Quatre souvenirs privés.',media:uploaded.map(url=>({url,type:'video'})),audience:'private',clientRequestId:'four-media-test-001'};
+  const fourResponse=await call('/api/posts',four,owner.token);assert.equal(fourResponse.status,201);
+  const fourPost=(await fourResponse.json()).post;assert.equal(fourPost.media.length,4);assert.ok(fourPost.media.every((item:any)=>item.type==='image'),'Le serveur déduit le type réel');
+  assert.equal((await call('/api/posts',{...four,media:[...four.media,{url:upload.readUrl}],clientRequestId:'five-media-test-001'},owner.token)).status,400);
+  assert.equal((await call('/api/posts',{...four,media:[four.media[0],four.media[0]],clientRequestId:'duplicate-media-001'},owner.token)).status,400);
+  assert.equal((await call('/api/posts',{...four,clientRequestId:'other-four-media-001'},outsider.token)).status,403);
+  assert.equal((await call('/api/media/upload',{mimeType:'video/mp4',dataBase64:'data:video/mp4;base64,AAAA',audience:'public'},owner.token)).status,400);
+  const videoBytes=await readFile(new URL('./fixtures/blue-demo.mp4',import.meta.url));
+  const videoUpload=await (await call('/api/media/upload',{mimeType:'video/mp4',dataBase64:'data:video/mp4;base64,'+videoBytes.toString('base64'),audience:'private'},owner.token)).json();
+  const videoResponse=await call('/api/posts',{text:'Vidéo privée.',media:[{url:videoUpload.readUrl,type:'image'}],audience:'private',clientRequestId:'private-video-test'},owner.token);
+  assert.equal(videoResponse.status,201);assert.equal((await videoResponse.json()).post.media[0].type,'video');
+  assert.equal((await call(videoUpload.readUrl)).status,403);assert.equal((await call(videoUpload.readUrl,undefined,outsider.token)).status,403);
+  assert.deepEqual(Buffer.from(await (await call(videoUpload.readUrl,undefined,owner.token)).arrayBuffer()),videoBytes);
   const draft={text:'Une publication privée synchronisée.',mediaUrl:upload.readUrl,linkedPlaceId:place.id,linkedCheckinId:checked.checkIn.id,audience:'private',authorId:outsider.user.id,clientRequestId:'shared-private-001'};
   const response=await call('/api/posts',draft,owner.token);assert.equal(response.status,201);const post=(await response.json()).post;
   assert.equal(post.authorId,owner.user.id);assert.equal(post.isVerifiedVisit,true);
@@ -34,6 +50,7 @@ export async function checkSharedState(start:any,stop:any,password:string){
   assert.equal(minorPost.audience,'private');
   assert.ok(!(await (await call('/api/posts')).json()).posts.some((item:any)=>item.id===minorPost.id));
   await stop(server.child);server=await start('shared-persistence',true);
+  assert.deepEqual(Buffer.from(await (await call(videoUpload.readUrl,undefined,owner.token)).arrayBuffer()),videoBytes,'La vidéo privée survit au redémarrage');
   const state=await (await call('/api/account/state',undefined,owner.token)).json();
   assert.ok(state.posts.some((item:any)=>item.id===post.id));assert.ok(state.savedPlaceIds.includes(place.id));assert.equal(state.checkins.length,1);assert.equal(state.user.xpPoints,75);
   const restoredPublic=state.posts.find((item:any)=>item.id===publicPost.id);assert.equal(restoredPublic.likesCount,1);assert.equal(restoredPublic.comments.length,1);assert.equal(restoredPublic.comments[0].authorId,outsider.user.id);

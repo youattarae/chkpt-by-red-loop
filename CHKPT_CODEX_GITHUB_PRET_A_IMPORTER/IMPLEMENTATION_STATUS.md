@@ -1,3 +1,9 @@
+# Publications multimédias — 30 octobre 2026
+
+Validation locale : lint et build réussis ; 21/21 groupes serveur et 36/36 groupes avec navigateur (les 21 sont compris dans les 36). Import réel de trois images et une vidéo H.264, lecture mobile, rechargement ; refus du cinquième média, doublons et accès tiers ; vidéo privée persistante après redémarrage.
+
+Jusqu’à quatre images/vidéos par publication, contrôles serveur et lecture protégée ; anciennes publications conservées. Voir [fonctionnement, limites et proposition de stories](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md). Les stories ne sont pas encore intégrées.
+
 # CHKPT — état vérifié des lots A à D
 
 Prototype privé pour FrancoTech Cocody et les financeurs ; non prêt pour la production.

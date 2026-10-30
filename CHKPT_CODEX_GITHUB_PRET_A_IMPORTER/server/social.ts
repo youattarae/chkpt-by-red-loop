@@ -31,28 +31,31 @@ export function installSocialRoutes(app:Express){
     if((data.linkedPlaceId&&!place)||(data.linkedCheckinId&&(!check||check.userId!==user.id||check.status!=='verified'||check.placeId!==place?.id))){res.status(400).json({error:'invalid_visit_link'});return;}
     const audience=user.visibility==='private'||user.age<18?'private':(data.audience===undefined?'public':data.audience);
     if(!['public','followers','private'].includes(audience)){res.status(400).json({error:'invalid_audience'});return;}
-    let mediaUrl:string|undefined;
+    const requested=data.media===undefined?(data.mediaUrl?[{url:data.mediaUrl}]:[]):data.media;
+    if(!Array.isArray(requested)||requested.length>4||requested.some(item=>!item||typeof item.url!=='string')){res.status(400).json({error:'invalid_media',message:'Quatre images ou vidéos maximum par publication.'});return;}
+    if(new Set(requested.map(item=>item.url)).size!==requested.length){res.status(400).json({error:'duplicate_media'});return;}
     let media=db.getRawData().media;
-    if(data.mediaUrl){
-      if(typeof data.mediaUrl!=='string'){res.status(400).json({error:'invalid_media'});return;}
-      if(data.mediaUrl.startsWith('/api/media/')){
-        const asset=media.find(item=>'/api/media/'+item.assetId===data.mediaUrl&&item.ownerId===user.id);
+    const attachments:NonNullable<Post['media']>=[];
+    for(const item of requested){
+      if(item.url.startsWith('/api/media/')){
+        const asset=media.find(asset=>'/api/media/'+asset.assetId===item.url&&asset.ownerId===user.id);
         if(!asset){res.status(403).json({error:'media_owner_required'});return;}
         if(asset.audience!=='public'&&asset.audience!==audience){res.status(400).json({error:'media_audience_mismatch'});return;}
-        // A private post must not leave its attached upload publicly readable.
-        media=media.map(item=>item.assetId===asset.assetId?{...item,audience}:item);
-        mediaUrl=data.mediaUrl;
+        media=media.map(entry=>entry.assetId===asset.assetId?{...entry,audience}:entry);
+        attachments.push({url:item.url,type:asset.mimeType.startsWith('video/')?'video':'image'});
       }else{
         const allowed=new Set(db.getPlaces().map(item=>item.coverImage).concat(['/illustrations/maquis-demo.png','/illustrations/rooftop-demo.png','/illustrations/culture-demo.png']));
-        if(!allowed.has(data.mediaUrl)){res.status(400).json({error:'upload_required',message:'Importez l’image avant de publier.'});return;}mediaUrl=data.mediaUrl;
+        if(!allowed.has(item.url)){res.status(400).json({error:'upload_required',message:'Importez le média avant de publier.'});return;}
+        attachments.push({url:item.url,type:'image'});
       }
     }
+    const mediaUrl=attachments.find(item=>item.type==='image')?.url;
     const nonce=typeof data.clientRequestId==='string'&&/^[a-zA-Z0-9_-]{8,100}$/.test(data.clientRequestId)?data.clientRequestId:null;
     if(!nonce){res.status(400).json({error:'request_id_required'});return;}
     const id='post_'+crypto.createHash('sha256').update(user.id+':'+nonce).digest('hex').slice(0,32);
     const existing=db.getRawData().posts.find(item=>item.id===id);
     if(existing){const awards=existing.linkedCheckinId&&existing.mediaUrl?awardPublishedPhoto(user.id,existing.linkedCheckinId,existing.mediaUrl):null;res.json({post:postDTO(existing,user),awards});return;}
-    const post:StoredPost={id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:!!check,isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
+    const post:StoredPost={id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),media:attachments,mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:!!check,isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
     db.updateSharedData({posts:[post,...db.getRawData().posts],media});
     const awards=check&&mediaUrl?awardPublishedPhoto(user.id,check.id,mediaUrl):null;
     res.status(201).json({post:postDTO(post,user),awards});

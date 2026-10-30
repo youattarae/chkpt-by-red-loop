@@ -83,7 +83,7 @@ installSocialRoutes(app);
 installBackupRoutes(app);
 
 // Allowed media types & limits
-const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const ALLOWED_MIME_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp', 'video/mp4', 'video/webm']);
 const MAX_MEDIA_SIZE_BYTES = 15 * 1024 * 1024; // 15 Megabytes
 
 // ==========================================
@@ -457,14 +457,16 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
     if (!mimeType || !ALLOWED_MIME_TYPES.has(mimeType)) {
       res.status(415).json({
         error: 'unsupported_media_type',
-        message: `Type MIME non autorisé (${mimeType || 'inconnu'}). Formats acceptés : image/jpeg, image/png, image/webp.`,
+        message: `Type MIME non autorisé (${mimeType || 'inconnu'}). Formats acceptés : JPEG, PNG, WebP, MP4, WebM.`,
       });
       return;
     }
 
-    const match=/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]+={0,2})$/.exec(dataBase64);
+    const match=/^data:((?:image\/(?:jpeg|png|webp)|video\/(?:mp4|webm)));base64,([A-Za-z0-9+/]+={0,2})$/.exec(dataBase64);
     if(!match||match[1]!==mimeType){res.status(400).json({error:'invalid_media'});return;}
-    const estimatedSizeBytes = Buffer.from(match[2],'base64').length;
+    const bytes = Buffer.from(match[2],'base64');
+    if(mimeType==='video/mp4' && (bytes.length<12 || bytes.toString('ascii',4,8)!=='ftyp') || mimeType==='video/webm' && bytes.subarray(0,4).toString('hex')!=='1a45dfa3'){res.status(400).json({error:'invalid_video',message:'Vidéo MP4 ou WebM invalide.'});return;}
+    const estimatedSizeBytes = bytes.length;
     if(db.getRawData().media.reduce((sum,asset)=>sum+asset.sizeBytes,0)+estimatedSizeBytes>50*1024*1024){res.status(413).json({error:'media_storage_full',message:'Le stockage de démonstration est plein (50 Mo). Contactez l’opérateur.'});return;}
     if (estimatedSizeBytes > MAX_MEDIA_SIZE_BYTES) {
       res.status(413).json({
@@ -568,7 +570,7 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
   }
 
   // Scenario C: Audience is "public" OR requester is authorized
-  const base64Data = asset.dataBase64.replace(/^data:image\/\w+;base64,/, '');
+  const base64Data = asset.dataBase64.slice(asset.dataBase64.indexOf(',')+1);
   const imageBuffer = Buffer.from(base64Data, 'base64');
 
   res.setHeader('Content-Type', asset.mimeType);

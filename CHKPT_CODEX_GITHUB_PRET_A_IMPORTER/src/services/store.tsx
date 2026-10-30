@@ -88,6 +88,7 @@ interface StoreContextType {
   createPost: (data: {
     text: string;
     mediaUrl?: string;
+    media?: import('../types').PostMedia[];
     linkedPlaceId?: string;
     linkedCheckinId?: string;
     isVerifiedVisit: boolean;
@@ -619,7 +620,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {endWrite();}
   };
 
-  const createPost = async (data: {text:string;mediaUrl?:string;linkedPlaceId?:string;linkedCheckinId?:string;isVerifiedVisit:boolean}):Promise<boolean> => {
+  const createPost = async (data: {text:string;mediaUrl?:string;media?:import('../types').PostMedia[];linkedPlaceId?:string;linkedCheckinId?:string;isVerifiedVisit:boolean}):Promise<boolean> => {
     const token=authSessionToken;
     if(!token){setSyncError('Connectez-vous dans Gérer mon compte pour publier.');return false;}
     const key=token+'|'+JSON.stringify(data);

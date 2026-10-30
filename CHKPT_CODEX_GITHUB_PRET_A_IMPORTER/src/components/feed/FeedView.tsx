@@ -14,7 +14,7 @@ import { CategoryFilterBar } from '../common/CategoryFilterBar';
 import { 
   Filter, SlidersHorizontal
 } from 'lucide-react';
-import { MediaUploader } from '../common/MediaUploader';
+import { PostMediaUploader } from '../common/PostMediaUploader';
 import { PublicationCard } from '../common/PublicationCard';
 
 interface FeedViewProps {
@@ -38,7 +38,8 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const [selectedCategories, setSelectedCategories] = useState<PlaceCategory[]>([]);
 
   const [newPostText, setNewPostText] = useState('');
-  const [newPostMediaUrl, setNewPostMediaUrl] = useState('');
+  const [newPostMedia, setNewPostMedia] = useState<import('../../types').PostMedia[]>([]);
+  const [mediaBusy,setMediaBusy]=useState(false);
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [publishing,setPublishing]=useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
@@ -116,19 +117,19 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
 
   const handlePublishPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newPostText.trim()) return;
+    if (mediaBusy || !newPostText.trim()) return;
 
     setPublishing(true);
     const published=await createPost({
       text: newPostText.trim(),
-      mediaUrl: newPostMediaUrl || undefined,
+      media: newPostMedia,
       isVerifiedVisit: false,
     });
 
     setPublishing(false);
     if(!published)return;
     setNewPostText('');
-    setNewPostMediaUrl('');
+    setNewPostMedia([]);
     setIsCreatingPost(false);
   };
 
@@ -187,11 +188,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
               className="w-full bg-canvas border border-line rounded-2xl p-3 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
             />
 
-            <MediaUploader
-              initialMediaUrl={newPostMediaUrl}
-              onMediaUploaded={(url) => setNewPostMediaUrl(url)}
-              onMediaCleared={() => setNewPostMediaUrl('')}
-            />
+            <PostMediaUploader value={newPostMedia} onChange={setNewPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex items-center justify-between pt-1">
               <button
@@ -199,7 +196,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
                 onClick={() => {
                   setIsCreatingPost(false);
                   setNewPostText('');
-                  setNewPostMediaUrl('');
+                  setNewPostMedia([]);
                 }}
                 className="text-xs text-muted hover:text-ink px-3 py-1.5 cursor-pointer"
               >
@@ -208,7 +205,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
               
               <button
                 type="submit"
-                disabled={publishing || !newPostText.trim()}
+                disabled={mediaBusy || publishing || !newPostText.trim()}
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-xs rounded-xl shadow-md transition-colors cursor-pointer"
               >
                 Publier

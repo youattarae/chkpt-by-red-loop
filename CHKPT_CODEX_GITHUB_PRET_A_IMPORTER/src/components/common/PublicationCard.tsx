@@ -3,6 +3,7 @@ import { Heart, MessageCircle, Bookmark, MapPin, Lock, CheckCircle2 } from 'luci
 import { Post } from '../../types';
 import { useStore } from '../../services/store';
 import { SafeImage } from './SafeImage';
+import { SafeVideo } from './SafeVideo';
 import { publicationImage, isGeneratedPublicationImage } from '../../data/publicationMedia';
 
 export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectPlace: (id: string) => void }) {
@@ -11,6 +12,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
   const [comment, setComment] = useState('');
   const [mediaFallback, setMediaFallback] = useState(false);
   const image = publicationImage(post.mediaUrl);
+  const attachments=post.media?.length?post.media:(image?[{url:image,type:'image' as const}]:[]);
   const saved = !!post.linkedPlaceId && savedPlaceIds.includes(post.linkedPlaceId);
   const place = places.find(item => item.id === post.linkedPlaceId);
   return <article className="publication-card bg-surface border border-line/70 rounded-3xl overflow-hidden shadow-sm">
@@ -23,10 +25,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}
     </header>
     <p className="px-4 pb-3 text-sm text-body leading-relaxed whitespace-pre-line break-words">{post.text}</p>
-    {image && <>
-      <div className="mx-3 rounded-2xl overflow-hidden"><SafeImage src={image} onError={() => setMediaFallback(true)} alt={post.linkedPlaceName || 'Souvenir de sortie'} className="w-full aspect-[3/2] object-cover" /></div>
-      {image.startsWith('/illustrations/') && <p className="media-disclosure">Illustration de démonstration · lieu fictif{!mediaFallback && isGeneratedPublicationImage(image) ? ' · image générée par IA' : ''}</p>}
-    </>}
+    {attachments.length>0 && <div className={`mx-3 grid gap-2 ${attachments.length>1?'grid-cols-2':''}`}>{attachments.map((item,index)=><div key={item.url} className="rounded-2xl overflow-hidden">{item.type==='video'?<SafeVideo src={item.url}/>:<SafeImage src={item.url} onError={()=>setMediaFallback(true)} alt={`${post.linkedPlaceName||'Souvenir de sortie'} · photo ${index+1}`} className="w-full aspect-[3/2] object-cover"/>}{item.url.startsWith('/illustrations/')&&<p className="media-disclosure">Illustration de démonstration · lieu fictif{!mediaFallback&&isGeneratedPublicationImage(item.url)?' · image générée par IA':''}</p>}</div>)}</div>}
     {post.linkedPlaceId && <div className="mx-4 py-3 border-b border-line flex items-center gap-3">
       <button type="button" onClick={() => onSelectPlace(post.linkedPlaceId!)} className="flex-1 min-w-0 flex items-center gap-2.5 text-left cursor-pointer">
         {image ? <SafeImage src={image} alt="" className="w-11 h-11 rounded-xl object-cover shrink-0" /> : <MapPin className="w-5 h-5 text-blue-400 shrink-0" />}

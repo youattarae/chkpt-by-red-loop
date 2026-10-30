@@ -14,7 +14,7 @@ import React, { useState, useMemo } from 'react';
 import { useStore } from '../../services/store';
 import { Place, CheckInAudience, CheckIn } from '../../types';
 import { calculateDistanceMeters, DEFAULT_CHECKIN_RADIUS_METERS } from '../../services/geoService';
-import { MediaUploader } from '../common/MediaUploader';
+import { PostMediaUploader } from '../common/PostMediaUploader';
 import { 
   X, 
   Crosshair, 
@@ -73,7 +73,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
   // Optional post state
   const [publishing,setPublishing]=useState(false);
   const [postText, setPostText] = useState('');
-  const [postPhotoUrl, setPostPhotoUrl] = useState('');
+  const [postMedia, setPostMedia] = useState<import('../../types').PostMedia[]>([]);
+  const [mediaBusy,setMediaBusy]=useState(false);
 
   // Propose place state
   const [newPlaceName, setNewPlaceName] = useState('');
@@ -118,7 +119,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
 
   const handlePublishFollowupPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verificationResult?.checkIn || !currentPlace) return;
+    if (mediaBusy || !verificationResult?.checkIn || !currentPlace) return;
 
     setPublishing(true);
     const published=await createPost({
@@ -126,7 +127,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
       linkedPlaceId: currentPlace.id,
       linkedCheckinId: verificationResult.checkIn.id,
       isVerifiedVisit: true,
-      mediaUrl: postPhotoUrl || currentPlace.coverImage
+      media: postMedia.length?postMedia:[{url:currentPlace.coverImage,type:'image'}]
     });
 
     setPublishing(false);if(!published)return;
@@ -467,12 +468,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               />
             </div>
 
-            <MediaUploader
-              initialMediaUrl={postPhotoUrl || currentPlace.coverImage}
-              onMediaUploaded={(url) => setPostPhotoUrl(url)}
-              onMediaCleared={() => setPostPhotoUrl('')}
-              label="Photo de la visite (EXIF GPS purgé automatiquement)"
-            />
+            <PostMediaUploader value={postMedia} onChange={setPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex gap-2 pt-2">
               <button
@@ -484,7 +480,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               </button>
               <button
                 type="submit"
-                disabled={publishing}
+                disabled={mediaBusy || publishing}
                 className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
               >
                 Publier le checkpoint

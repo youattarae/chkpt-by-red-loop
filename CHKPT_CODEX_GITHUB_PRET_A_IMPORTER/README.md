@@ -28,6 +28,8 @@ Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINA
 
 La [synchronisation entre appareils et la sauvegarde chiffrée](docs/SYNCHRONISATION_ET_SAUVEGARDE.md) permettent de retrouver les publications, photos, favoris et visites avec le même compte. Le budget reste gratuit ; la persistance du disque de l’hébergeur n’est pas garantie.
 
+Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) acceptent jusqu’à quatre photos ou vidéos mélangées. Les stories sont décrites comme proposition, pas encore intégrées.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

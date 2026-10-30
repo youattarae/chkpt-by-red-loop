@@ -1,3 +1,5 @@
+Mise à jour du 30 octobre : publications de quatre images ou vidéos maximum. Voir [les détails et la proposition de stories](PUBLICATIONS_MEDIAS_ET_STORIES.md). Stories non intégrées à ce stade.
+
 # CHKPT by RED LOOP — bilan du prototype
 
 **Mise à jour : 28 octobre 2026.**

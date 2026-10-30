@@ -365,6 +365,8 @@ try {
     await check('Carte interactive, radar de 250 m, catégories et secours hors connexion', () => checkRadarMap(demo.url));
     const {checkSharedBrowsers}=await import('./shared_state_browser');
     await check('Deux navigateurs : publications, favoris, visites et photo privée, reprise sans doublon',()=>checkSharedBrowsers(demo.url,password));
+    const {checkPostMedia}=await import('./post_media_browser');
+    await check('Publication : quatre photos/vidéos, import, lecture et rechargement mobile',()=>checkPostMedia(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }
