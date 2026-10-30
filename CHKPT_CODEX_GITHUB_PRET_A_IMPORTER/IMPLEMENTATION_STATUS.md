@@ -1,3 +1,7 @@
+## Audit des cas limites — 30 octobre 2026
+
+Dix comportements problématiques reproduits sur serveur/base temporaires sous Chromium, sans modification fonctionnelle : états personnels traversant le changement de compte, audience publique implicite après check privé, remise à zéro destructive trop peu explicite, écran blanc sur cache invalide, réponse de check perdue sans reprise, incohérences recherche/filtres, catégorie effacée, favori non confirmé, erreur de profil persistante et fermeture Échap absente. **Correctifs à réaliser** ; les 43 groupes précédemment réussis ne couvrent pas tous ces cas. Voir [reproductions, preuves et ordre de correction](docs/AUDIT_ANGLES_MORTS_ET_FLUIDITE.md). Cette revue n’annonce pas une nouvelle exécution de la suite complète ni une certification de sécurité.
+
 ## Supports de présentation actualisés — 30 octobre 2026
 
 Le passage du dépôt en privé est reporté à la fin du travail selon la demande du porteur ; cela ne bloque pas le développement local. Les supports de secours sont régénérés depuis la navigation actuelle : HTML autonome de quatre étapes et PDF de dix pages (environ 1,3 Mo). Le guide Ingrid et le pitch corrigent les anciens noms, la synchronisation et le point d’entrée central du check-in ; ils expliquent menu, profils, classement et lancement Mac/Windows.

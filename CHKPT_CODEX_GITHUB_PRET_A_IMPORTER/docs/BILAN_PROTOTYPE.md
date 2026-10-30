@@ -1,3 +1,5 @@
+Dernière revue : **dix défauts de cas limites reproduits et encore à corriger**, malgré les validations précédentes. Voir [l’audit détaillé et les priorités](AUDIT_ANGLES_MORTS_ET_FLUIDITE.md). Les observations concernent une base temporaire ; aucune donnée personnelle n’a été effacée.
+
 Mise à jour de présentation : [guide Ingrid](GUIDE_PRESENTATION.md), [PDF de dix étapes](DEMONSTRATION_PAS_A_PAS.pdf) et [secours HTML autonome](DEMO_SECOURS.html) actualisés avec les nouveaux écrans. Le PDF pèse environ 1,3 Mo. Répétition automatisée 390/1280 px et lecture hors connexion 320/1280 px réussies. Passage du dépôt en privé reporté à la fin du travail ; développement local poursuivi.
 
 Mise à jour suivante : pages de consultation avec Retour, recherche validée et suggestions, filtres rétractables, menu personnel et profil compact intégrés localement. Classement seulement dans le menu ; XP totaux et historique réservés à leur propriétaire. [Changements et étapes pour essayer](NAVIGATION_PAGES_ET_MENU.md). Lint/build et 43/43 groupes de tests réussis ; lot non publié tant que le dépôt reste public.

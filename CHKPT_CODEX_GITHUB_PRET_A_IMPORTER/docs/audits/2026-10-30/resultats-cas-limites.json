@@ -1,0 +1,54 @@
+[
+  {
+    "case": "cache-corrompu",
+    "errors": [
+      "Expected property name or '}' in JSON at position 1 (line 1 column 2)"
+    ],
+    "rootText": ""
+  },
+  {
+    "case": "requete-apres-filtres",
+    "input": "Georges",
+    "status": "1 résultat pour « Ingrid »"
+  },
+  {
+    "case": "puce-perdue",
+    "before": "2 lieux trouvés · données fictives",
+    "after": "6 lieux trouvés · données fictives",
+    "activeBanner": 0
+  },
+  {
+    "case": "audience-check-publication",
+    "checkAudience": "private",
+    "postAudience": "public"
+  },
+  {
+    "case": "etat-autre-compte",
+    "eventSelected": "true",
+    "oldBadgeNotice": 3
+  },
+  {
+    "case": "erreur-profil-perimee",
+    "error": "Profil indisponible."
+  },
+  {
+    "case": "reponse-check-perdue",
+    "serverXp": 75,
+    "verifiedVisits": 1,
+    "followupButton": 0
+  },
+  {
+    "case": "echap-check",
+    "stillVisible": true
+  },
+  {
+    "case": "favori-non-enregistre",
+    "stillMarkedSaved": "true",
+    "serverSaved": false
+  },
+  {
+    "case": "reset-compte-ajoute",
+    "authenticatedBefore": true,
+    "loginAfterStatus": 401
+  }
+]
