@@ -1,3 +1,7 @@
+## Album illustré de quatre images — 30 octobre 2026
+
+La publication fictive du maquis montre quatre vues en grille 2 × 2, dont trois nouvelles images générées (braisé, boissons, soirée). Mention IA/fictive commune à l’album. Mise à jour des seuls exemples intacts au chargement de la base, sans changer commentaires/réactions ni publications personnelles. Lint, build, 21/21 groupes serveur et recette ciblée Accueil sur 390/1280 px en clair/sombre réussis. Voir `docs/PUBLICATIONS_MEDIAS_ET_STORIES.md` et `docs/VISUELS_ET_DROITS.md`.
+
 ## Correction GitHub Actions — 30 octobre 2026
 
 L’exécution [41049586164](https://github.com/youattarae/chkpt-by-red-loop/actions/runs/41049586164) échouait dans `next_features_browser.ts:39` : le message de recherche sans résultat existait uniquement sur la carte illustrée. La carte interactive avec des tuiles disponibles ne l’affichait pas. Le problème a été reproduit localement avec des tuiles neutres simulant une réponse réussie, puis corrigé dans `MapView.tsx` par un état vide commun aux deux modes. Le test radar vérifie désormais recherche vide, absence de repères/fiche et remise à zéro dans chaque mode. Aucun contrôle supprimé ni délai artificiellement allongé. Lint, build et test ciblé réussis ; validation complète et GitHub à suivre.

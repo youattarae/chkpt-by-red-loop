@@ -205,6 +205,7 @@ export const INITIAL_POSTS: Post[] = [
     createdAt: 'Publication de démonstration',
     text: 'Une belle découverte à Cocody : une terrasse, du braisé et une soirée entre amis.',
     mediaUrl: '/illustrations/maquis-demo.png', mediaType: 'image',
+    media: ['maquis-demo.png','maquis-braise-demo.png','maquis-boissons-demo.png','maquis-soiree-demo.png'].map(file=>({url:'/illustrations/'+file,type:'image' as const})),
     linkedPlaceId: 'plc_maquis_etoile', linkedPlaceName: "Maquis L’Étoile d’Abidjan",
     isVerifiedVisit: false, audience: 'public', likesCount: 0, isLikedByCurrentUser: false,
     commentsCount: 0, comments: [],

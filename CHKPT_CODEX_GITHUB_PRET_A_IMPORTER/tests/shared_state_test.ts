@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {readFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import { randomBytes } from 'node:crypto';
 export async function checkSharedState(start:any,stop:any,password:string){
   let server=await start('shared-persistence',true);
@@ -49,9 +49,16 @@ export async function checkSharedState(start:any,stop:any,password:string){
   const minorPost=(await (await call('/api/posts',{text:'Un contenu mineur doit rester privé.',audience:'public',clientRequestId:'minor-private-001'},minor.token)).json()).post;
   assert.equal(minorPost.audience,'private');
   assert.ok(!(await (await call('/api/posts')).json()).posts.some((item:any)=>item.id===minorPost.id));
-  await stop(server.child);server=await start('shared-persistence',true);
+  await stop(server.child);
+  const dbPath=server.cwd+'/.data/chkpt_db.json';
+  const legacy=JSON.parse(await readFile(dbPath,'utf8'));
+  const seed=legacy.posts.find((post:any)=>post.id==='pst_maquis_demo');delete seed.media;
+  seed.comments.push({id:'legacy-comment',authorId:owner.user.id,authorName:'Visiteur fictif',authorAvatar:'',text:'À conserver.',createdAt:new Date().toISOString()});
+  await writeFile(dbPath,JSON.stringify(legacy));
+  server=await start('shared-persistence',true);
   assert.deepEqual(Buffer.from(await (await call(videoUpload.readUrl,undefined,owner.token)).arrayBuffer()),videoBytes,'La vidéo privée survit au redémarrage');
   const state=await (await call('/api/account/state',undefined,owner.token)).json();
+  const album=state.posts.find((post:any)=>post.id==='pst_maquis_demo');assert.equal(album.media.length,4);assert.ok(album.comments.some((comment:any)=>comment.id==='legacy-comment'));assert.equal(state.posts.find((post:any)=>post.id===publicPost.id).media.length,0,'Le texte personnel reste sans album ajouté');
   assert.ok(state.posts.some((item:any)=>item.id===post.id));assert.ok(state.savedPlaceIds.includes(place.id));assert.equal(state.checkins.length,1);assert.equal(state.user.xpPoints,75);
   const restoredPublic=state.posts.find((item:any)=>item.id===publicPost.id);assert.equal(restoredPublic.likesCount,1);assert.equal(restoredPublic.comments.length,1);assert.equal(restoredPublic.comments[0].authorId,outsider.user.id);
   assert.ok(!('likedBy' in restoredPublic));assert.ok(!('baseLikesCount' in restoredPublic));

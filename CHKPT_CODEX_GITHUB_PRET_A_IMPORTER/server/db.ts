@@ -435,6 +435,11 @@ class Database {
         parsed.reviews ??= [];
         for(const table of ['posts','saved_places','media']) if(parsed[table]!==undefined&&!Array.isArray(parsed[table])) throw new Error('Invalid shared data table');
         parsed.posts ??= seedPosts();
+        // Enrich only untouched demo illustrations, preserving personal posts and reactions.
+        parsed.posts = parsed.posts.map((post:StoredPost)=>{
+          const seed=INITIAL_POSTS.find(seed=>seed.id===post.id&&seed.authorId===post.authorId&&seed.text===post.text&&seed.mediaUrl===post.mediaUrl);
+          return seed?.media?.length&&!post.media?.length?{...post,media:seed.media}:post;
+        });
         parsed.saved_places ??= [{userId:'usr_01',placeId:'plc_cocody_lounge'}];
         parsed.media ??= [];
         parsed.places = CANONICAL_PLACES;

@@ -16,6 +16,12 @@ Les images sont redimensionnées et réencodées pour retirer leurs métadonnée
 
 Le serveur impose quatre médias au maximum, refuse les doublons et les médias importés par un autre compte, et déduit leur type à partir du fichier enregistré. Les anciennes publications à une image restent compatibles. La publication facultative après un check conserve le lien avec la visite ; publier seul ne valide aucune visite.
 
+## Exemple visuel dans l’accueil
+
+La publication fictive de Koffi « Une belle découverte à Cocody » montre quatre vues : terrasse, braisé, boissons et soirée. Les trois dernières sont de nouvelles illustrations générées par IA. L’album apparaît aussi sur son profil. Les autres publications à une image sont conservées.
+
+Au démarrage, les anciennes publications de démonstration intactes reçoivent cet album ; leurs réactions et commentaires sont conservés. Aucun album n’est ajouté aux publications personnelles. Il n’est pas nécessaire de réinitialiser la démo pour voir cet exemple.
+
 ## Stories : proposition, pas encore intégrée
 
 Oui, ce mécanisme peut être ajouté sans refaire l’application. Proposition pour le prototype :

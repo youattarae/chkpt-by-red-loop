@@ -1,3 +1,5 @@
+La publication fictive du maquis dispose maintenant d’un album de quatre illustrations : terrasse, braisé, boissons et soirée. Les publications personnelles et les exemples à une image sont conservés.
+
 Mise à jour du 30 octobre : publications de quatre images ou vidéos maximum. Voir [les détails et la proposition de stories](PUBLICATIONS_MEDIAS_ET_STORIES.md). Stories non intégrées à ce stade.
 
 # CHKPT by RED LOOP — bilan du prototype

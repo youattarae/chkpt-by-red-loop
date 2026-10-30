@@ -34,6 +34,9 @@ export async function checkFeed(url: string, password: string) {
       assert.equal(await page.locator('article img[src="/illustrations/rooftop-demo.png"]:not([alt=""])').count(), 1);
       assert.equal(await page.locator('article img[src="/illustrations/culture-demo.png"]:not([alt=""])').count(), 1);
       assert.equal(await page.getByText(/image générée par IA/).count(), 3);
+      const album=page.getByRole('article').filter({hasText:'Une belle découverte à Cocody'});
+      assert.equal(await album.locator('img[alt*="photo"]').count(),4);
+      assert.equal(new Set(await album.locator('img[alt*="photo"]').evaluateAll(images=>images.map(image=>(image as HTMLImageElement).src))).size,4);
       const bankAd = page.getByRole('region', { name: 'Publicité fictive de banque', exact: true });
       await bankAd.getByText('Banque Boucle · banque imaginaire', { exact: true }).waitFor();
       assert.equal(await bankAd.locator('a, button, [role="button"], [onclick], [tabindex]').count(), 0, 'Publicité sans lien ni contrôle interactif');
@@ -50,6 +53,7 @@ export async function checkFeed(url: string, password: string) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
           await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `accueil-social-${theme}-${width}.png`) });
           if (width === 390 && theme === 'light') {
+            await album.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'publication-album-4-images-390.png'),style:'nav, header[aria-label="En-tête CHKPT"] { visibility: hidden !important; }'});
             await bankAd.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publicite-banque-390.png') });
             const detailStyle = 'nav, header[aria-label="En-tête CHKPT"] { visibility: hidden !important; }';
             await page.getByRole('article').filter({ hasText: '@sarah_dlo' }).screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publication-rooftop.png'), style: detailStyle });

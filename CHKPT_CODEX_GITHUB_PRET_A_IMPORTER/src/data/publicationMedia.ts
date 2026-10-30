@@ -5,7 +5,7 @@ const replacements = new Map([
   ['/illustrations/rooftop.svg', '/illustrations/rooftop-demo.png'],
   ['/illustrations/art.svg', '/illustrations/culture-demo.png'],
 ]);
-const generated = new Set(replacements.values());
+const generated = new Set([...replacements.values(), '/illustrations/maquis-braise-demo.png', '/illustrations/maquis-boissons-demo.png', '/illustrations/maquis-soiree-demo.png']);
 
 export function publicationImage(source?: string) {
   return source ? replacements.get(source) ?? source : undefined;
