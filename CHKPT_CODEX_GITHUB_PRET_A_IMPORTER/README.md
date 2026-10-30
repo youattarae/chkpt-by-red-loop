@@ -18,7 +18,7 @@ Le [partage des établissements et l’historique personnel](docs/PARTAGE_ET_HIS
 
 Voir aussi le [bilan complet du prototype](docs/BILAN_PROTOTYPE.md).
 
-Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue, recherche, filtres Sortir, récompense fictive, aperçu établissement, profils suivis et avis.
+Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue, recherche, filtres Carte, récompense fictive, aperçu établissement, profils suivis et avis.
 
 L’[accès privé à distance](docs/ACCES_PRIVE_DISTANCE.md) est préparé pour Render avec un mot de passe visiteur distinct de l’opérateur. Aucun hébergement n’est créé automatiquement.
 
@@ -29,6 +29,8 @@ Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINA
 La [synchronisation entre appareils et la sauvegarde chiffrée](docs/SYNCHRONISATION_ET_SAUVEGARDE.md) permettent de retrouver les publications, photos, favoris et visites avec le même compte. Le budget reste gratuit ; la persistance du disque de l’hébergeur n’est pas garantie.
 
 Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) acceptent jusqu’à quatre photos ou vidéos mélangées. Les [stories](docs/STORIES_PROTOTYPE.md) sont accessibles depuis l’accueil et les avatars, avec une durée de 24 h.
+
+La [répartition des recherches, les relations et le classement](docs/RECHERCHE_SORTIR_ET_CLASSEMENT.md) précise Accueil général, Carte pour les lieux et Sortir éditorial avec classement mensuel.
 
 ## Voir la démonstration sans lire le code
 

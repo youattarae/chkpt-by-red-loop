@@ -1,3 +1,9 @@
+## Recherche, éditorial et classement mensuel — 30 octobre 2026
+
+Décisions clarifiées : Accueil général avec filtres (profils, établissements, événements, publications), recherche intelligente et filtres de lieux sur Carte, Sortir éditorial avec petite recherche interne. Point bordeaux sous l’icône active. Listes réelles d’abonnés/abonnements au toucher des compteurs sur les profils accessibles. Rubrique classement en bas de Sortir, ouverte sur Amis/Global ; XP mensuels uniquement ; Amis = suivis réciproques + soi. Totaux publics sur les profils accessibles, sans historique, preuves ni registre.
+
+Validation locale : lint/build réussis ; suite complète 40/40 groupes (23 groupes serveur inclus) ; après ajustements de lisibilité, recette dédiée réussie de 320 à 1280 px. Les tests d’ancien emplacement ont été adaptés à Carte ; le test de secours image cible maintenant le PNG effectivement affiché dans Sortir. Aucun test de confidentialité ou parcours check-in supprimé. Les données existantes et la pile technique sont conservées. Voir [guide, calculs, limites et captures](docs/RECHERCHE_SORTIR_ET_CLASSEMENT.md). Aucun déploiement ni fusion.
+
 ## Stories intégrées et vérification — 30 octobre 2026
 
 Demande explicite : stories et vérification complète. Accueil, profil et avatar des publications ; ajout + ; un média, texte facultatif, visibilité, durée serveur de 24 h, lecture plein écran et suppression propriétaire. Métadonnées persistantes ajoutées sans effacer les données existantes ; anciens backups compatibles. Médias dédiés, expiration de leur accès et nettoyage ; aucune récompense ni preuve de visite.

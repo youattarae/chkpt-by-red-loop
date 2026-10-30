@@ -1,3 +1,4 @@
+import {ConnectionsDialog} from './ConnectionsDialog';
 import {StoryAvatar} from '../stories/Stories';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
@@ -6,9 +7,10 @@ import { UserProfile } from '../../types';
 import { SafeImage } from '../common/SafeImage';
 import { PublicationCard } from '../common/PublicationCard';
 
-type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount'>>;
+type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount' | 'xpPoints'>>;
 export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClose: () => void; onSelectPlace: (id: string) => void }) {
   const { currentUser, authSessionToken, posts, followingIds, setFollowingIds, setCurrentUser } = useStore();
+  const [connections,setConnections]=useState<'followers'|'following'|null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
@@ -43,6 +45,7 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
   }
   const visiblePosts = profile?.visibility === 'public' ? posts.filter(post => post.authorId === id && (post.audience === 'public' || (post.audience === 'followers' && following))) : [];
   return <section role="dialog" aria-modal="true" aria-label="Profil de la communauté" className="fixed inset-0 z-40 bg-canvas overflow-y-auto text-ink">
+    {connections&&<ConnectionsDialog id={id} kind={connections} onClose={()=>setConnections(null)}/>}
     <div className="max-w-2xl mx-auto p-4 pb-24 space-y-5">
       <button type="button" autoFocus onClick={onClose} className="flex items-center gap-2 py-2 text-sm text-muted cursor-pointer"><ArrowLeft className="w-5 h-5" />Retour</button>
       {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
@@ -50,7 +53,9 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
       {profile && <>
         <div className="flex gap-4 items-center"><StoryAvatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} className="w-20 h-20"/><div className="min-w-0"><h1 className="text-xl font-extrabold break-words">{profile.displayName}</h1><p className="text-xs text-muted">@{profile.username}</p></div></div>
         {profile.visibility === 'private' ? <p className="flex items-center gap-2 bg-soft rounded-2xl p-4 text-sm"><Lock className="w-5 h-5 shrink-0" />Profil privé. Ses publications ne sont pas accessibles dans cette démo.</p> : <>
-          <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · {profile.followersCount} abonnés · {profile.followingCount} abonnements · compteurs de démonstration</p>
+          <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · compteurs de démonstration</p>
+          <p className="text-sm font-bold">{profile.xpPoints??0} XP au total</p>
+          <div className="grid grid-cols-2 gap-3"><button type="button" onClick={()=>setConnections('followers')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followersCount}</strong>Abonnés</button><button type="button" onClick={()=>setConnections('following')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followingCount}</strong>Abonnements</button></div>
           <button type="button" disabled={pending} aria-pressed={following} onClick={toggleFollow} className="w-full p-3 rounded-xl bg-blue-600 text-white font-bold text-sm disabled:opacity-50 cursor-pointer">{pending ? 'En cours…' : following ? 'Ne plus suivre' : 'Suivre'}</button>
           <h2 className="text-sm font-bold">Publications</h2><div className="space-y-3">{visiblePosts.length ? visiblePosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />) : <p className="text-sm text-muted">Aucune publication accessible pour le moment.</p>}</div>
         </>}

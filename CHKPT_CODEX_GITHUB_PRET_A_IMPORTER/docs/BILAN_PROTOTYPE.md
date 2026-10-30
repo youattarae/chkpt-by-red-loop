@@ -1,3 +1,5 @@
+Dernières demandes intégrées : Accueil général (profils, établissements, événements, publications), Carte pour les recherches de lieux, Sortir éditorial avec classement mensuel Amis/Global, listes d’abonnés consultables et point bordeaux de navigation. Voir [le fonctionnement](RECHERCHE_SORTIR_ET_CLASSEMENT.md).
+
 Stories du 30 octobre : ajout par +, lecture accueil/profil/avatar, 24 h, suppression et permissions serveur. Voir [le guide pour essayer](STORIES_PROTOTYPE.md).
 
 La publication fictive du maquis dispose maintenant d’un album de quatre illustrations : terrasse, braisé, boissons et soirée. Les publications personnelles et les exemples à une image sont conservés.

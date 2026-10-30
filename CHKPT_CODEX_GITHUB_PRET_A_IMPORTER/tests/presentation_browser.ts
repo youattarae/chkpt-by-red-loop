@@ -10,7 +10,7 @@ export async function checkPresentation(url: string, password: string) {
     for (const width of [390, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       await context.route('https://**/*', route => route.abort());
-      await context.route('**/illustrations/rooftop.svg', route => route.abort());
+      await context.route('**/illustrations/rooftop-demo.png', route => route.abort());
       const page = await context.newPage();
       page.setDefaultTimeout(10000);
       const errors: string[] = [];

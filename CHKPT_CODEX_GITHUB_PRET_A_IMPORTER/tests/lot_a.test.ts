@@ -132,7 +132,9 @@ try {
     assert.equal((await request(demo.url, route)).status, 401);
     const profile = await (await request(demo.url, route, undefined, user.token)).json();
     assert.equal(profile.profile.displayName, 'Sarah Diallo');
-    for (const forbidden of ['passwordHash', 'salt', 'age', 'role', 'checkins', 'xpPoints']) assert.ok(!(forbidden in profile.profile));
+    for (const forbidden of ['passwordHash', 'salt', 'age', 'role', 'checkins', 'checkin_proofs', 'points_ledger']) assert.ok(!(forbidden in profile.profile));
+    // Requested public aggregate; individual visits and ledger remain private.
+    assert.equal(typeof profile.profile.xpPoints,'number');
     const follow = route + '/follow';
     const before = profile.profile.followersCount;
     for (let i = 0; i < 2; i++) {
@@ -325,6 +327,8 @@ try {
       assert.equal(await readFile(file, 'utf8'), contents);
     }
   });
+  const {checkDiscovery}=await import('./discovery_test');
+  await check('Recherche publique, relations protégées et classement mensuel réciproque',()=>checkDiscovery(start,stop,password));
   const {checkStories}=await import('./stories_test');
   await check('Stories : expiration serveur, confidentialité, suppression et stockage',()=>checkStories(start,stop,password));
   const {checkSharedState}=await import('./shared_state_test');
@@ -371,6 +375,8 @@ try {
     await check('Publication : quatre photos/vidéos, import, lecture et rechargement mobile',()=>checkPostMedia(demo.url,password));
     const {checkStoryBrowsers}=await import('./stories_browser');
     await check('Stories mobiles : ajout, profil, avatar, deux appareils et suppression',()=>checkStoryBrowsers(demo.url,password));
+    const {checkNavigationSearch}=await import('./navigation_search_browser');
+    await check('Accueil général, Sortir éditorial, relations et classement mensuel',()=>checkNavigationSearch(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

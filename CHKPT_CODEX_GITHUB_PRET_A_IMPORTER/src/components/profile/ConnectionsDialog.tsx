@@ -1,0 +1,11 @@
+import {useEffect,useState} from 'react';
+import {useStore} from '../../services/store';
+import {SafeImage} from '../common/SafeImage';
+import {SimpleDialog} from '../common/SimpleDialog';
+interface Connection {id:string;displayName:string;username:string;avatarUrl:string}
+export function ConnectionsDialog({id,kind,onClose}:{id:string;kind:'followers'|'following';onClose:()=>void}){
+  const {authSessionToken:token}=useStore();const [result,setResult]=useState<{key:string;profiles:Connection[];error:string}|null>(null);const key=token+':'+id+':'+kind;
+  useEffect(()=>{const controller=new AbortController();fetch(`/api/profiles/${encodeURIComponent(id)}/connections?kind=${kind}`,{headers:{Authorization:`Bearer ${token}`},signal:controller.signal,cache:'no-store'}).then(async response=>{if(!response.ok)throw Error(response.status===401?'Connectez-vous pour consulter cette liste.':'Liste indisponible ou privée.');return response.json();}).then(data=>setResult({key,profiles:data.profiles,error:''})).catch(error=>{if(!controller.signal.aborted)setResult({key,profiles:[],error:error.message});});return()=>controller.abort();},[key]);
+  const current=result?.key===key?result:null;
+  return <SimpleDialog title={kind==='followers'?'Abonnés':'Abonnements'} onClose={onClose}>{!current?<p role="status">Chargement…</p>:current.error?<p role="alert">{current.error}</p>:<><ul className="space-y-2">{current.profiles.map(profile=><li key={profile.id}><button type="button" className="flex gap-3 items-center text-left p-3 rounded-2xl hover:bg-soft w-full" onClick={()=>{onClose();window.dispatchEvent(new CustomEvent('chkpt:profile',{detail:profile.id}));}}><SafeImage src={profile.avatarUrl} alt="" className="w-10 h-10 rounded-full object-cover"/><span className="min-w-0"><strong className="block text-sm break-words">{profile.displayName}</strong><span className="block truncate text-xs text-muted">@{profile.username}</span></span></button></li>)}</ul>{current.profiles.length===0&&<p>Aucun profil accessible dans cette liste.</p>}<p className="text-[11px] text-muted mt-4">Relations enregistrées dans la démo. Les compteurs de départ sont fictifs ; aucun profil n’est inventé pour remplir la liste.</p></>}</SimpleDialog>;
+}

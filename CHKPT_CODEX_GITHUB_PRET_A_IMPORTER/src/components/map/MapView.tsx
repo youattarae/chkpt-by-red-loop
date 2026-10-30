@@ -1,3 +1,5 @@
+import {SmartPlaceSearch} from './SmartPlaceSearch';
+import {calculateDistanceMeters} from '../../services/geoService';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -31,6 +33,8 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const [interactive, setInteractive] = useState(true);
 
   // Local state to store selected categories (Chip-based multi-toggle)
+  const [radius,setRadius]=useState('all');
+  const [category,setCategory]=useState('all');
   const [query, setQuery] = useState('');
   const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
   const [selectedCategories, setSelectedCategories] = useState<PlaceCategory[]>([]);
@@ -50,14 +54,14 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   // Reset to display all places
   const handleResetFilters = () => {
     setSelectedCategories([]);
-    setQuery('');
+    setQuery('');setRadius('all');setCategory('all');
   };
 
   // Filtered places according to active category chips
   const filteredPlaces = useMemo(() => {
     const words = normalize(query).trim().split(/\s+/).filter(Boolean);
-    return places.filter(place => (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && words.every(word => normalize(`${place.name} ${place.commune} ${place.neighborhood} ${place.categoryLabel}`).includes(word)));
-  }, [places, selectedCategories, query]);
+    return places.filter(place => (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && (category==='all'||(category==='clubs'?/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):category==='bars'?place.category==='bars_lounges'&&!/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):place.category===category)) && (radius==='all'||locationReady&&calculateDistanceMeters(userCurrentCoordinates,place.coordinates)<=Number(radius)) && words.every(word => normalize(`${place.name} ${place.commune} ${place.neighborhood} ${place.categoryLabel}`).includes(word)));
+  }, [places, selectedCategories, query, category, radius, locationReady, userCurrentCoordinates]);
 
   // Selected place for bottom card preview
   const activePlace = useMemo(() => {
@@ -76,13 +80,15 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   }, [places]);
 
   return (
-    <div className="relative w-full h-[calc(100dvh-145px)] min-h-[720px] bg-canvas overflow-hidden flex flex-col">
+    <div className="relative w-full min-h-[720px] pb-24 bg-canvas flex flex-col">
       
       <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">{interactive ? 'Repères de lieux fictifs' : 'Carte illustrée · positions de démonstration'}</span>
       <div className="p-3 bg-canvas relative z-20">
         <label className="text-xs font-bold block">Rechercher un établissement<input type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder="Nom, commune ou catégorie…" className="block w-full mt-1 p-3 rounded-xl border border-line bg-surface text-sm text-ink" /></label>
         <p role="status" className="text-[10px] text-muted mt-1">{filteredPlaces.length} lieu{filteredPlaces.length > 1 ? 'x' : ''} trouvé{filteredPlaces.length > 1 ? 's' : ''} · données fictives</p>
       </div>
+      <details className="mx-3 mb-3 p-3 bg-surface rounded-2xl border border-line"><summary className="text-xs font-bold cursor-pointer">Affiner la recherche sur la carte</summary><section aria-label="Filtres de la carte" className="space-y-3 mt-3"><div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3"><label className="text-xs font-semibold">Catégorie de lieu<select value={category} onChange={event=>setCategory(event.target.value)} className="block w-full p-3 mt-1 rounded-xl border border-line bg-canvas text-sm"><option value="all">Toutes les catégories</option><option value="bars">Bars</option><option value="restaurants">Restaurants</option><option value="clubs">Clubs</option><option value="maquis">Maquis</option><option value="cafes_boulangeries">Cafés</option><option value="culture_art">Culture</option></select></label><label className="text-xs font-semibold">Distance maximale<select value={radius} onChange={event=>setRadius(event.target.value)} className="block w-full p-3 mt-1 rounded-xl border border-line bg-canvas text-sm"><option value="all">Toutes les distances</option><option value="1000">1 km</option><option value="5000">5 km</option><option value="10000">10 km</option><option value="20000">20 km</option></select></label></div><p className="text-[11px] text-muted">{activeLocationMode==='simulation'?'Distances simulées depuis la position choisie dans le GPS.':locationReady?'Distances estimées depuis votre GPS réel.':'Position GPS réelle en attente : aucun rayon ne peut être appliqué.'} Distances à vol d’oiseau, pas des itinéraires.</p><button type="button" onClick={handleResetFilters} className="text-xs font-bold text-blue-400">Réinitialiser les filtres de carte</button></section></details>
+      <SmartPlaceSearch/>
       <div className="px-3 pb-2 flex gap-2"><button type="button" aria-pressed={interactive} onClick={()=>setInteractive(true)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={()=>setInteractive(false)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte illustrée</button></div>
       {mapUnavailable && !interactive && <p role="status" className="px-3 text-[10px] text-muted">Fond de carte indisponible : carte illustrée de secours active.</p>}
       {/* Floating Chip-Based Category Filter Bar */}
@@ -234,7 +240,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
       </>}
       {/* Selected Place Bottom Preview Card */}
       {activePlace && (
-        <div className="absolute bottom-4 left-3 right-3 sm:left-6 sm:right-6 max-w-lg mx-auto z-30">
+        <div className="absolute bottom-28 left-3 right-3 sm:left-6 sm:right-6 max-w-lg mx-auto z-30">
           <div className="bg-surface/95 border border-line rounded-3xl p-3 sm:p-4 shadow-2xl backdrop-blur-md flex items-center justify-between gap-3 animate-in slide-in-from-bottom-3 duration-200">
             <SafeImage
               src={activePlace.coverImage}

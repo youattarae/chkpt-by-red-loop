@@ -1,3 +1,5 @@
+> Mise à jour du 30 octobre : les filtres et la recherche intelligente sont déplacés sur Carte ; Accueil reçoit une recherche générale, Sortir reste éditorial. Voir [la décision actualisée](RECHERCHE_SORTIR_ET_CLASSEMENT.md). Les descriptions antérieures ci-dessous sont historiques sur ces points.
+
 # Compléments de démonstration — 28 octobre 2026
 
 ## Bienvenue

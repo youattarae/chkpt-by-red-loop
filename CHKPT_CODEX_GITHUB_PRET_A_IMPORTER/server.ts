@@ -16,6 +16,7 @@
 
 import { installBackupRoutes } from './server/backup';
 import { installStoryRoutes, pruneStories } from './server/stories';
+import {installDiscoveryRoutes} from './server/discovery';
 import { installSocialRoutes } from './server/social';
 import { evaluateBadges, awardPublishedPhoto } from './server/badgeEngine';
 import { getEventCatalog } from './server/events';
@@ -81,6 +82,7 @@ const mediaRegistry = {
   clear: () => db.updateSharedData({media:[]}),
 };
 installSocialRoutes(app);
+installDiscoveryRoutes(app);
 installStoryRoutes(app);
 installBackupRoutes(app);
 
@@ -287,7 +289,7 @@ app.get('/api/profiles/:id', requireAuth, (req: Request, res: Response) => {
   const hidden = user.visibility === 'private' || user.age < 18;
   const profile = { id: user.id, displayName: user.displayName, username: user.username,
     avatarUrl: user.avatarUrl, visibility: hidden ? 'private' : 'public',
-    ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
+    ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, xpPoints:user.xpPoints, followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
   res.json({ profile, following: db.isFollower(req.user!.id, user.id) });
 });
 app.post('/api/profiles/:id/follow', requireAuth, (req: Request, res: Response) => {

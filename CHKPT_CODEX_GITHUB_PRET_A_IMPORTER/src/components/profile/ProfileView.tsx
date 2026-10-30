@@ -1,3 +1,4 @@
+import {ConnectionsDialog} from './ConnectionsDialog';
 import {StoryAvatar} from '../stories/Stories';
 import { RewardDemo } from '../demo/RewardDemo';
 import { VisitedPlaces } from './VisitedPlaces';
@@ -17,6 +18,7 @@ interface ProfileViewProps {
 
 export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelectPlace, onOpenAuth, onOpenSettings }) => {
   const { currentUser, authSessionToken, isServerAuthenticated, checkins, places, savedPlaceIds, badges, pointsLedger, posts } = useStore();
+  const [connections,setConnections]=useState<'followers'|'following'|null>(null);
   const [activeTab, setActiveTab] = useState<'posts' | 'saved' | 'badges'>('posts');
   const [activityOpen, setActivityOpen] = useState(false);
   const [activityTab, setActivityTab] = useState<'checkins' | 'ledger'>('checkins');
@@ -32,6 +34,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
   if(authSessionToken && !isServerAuthenticated)return <p role="status" className="p-6 text-sm text-muted">Chargement de votre profil…</p>;
 
   return <div className="profile-social max-w-2xl mx-auto pb-24">
+    {connections&&<ConnectionsDialog id={currentUser.id} kind={connections} onClose={()=>setConnections(null)}/>}
     <section aria-label="Mon profil" className="bg-canvas p-4 sm:p-6 space-y-5">
       <div className="flex items-start gap-4">
         <StoryAvatar id={currentUser.id} name={currentUser.displayName} src={currentUser.avatarUrl} own className="w-20 h-20 sm:w-24 sm:h-24"/>
@@ -42,15 +45,15 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
           </div>
           <p className="text-xs text-muted mt-1 break-words">@{currentUser.username}</p>
           <p className="text-xs sm:text-sm text-body leading-relaxed mt-2 break-words">{currentUser.bio}</p>
-          <p className="text-[11px] text-muted mt-2">{currentUser.homeZone} · {currentUser.followingCount} abonnements</p>
+          <p className="text-[11px] text-muted mt-2">{currentUser.homeZone}</p>
           {currentUser.visibility === 'private' && <span className="inline-flex items-center gap-1 text-[10px] text-muted mt-1"><Lock className="w-3 h-3" />Profil privé</span>}
         </div>
       </div>
 
-      <div aria-label="Statistiques du profil" className="grid grid-cols-3 divide-x divide-line text-center">
-        <div className="px-2"><strong className="block text-lg font-extrabold text-ink">{currentUser.checkinsCount}</strong><span className="text-xs text-muted">Checks</span></div>
-        <button type="button" onClick={() => setActiveTab('badges')} aria-label="Voir mes badges" className="px-2 hover:text-blue-400 cursor-pointer"><strong className="block text-lg font-extrabold text-ink">{unlockedBadges.length}</strong><span className="text-xs text-muted">Badges</span></button>
-        <div className="px-2"><strong className="block text-lg font-extrabold text-ink">{currentUser.followersCount}</strong><span className="text-xs text-muted">Abonnés</span></div>
+      <div aria-label="Statistiques du profil" className="grid grid-cols-4 divide-x divide-line text-center">
+        <div className="px-1"><strong className="block text-lg font-extrabold text-ink">{currentUser.checkinsCount}</strong><span className="text-[10px] sm:text-xs text-muted">Checks</span></div>
+        <button type="button" onClick={() => setActiveTab('badges')} aria-label="Voir mes badges" className="px-1 hover:text-blue-400 cursor-pointer"><strong className="block text-lg font-extrabold text-ink">{unlockedBadges.length}</strong><span className="text-[10px] sm:text-xs text-muted">Badges</span></button>
+        <button type="button" onClick={()=>setConnections('followers')} className="px-1 hover:text-blue-400"><strong className="block text-lg font-extrabold text-ink">{currentUser.followersCount}</strong><span className="text-[10px] sm:text-xs text-muted">Abonnés</span></button><button type="button" onClick={()=>setConnections('following')} className="px-1 hover:text-blue-400"><strong className="block text-lg font-extrabold text-ink">{currentUser.followingCount}</strong><span className="text-[10px] sm:text-xs text-muted">Abonnements</span></button>
       </div>
 
       <button type="button" onClick={onOpenAuth} title="Profil & Compte Démo" className="w-full py-3 rounded-2xl bg-soft hover:bg-raised text-ink font-bold text-sm flex items-center justify-center gap-2 cursor-pointer"><UserRound className="w-4 h-4" />Gérer mon compte</button>

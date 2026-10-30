@@ -1,3 +1,4 @@
+import {EventDialog} from './components/events/EventDialog';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -35,6 +36,7 @@ const AppContent: React.FC = () => {
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isBadgesViewOpen, setIsBadgesViewOpen] = useState(false);
+  const [eventId,setEventId]=useState<string|null>(null);
   const [profileId, setProfileId] = useState<string | null>(null);
   const [businessOpen, setBusinessOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
@@ -65,6 +67,8 @@ const AppContent: React.FC = () => {
     window.addEventListener('chkpt:profile', open);
     return () => window.removeEventListener('chkpt:profile', open);
   }, [currentUser.id]);
+
+  useEffect(()=>{const open=(event:Event)=>{if(typeof (event as CustomEvent).detail==='string')setEventId((event as CustomEvent).detail);};window.addEventListener('chkpt:event',open);return()=>window.removeEventListener('chkpt:event',open);},[]);
 
   const selectedPlace = places.find(p => p.id === selectedPlaceIdForDetail) || null;
 
@@ -141,6 +145,7 @@ const AppContent: React.FC = () => {
       )}
 
       {/* Modals & Dialogs */}
+      {eventId&&<EventDialog id={eventId} onClose={()=>setEventId(null)}/>}
       {profileId && <OtherProfile key={`${currentUser.id}:${profileId}`} id={profileId} onClose={() => setProfileId(null)} onSelectPlace={setSelectedPlaceIdForDetail} />}
       {isCheckinOpen && <CheckinModal
         isOpen={isCheckinOpen}

@@ -39,6 +39,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           aria-current={activeTab === 'feed' ? 'page' : undefined}
         >
           <Home className="w-5 h-5 mb-0.5" />
+          <span aria-hidden="true" data-active-dot={activeTab === 'feed' ? 'true' : undefined} className={`w-1 h-1 rounded-full mb-0.5 ${activeTab === 'feed' ? 'bg-[#80002f]' : 'bg-transparent'}`} />
           <span className="text-[10px] tracking-tight">Accueil</span>
         </button>
 
@@ -51,6 +52,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           aria-current={activeTab === 'map' ? 'page' : undefined}
         >
           <Map className="w-5 h-5 mb-0.5" />
+          <span aria-hidden="true" data-active-dot={activeTab === 'map' ? 'true' : undefined} className={`w-1 h-1 rounded-full mb-0.5 ${activeTab === 'map' ? 'bg-[#80002f]' : 'bg-transparent'}`} />
           <span className="text-[10px] tracking-tight">Carte</span>
         </button>
 
@@ -75,6 +77,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           aria-current={activeTab === 'sortir' ? 'page' : undefined}
         >
           <Compass className="w-5 h-5 mb-0.5" />
+          <span aria-hidden="true" data-active-dot={activeTab === 'sortir' ? 'true' : undefined} className={`w-1 h-1 rounded-full mb-0.5 ${activeTab === 'sortir' ? 'bg-[#80002f]' : 'bg-transparent'}`} />
           <span className="text-[10px] tracking-tight">Sortir</span>
         </button>
 
@@ -87,6 +90,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
           aria-current={activeTab === 'profile' ? 'page' : undefined}
         >
           <User className="w-5 h-5 mb-0.5" />
+          <span aria-hidden="true" data-active-dot={activeTab === 'profile' ? 'true' : undefined} className={`w-1 h-1 rounded-full mb-0.5 ${activeTab === 'profile' ? 'bg-[#80002f]' : 'bg-transparent'}`} />
           <span className="text-[10px] tracking-tight">Profil</span>
         </button>
 
