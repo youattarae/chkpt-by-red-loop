@@ -1,0 +1,6 @@
+import {useEffect,useRef,ReactNode} from 'react';
+export function FilterPanel({label,open,onClose,children}:{label:string;open:boolean;onClose:()=>void;children:ReactNode}){
+ const ref=useRef<HTMLDivElement>(null);
+ useEffect(()=>{if(!open)return;const outside=(event:PointerEvent)=>{if(ref.current&&!ref.current.contains(event.target as Node)&&!(event.target as Element).closest("[data-filter-toggle]"))onClose();};const escape=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();onClose();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape,true);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape,true);};},[open,onClose]);
+ return open?<div ref={ref} role="region" aria-label={label} className="absolute left-0 right-0 top-full mt-2 z-30 rounded-2xl border border-line bg-surface p-4 shadow-xl max-h-[65dvh] overflow-y-auto"><div className="flex justify-between items-center gap-2 mb-3"><strong className="text-sm">{label}</strong><button type="button" onClick={onClose} className="text-xs p-3 rounded-xl bg-soft">Fermer les filtres</button></div>{children}</div>:null;
+}

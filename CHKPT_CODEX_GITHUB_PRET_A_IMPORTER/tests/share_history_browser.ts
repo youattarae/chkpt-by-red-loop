@@ -35,7 +35,7 @@ export async function checkShareHistory(url: string, password: string) {
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
-      await page.getByRole('button', { name: /Historique des lieux visités/ }).click();
+      await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
       const history = page.getByRole('region', { name: 'Historique des lieux visités', exact: true });
       await history.getByText(/2 visites/).waitFor();
       assert.equal(await history.getByRole('button').count(), 1, 'Deux visites du même lieu donnent une fiche');
@@ -43,7 +43,7 @@ export async function checkShareHistory(url: string, password: string) {
       assert.equal(await history.getByText(/Historique autre personne|Tentative refusée/).count(), 0);
       assert.equal(await history.getByText(/Maquis L'Étoile/).count(),0,'Les visites forgées dans le cache local ne sont pas synchronisées');
       for (const theme of ['light', 'dark']) {
-        if (theme === 'dark') await toggleTheme(page);
+        if (theme === 'dark') {await toggleTheme(page);await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();}
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
         if (width === 390 && process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
@@ -51,7 +51,7 @@ export async function checkShareHistory(url: string, password: string) {
         }
       }
       await history.getByRole('button').click();
-      const venue = page.getByRole('dialog', { name: 'Lagon Bleu Rooftop Lounge', exact: true });
+      const venue = page.getByRole('region', { name: 'Lagon Bleu Rooftop Lounge', exact: true });
       await venue.getByRole('button', { name: 'Partager cet établissement', exact: true }).click();
       const share = venue.getByRole('region', { name: 'Partager le lieu', exact: true });
       const link = await share.getByRole('textbox', { name: 'Lien de la fiche', exact: true }).inputValue();
@@ -78,13 +78,13 @@ export async function checkShareHistory(url: string, password: string) {
       await page.reload();
       await venue.waitFor();
       assert.equal(await page.getByRole('dialog', { name: 'Check-in', exact: true }).count(), 0);
-      await venue.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
-      assert.equal(new URL(page.url()).hash, '');
+      await venue.getByRole('button', { name: 'Retour', exact: true }).click();
+      assert.ok(!new URL(page.url()).hash.includes('lieu='));
       await page.goto(url + '/#lieu=unknown');
       await page.reload();
       assert.equal(await page.getByRole('dialog').count(), 0);
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
-      await page.getByRole('button', { name: /Historique des lieux visités/ }).click();
+      await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
       await history.getByText(/2 visites/).waitFor();
       assert.deepEqual(errors, []);
       await context.close();

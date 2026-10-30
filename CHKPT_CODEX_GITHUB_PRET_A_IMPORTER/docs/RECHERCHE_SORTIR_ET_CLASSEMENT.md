@@ -1,12 +1,10 @@
-> Précisions ultérieures : XP totaux privés, badges publics ; classement uniquement dans le futur menu latéral ; fiches, profils, relations et résultats en pages dédiées. Ces transformations de navigation restent à appliquer. Voir [la revue actualisée](AUDIT_FLUIDITE_SECURITE_2026_10_30.md).
-
 # Recherche, Sortir, relations et classement
 
 Décisions utilisateur du 30 octobre 2026, après clarification. Ces choix remplacent l’ancienne recherche détaillée de lieux dans Sortir.
 
 ## Accueil : rechercher dans CHKPT
 
-La barre de recherche réunit les profils, établissements, événements et publications accessibles. Les filtres **Tout / Profils / Établissements / Événements / Publications** permettent ensuite de séparer les résultats.
+Le champ, **Rechercher** et **Filtres** sont côte à côte. Les suggestions apparaissent pendant la saisie ; Rechercher ou Entrée ouvre une page de résultats. Ses filtres permettent aussi de trier par pertinence ou nom. Retour conserve le contexte. La barre de recherche réunit les profils, établissements, événements et publications accessibles. Les filtres **Tout / Profils / Établissements / Événements / Publications** permettent ensuite de séparer les résultats.
 
 - Toucher un profil ouvre son profil ; toucher un établissement ouvre sa fiche.
 - Toucher un événement ouvre sa fiche avec description, date, lieu et intentions « Ça m’intéresse » / « J’y serai ».
@@ -16,7 +14,7 @@ La barre de recherche réunit les profils, établissements, événements et publ
 
 ## Carte : rechercher des lieux
 
-La recherche locale, les puces de catégories et la carte sont conservées. **Affiner la recherche sur la carte** regroupe les filtres de catégorie et distance déplacés depuis Sortir : bars, restaurants, clubs, maquis, cafés et culture ; rayons de 1, 5, 10 et 20 km.
+La recherche locale, les puces de catégories et la carte sont conservées. Le bouton **Filtres** ouvre un panneau qui regroupe les filtres de catégorie et distance déplacés depuis Sortir : bars, restaurants, clubs, maquis, cafés et culture ; rayons de 1, 5, 10 et 20 km.
 
 Les distances sont à vol d’oiseau. En simulation, elles utilisent la position choisie ; en GPS réel, un rayon attend une position réellement disponible. Il n’y a pas de club fictif ajouté pour remplir artificiellement ce résultat.
 
@@ -26,11 +24,11 @@ Les distances sont à vol d’oiseau. En simulation, elles utilisent la position
 
 Sortir conserve l’agenda, les sélections de rooftops/cocktails et de maquis/braisé. Sa petite barre cherche **dans ce contenu uniquement** : titres, descriptions, lieux, communes et rubriques. Elle ne lance pas la recherche externe.
 
-La rubrique **Classement des explorateurs** se trouve en bas. Aucun tableau n’est affiché avant de toucher cette rubrique.
+Le classement a été retiré de Sortir : il se trouve uniquement dans le menu personnel ☰.
 
 ## Classement mensuel uniquement
 
-Après ouverture : deux onglets **Amis** et **Global**. La dernière décision retire les deux colonnes mois/total : la liste montre uniquement les **XP du mois**.
+Après **☰ → Classement des explorateurs** : deux onglets **Amis** et **Global**. La dernière décision retire les deux colonnes mois/total : la liste montre uniquement les **XP du mois**.
 
 - Amis = vous + les suivis réciproques accessibles. Un abonnement à sens unique ne suffit pas.
 - Global = profils adultes publics accessibles + votre propre compte. Les autres profils privés/mineurs et les comptes opérateurs ne sont pas exposés.
@@ -42,7 +40,7 @@ Après ouverture : deux onglets **Amis** et **Global**. La dernière décision r
 
 ## Abonnés et abonnements
 
-Sur votre profil et les profils publics accessibles, toucher le compteur **Abonnés** ou **Abonnements** ouvre la liste correspondante. Toucher une personne ouvre son profil.
+Sur votre profil et les profils publics accessibles, toucher le compteur **Abonnés** ou **Abonnements** ouvre une page de liste avec sa propre barre de recherche. Toucher une personne ouvre son profil ; Retour retrouve la liste.
 
 La liste repose sur les relations effectivement enregistrées. Les centaines d’abonnés fictifs indiqués dans certains compteurs initiaux ne sont pas transformés en faux profils. Les profils privés/mineurs d’autrui restent masqués et les listes d’un profil privé sont réservées à leur propriétaire.
 
@@ -52,20 +50,13 @@ Accueil, Carte, Sortir et Profil gardent leur changement de couleur et affichent
 
 ## Pour essayer
 
-1. Accueil → rechercher « Sarah », puis Profils ; rechercher « Étoile », puis Établissements ; rechercher « Nuit Urbaine », puis Événements.
-2. Carte → Affiner la recherche → catégorie et distance. Ouvrir aussi Recherche intelligente : l’absence du service externe doit être indiquée sans bloquer la carte.
-3. Sortir → chercher un titre de rubrique ou d’événement ; toucher Classement des explorateurs tout en bas, puis Amis et Global.
+1. Accueil → écrire « Ingrid », puis Rechercher ; Filtres → Profils → Appliquer. Recommencer avec « Étoile » ou « Nuit Urbaine » pour ouvrir les fiches.
+2. Carte → Filtres → catégorie et distance → Appliquer. Ouvrir aussi Recherche intelligente : l’absence du service externe doit être indiquée sans bloquer la carte.
+3. Sortir → chercher un titre de rubrique ou d’événement, puis Rechercher. ☰ → Classement des explorateurs → Amis ou Global.
 4. Profil → toucher Abonnés ou Abonnements ; ouvrir un autre profil depuis la liste.
 
 Les essais automatisés utilisent des comptes fictifs, des bases temporaires et des positions explicitement simulées.
 
-## Captures de la recette
+## Captures et vérification
 
-- [Recherche générale](captures/accueil-recherche-390.png)
-- [Abonnements consultables](captures/profil-abonnements-390.png)
-- [Sortir éditorial](captures/sortir-editorial-390.png)
-- [Classement Amis mensuel](captures/classement-amis-390.png)
-
-## Résultats de vérification
-
-Lint et build réussis ; suite complète : **40/40 groupes**, dont 23 groupes serveur. La recette spécifique a aussi été exécutée sur les largeurs 320, 390 et 1280 px après les derniers ajustements de lisibilité. Les tests couvrent les recherches, les fiches événement, les relations réciproques ou simples, les mois exclus du score, le total public autorisé, les mineurs/profils privés et le maintien de l’historique propriétaire. La recherche intelligente a été testée dans son état indisponible ; aucun accès externe payant n’a été activé.
+Voir [le lot pages et menu](NAVIGATION_PAGES_ET_MENU.md) pour les captures et la validation actualisée. L’ancienne recette de recherche instantanée a été adaptée aux pages et panneaux retenus. Les contrôles serveur de confidentialité, de mois et de suivi réciproque restent en place.

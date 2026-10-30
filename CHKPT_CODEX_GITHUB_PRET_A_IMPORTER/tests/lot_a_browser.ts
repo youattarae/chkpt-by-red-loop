@@ -26,7 +26,7 @@ export async function checkBrowser(url: string) {
       await page.getByRole('button', { name: "Choisir Maquis L'Étoile d'Abidjan", exact: true }).click();
       await page.getByRole('button', { name: 'Détails', exact: true }).click();
       assert.equal(await page.getByRole('button', { name: 'Faire un check-in ici' }).count(), 0);
-      await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+      await page.getByRole('button', { name: 'Retour', exact: true }).click();
       await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
       const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
       assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).isDisabled(), true);
@@ -43,7 +43,7 @@ export async function checkBrowser(url: string) {
       // This used to keep the previous result/selection when reopening the persistent modal.
       await page.getByRole('button', { name: "Choisir L'Atelier Café & Bakery", exact: true }).click();
       await page.getByRole('button', { name: 'Détails', exact: true }).click();
-      await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+      await page.getByRole('button', { name: 'Retour', exact: true }).click();
       await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
       assert.equal(await dialog.getByRole('button', { pressed: true }).count(), 0);
       await dialog.getByRole('button', { name: /Atelier Café/ }).click();

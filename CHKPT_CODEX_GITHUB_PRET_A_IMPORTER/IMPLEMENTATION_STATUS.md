@@ -1,3 +1,9 @@
+## Navigation actualisée — 30 octobre 2026
+
+Les pages de consultation, le retour navigateur, les suggestions suivies d’une page de résultats, les filtres rétractables, le menu personnel et le profil compact sont maintenant implémentés localement. Le classement quitte Sortir et se trouve seulement dans le menu. XP totaux et historique restent personnels. Voir [les changements et la recette](docs/NAVIGATION_PAGES_ET_MENU.md). Validation : lint, build et **43/43 groupes de tests réussis** ; essais de navigation sur 320, 390 et 1280 px, retour navigateur/défilement, changement de compte et sortie de console inclus. Aucun push public, déploiement ni fusion.
+
+Les notes suivantes décrivent les étapes précédentes et leurs validations historiques.
+
 ## Revue, quatre profils et publicités diversifiées — 30 octobre 2026
 
 Préparé localement : quatre profils fictifs aux noms fournis (Ingrid N’Goan, Grâce Agbomi, Yacoub Ouattara, Georges Armand), portraits IA WebP, bios et cinq publications chacun ; conservation des données et migration idempotente. Publicité avant le fil puis toutes les cinq publications : banque, téléphonie, bière réservée aux majeurs côté serveur, vêtements, mobilité ; marques/slogans sur le visuel, fictifs et non cliquables.

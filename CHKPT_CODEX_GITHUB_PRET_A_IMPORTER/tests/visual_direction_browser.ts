@@ -22,7 +22,7 @@ export async function checkVisualDirection(url: string) {
       assert.equal(await header.locator('select').count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Mode sombre', exact: true }).count(), 0, 'Le thème est uniquement dans les réglages');
       assert.equal(await header.getByRole('button', { name: 'GPS', exact: true }).count(), 1);
-      assert.equal(await header.getByRole('button').count(), 3, 'En-tête limité au symbole, GPS et notifications');
+      assert.equal(await header.getByRole('button').count(), 4, 'Symbole, GPS, notifications et menu personnel');
       const gps = header.getByRole('button', { name: 'GPS', exact: true });
       await gps.click();
       const spots = header.getByRole('region', { name: 'Positions de démonstration', exact: true });

@@ -25,9 +25,9 @@ export async function checkRemoteBrowser(upstream: string, password: string) {
     if(process.env.CHKPT_CAPTURE_DIR){await mkdir(process.env.CHKPT_CAPTURE_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'acces-prive-390.png')});}
     await page.getByLabel('Mot de passe d’accès',{exact:true}).fill(password);
     await page.getByRole('button',{name:'Ouvrir la démonstration',exact:true}).click();
-    const venue=page.getByRole('dialog',{name:"Maquis L'Étoile d'Abidjan",exact:true});
+    const venue=page.getByRole('region',{name:"Maquis L'Étoile d'Abidjan",exact:true});
     await venue.waitFor();
-    await venue.getByRole('button',{name:'Fermer la fiche',exact:true}).click();
+    await venue.getByRole('button',{name:'Retour',exact:true}).click();
     assert.equal((await context.request.get(url+'/api/places')).status(),200);
     await page.getByRole('button',{name:'Profil',exact:true}).click();
     await page.getByRole('button',{name:'Réglages',exact:true}).click();

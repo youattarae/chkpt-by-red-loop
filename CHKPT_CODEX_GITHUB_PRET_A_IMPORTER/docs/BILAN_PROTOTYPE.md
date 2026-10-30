@@ -1,4 +1,6 @@
-Revue suivante : quatre profils nommés, vingt publications de départ, cinq publicités fictives en rotation, XP totaux privés et durcissement des accès/sources. [Revue complète et points encore ouverts](AUDIT_FLUIDITE_SECURITE_2026_10_30.md) ; [profils et publicités](PROFILS_ET_PUBLICITES_DEMO.md). Le nouveau menu et les pages dédiées restent à réaliser ; ce lot est préparé localement en attente du dépôt privé.
+Mise à jour suivante : pages de consultation avec Retour, recherche validée et suggestions, filtres rétractables, menu personnel et profil compact intégrés localement. Classement seulement dans le menu ; XP totaux et historique réservés à leur propriétaire. [Changements et étapes pour essayer](NAVIGATION_PAGES_ET_MENU.md). Lint/build et 43/43 groupes de tests réussis ; lot non publié tant que le dépôt reste public.
+
+Revue suivante : quatre profils nommés, vingt publications de départ, cinq publicités fictives en rotation, XP totaux privés et durcissement des accès/sources. [Revue complète et points encore ouverts](AUDIT_FLUIDITE_SECURITE_2026_10_30.md) ; [profils et publicités](PROFILS_ET_PUBLICITES_DEMO.md). Le menu et les pages ont ensuite été implémentés ; voir la mise à jour ci-dessus. Le lot reste local en attente du dépôt privé.
 
 Dernières demandes intégrées : Accueil général (profils, établissements, événements, publications), Carte pour les recherches de lieux, Sortir éditorial avec classement mensuel Amis/Global, listes d’abonnés consultables et point bordeaux de navigation. Voir [le fonctionnement](RECHERCHE_SORTIR_ET_CLASSEMENT.md).
 
@@ -18,7 +20,7 @@ Ce document résume le travail réalisé sur le dépôt existant et les limites 
 
 Préparer un prototype web fiable et présentable, utilisable sur ordinateur et téléphone. Le code existant a été conservé et corrigé progressivement : aucune réécriture complète, nouvelle stack ou infrastructure de production.
 
-Le dépôt reste privé. Les corrections passent par des branches et pull requests. Les lots A à D sont préparés ; les derniers ajustements visuels et fonctionnels sont regroupés dans la [pull request nº 4](https://github.com/youattarae/chkpt-by-red-loop/pull/4), sur la branche `feat/profil-social`. Les compléments ci-dessous sont préparés sur cette même branche. Une version installée sur un ordinateur ne se met pas à jour automatiquement après modification du dépôt.
+Le dépôt a été constaté Public le 30 octobre ; son passage en privé est nécessaire avant la publication du nouveau lot. Les corrections passent par des branches et pull requests. Les lots A à D sont préparés ; les derniers ajustements visuels et fonctionnels sont regroupés dans la [pull request nº 4](https://github.com/youattarae/chkpt-by-red-loop/pull/4), sur la branche `feat/profil-social`. Les compléments ci-dessous sont préparés sur cette même branche. Une version installée sur un ordinateur ne se met pas à jour automatiquement après modification du dépôt.
 
 ## 2. Lot A — vérification, accès et check-in
 

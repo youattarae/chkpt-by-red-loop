@@ -80,7 +80,7 @@ export async function checkFeed(url: string, password: string) {
       const message = `Une découverte à partager — accueil ${width}`;
       await page.getByPlaceholder('Partage tes bonnes adresses, tes coups de cœur…', { exact: true }).fill(message);
       await page.getByRole('button', { name: 'Publier', exact: true }).click();
-      await page.getByText(message, { exact: true }).waitFor();
+      await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
       const post = page.getByRole('article').filter({ hasText: message });
       await post.getByRole('button', { name: 'Aimer cette publication', exact: true }).click();
       await page.getByRole('button', { name: 'Profil', exact: true }).click();

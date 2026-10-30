@@ -1,3 +1,5 @@
+> Mise à jour suivante : les sept écarts de navigation listés dans cet audit ont été traités localement dans le [lot pages et menu](NAVIGATION_PAGES_ET_MENU.md). Lint/build et 43/43 groupes de tests réussis. L’audit ci-dessous garde son état historique antérieur ; la restriction de publication tant que le dépôt reste public est maintenue.
+
 # Revue de cohérence, sécurité et fluidité — 30 octobre 2026
 
 Cette revue confronte le code aux dernières décisions du porteur, pas seulement aux anciens tests. Elle distingue les corrections réalisées, les décisions encore non implémentées et les limites du prototype. Ce n’est pas une certification de sécurité ni un constat de préparation à la production.

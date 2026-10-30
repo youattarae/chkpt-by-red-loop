@@ -4,9 +4,9 @@ import { useStore } from '../../services/store';
 import { SafeImage } from '../common/SafeImage';
 import { publicationImage } from '../../data/publicationMedia';
 
-export function VisitedPlaces({ onSelectPlace }: { onSelectPlace: (id: string) => void }) {
+export function VisitedPlaces({ onSelectPlace, initialOpen=false }: { onSelectPlace: (id: string) => void; initialOpen?:boolean }) {
   const { currentUser, checkins, places } = useStore();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initialOpen);
   const id = useId();
   const visits = checkins.filter(visit => visit.userId === currentUser.id && visit.status === 'verified')
     .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));

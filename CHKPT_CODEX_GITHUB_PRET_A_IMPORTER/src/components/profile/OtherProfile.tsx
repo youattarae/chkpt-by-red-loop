@@ -1,4 +1,4 @@
-import {ConnectionsDialog} from './ConnectionsDialog';
+import {useNavigation} from '../../navigation/Navigation';
 import {StoryAvatar} from '../stories/Stories';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
@@ -9,28 +9,24 @@ import { PublicationCard } from '../common/PublicationCard';
 
 type PublicBadge={id:string;name:string;family:string;tier:string};
 type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount'>> & {badges?:PublicBadge[]};
-export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClose: () => void; onSelectPlace: (id: string) => void }) {
+export function OtherProfile({ id, onClose, onSelectPlace, isVisible=true }: { isVisible?:boolean;id: string; onClose: () => void; onSelectPlace: (id: string) => void }) {
   const { currentUser, authSessionToken, posts, followingIds, setFollowingIds, setCurrentUser } = useStore();
-  const [connections,setConnections]=useState<'followers'|'following'|null>(null);
+  const nav=useNavigation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState('');
   const [pending, setPending] = useState(false);
   const active = useRef(true);
   const following = followingIds.includes(id);
+  useEffect(() => {active.current=true;return()=>{active.current=false;};},[]);
   useEffect(() => {
-    active.current = true;
+    if(!isVisible)return;
     const controller = new AbortController();
     fetch(`/api/profiles/${encodeURIComponent(id)}`, { headers: { Authorization: `Bearer ${authSessionToken}` }, signal: controller.signal })
       .then(async response => { if (!response.ok) throw new Error(response.status === 401 ? 'Connectez-vous dans Gérer mon compte pour consulter les profils.' : 'Profil indisponible.'); return response.json(); })
       .then(data => setProfile(data.profile))
       .catch(error => { if (!controller.signal.aborted) setError(error.message); });
-    return () => { active.current = false; controller.abort(); };
-  }, [id, authSessionToken]);
-  useEffect(() => {
-    const close = (event: KeyboardEvent) => { if (event.key === 'Escape' && !document.querySelector('.place-detail, dialog[open]')) onClose(); };
-    window.addEventListener('keydown', close);
-    return () => window.removeEventListener('keydown', close);
-  }, [onClose]);
+    return () => { controller.abort(); };
+  }, [id, authSessionToken,isVisible]);
   async function toggleFollow() {
     setPending(true); setError('');
     try {
@@ -45,10 +41,9 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
     finally { if (active.current) setPending(false); }
   }
   const visiblePosts = profile?.visibility === 'public' ? posts.filter(post => post.authorId === id && (post.audience === 'public' || (post.audience === 'followers' && following))) : [];
-  return <section role="dialog" aria-modal="true" aria-label="Profil de la communauté" className="fixed inset-0 z-40 bg-canvas overflow-y-auto text-ink">
-    {connections&&<ConnectionsDialog id={id} kind={connections} onClose={()=>setConnections(null)}/>}
+  return <section role="region" aria-label="Profil de la communauté" className="bg-canvas text-ink">
     <div className="max-w-2xl mx-auto p-4 pb-24 space-y-5">
-      <button type="button" autoFocus onClick={onClose} className="flex items-center gap-2 py-2 text-sm text-muted cursor-pointer"><ArrowLeft className="w-5 h-5" />Retour</button>
+      <button type="button" aria-label="Retour" onClick={onClose} className="flex items-center gap-2 py-2 text-sm text-muted cursor-pointer"><ArrowLeft className="w-5 h-5" />Retour</button>
       {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
       {!profile && !error && <p role="status">Chargement du profil…</p>}
       {profile && <>
@@ -57,7 +52,7 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
         {profile.visibility === 'private' ? <p className="flex items-center gap-2 bg-soft rounded-2xl p-4 text-sm"><Lock className="w-5 h-5 shrink-0" />Profil privé. Ses publications ne sont pas accessibles dans cette démo.</p> : <>
           <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · compteurs de démonstration</p>
           <section aria-label="Badges publics" className="space-y-2"><h2 className="font-bold text-sm">Badges</h2>{profile.badges?.length?<div className="flex flex-wrap gap-2">{profile.badges.map(badge=><span key={badge.id} className="rounded-xl bg-soft px-3 py-2 text-xs"><strong className="block">{badge.name}</strong><span className="text-muted">{badge.family} · {({bronze:'Bronze',silver:'Argent',gold:'Or',platinum:'Platine',diamond:'Diamant'} as Record<string,string>)[badge.tier]||badge.tier}</span></span>)}</div>:<p className="text-xs text-muted">Aucun badge public débloqué.</p>}</section>
-          <div className="grid grid-cols-2 gap-3"><button type="button" onClick={()=>setConnections('followers')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followersCount}</strong>Abonnés</button><button type="button" onClick={()=>setConnections('following')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followingCount}</strong>Abonnements</button></div>
+          <div className="grid grid-cols-2 gap-3"><button type="button" onClick={()=>nav.push({page:'followers',id,tab:nav.current.route.tab})} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followersCount}</strong>Abonnés</button><button type="button" onClick={()=>nav.push({page:'following',id,tab:nav.current.route.tab})} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followingCount}</strong>Abonnements</button></div>
           <button type="button" disabled={pending} aria-pressed={following} onClick={toggleFollow} className="w-full p-3 rounded-xl bg-blue-600 text-white font-bold text-sm disabled:opacity-50 cursor-pointer">{pending ? 'En cours…' : following ? 'Ne plus suivre' : 'Suivre'}</button>
           <h2 className="text-sm font-bold">Publications</h2><div className="space-y-3">{visiblePosts.length ? visiblePosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />) : <p className="text-sm text-muted">Aucune publication accessible pour le moment.</p>}</div>
         </>}

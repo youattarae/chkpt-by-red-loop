@@ -1,0 +1,16 @@
+import {useStore} from '../../services/store';
+import {PageLayout} from './PageLayout';
+import {VisitedPlaces} from '../profile/VisitedPlaces';
+import {BadgesView} from '../badges/BadgesView';
+import {RewardDemo} from '../demo/RewardDemo';
+import {SafeImage} from '../common/SafeImage';
+export function PersonalPage({page,onBack,onPlace,onAccount}:{page:string;onBack:()=>void;onPlace:(id:string)=>void;onAccount:()=>void}){
+ const {currentUser,isServerAuthenticated,places,savedPlaceIds,pointsLedger}=useStore();
+ const title=({saved:'Lieux enregistrés',history:'Mon historique privé',progress:'Badges et progression',rewards:'Récompenses fictives',help:'Aide et démonstration'} as Record<string,string>)[page]||'Mon espace';
+ return <PageLayout title={title} onBack={onBack}>{page==='help'?<div className="space-y-4 text-sm"><p>Ce prototype utilise des lieux, portraits et contenus fictifs.</p><p>Pour faire un check : bouton central → sélectionner un lieu → Confirmer le check → publication facultative.</p><p>Le bouton GPS permet de choisir une position simulée. Un seul check est accepté par lieu et par jour.</p><p>Les stories expirent après 24 h. Les visites et XP totaux restent personnels. Le classement affiche les XP du mois.</p><p>Pour modifier le thème ou retrouver les outils de présentation autorisés, ouvrez Réglages et confidentialité dans votre menu.</p></div>:!isServerAuthenticated?<div className="space-y-3"><p>Connectez-vous pour consulter votre espace personnel.</p><button type="button" onClick={onAccount} className="p-3 rounded-xl bg-blue-600 text-white">Se connecter</button></div>:<>
+ {page==='history'&&<VisitedPlaces initialOpen onSelectPlace={onPlace}/>}
+ {page==='saved'&&<section aria-label="Mes lieux enregistrés" className="space-y-3">{places.filter(place=>savedPlaceIds.includes(place.id)).map(place=><button type="button" key={place.id} onClick={()=>onPlace(place.id)} className="flex items-center gap-3 p-3 border border-line rounded-xl w-full text-left"><SafeImage src={place.coverImage} alt="" className="w-14 h-14 object-cover rounded-xl"/><span><strong className="block text-sm">{place.name}</strong><span className="text-xs text-muted">{place.commune}</span></span></button>)}{!savedPlaceIds.length&&<p>Aucun lieu enregistré pour le moment.</p>}</section>}
+ {page==='rewards'&&<RewardDemo/>}
+ {page==='progress'&&<><p className="text-sm font-bold">Niveau {currentUser.level} · {currentUser.xpPoints} XP au total</p><p className="text-xs text-muted">Vos XP et votre journal sont visibles par vous seul. Barème provisoire de démonstration.</p><BadgesView embedded onBack={onBack}/><section aria-label="Journal XP" className="space-y-2"><h2 className="font-bold text-sm">Journal XP</h2>{pointsLedger.filter(entry=>entry.userId===currentUser.id).map(entry=><div key={entry.id} className="flex justify-between gap-3 p-3 bg-soft rounded-xl text-xs"><span>{entry.label}<span className="block text-muted">{new Date(entry.timestamp).toLocaleDateString('fr-FR')}</span></span><strong>+{entry.deltaXp} XP</strong></div>)}{!pointsLedger.some(entry=>entry.userId===currentUser.id)&&<p className="text-sm text-muted">Aucun mouvement de points pour le moment.</p>}</section></>}
+ </>}</PageLayout>;
+}

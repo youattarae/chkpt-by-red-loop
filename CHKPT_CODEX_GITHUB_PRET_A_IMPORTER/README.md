@@ -8,7 +8,7 @@ CHKPT est un réseau social de découverte de lieux et sorties, centré sur Coco
 
 Interface claire par défaut, mode sombre au choix, symbole CHKPT pour le bouton central. Voir [les choix et les captures réelles](docs/DIRECTION_VISUELLE_2026_10.md).
 
-Le [profil social actualisé](docs/PROFIL_SOCIAL.md) rassemble la présentation du compte, trois compteurs et les onglets Publications, Lieux enregistrés et Badges. Les visites et les XP restent accessibles dans un volet secondaire.
+Le [profil compact et la navigation actualisée](docs/NAVIGATION_PAGES_ET_MENU.md) affichent rapidement les publications. Le menu personnel regroupe les enregistrés, visites privées, progression, récompenses et classement. Les recherches validées et les fiches s’ouvrent dans des pages avec Retour.
 
 L'[accueil social actualisé](docs/ACCUEIL_SOCIAL.md) propose Pour toi et Amis, des cartes cohérentes avec le profil et des illustrations locales générées pour les publications fictives. Le bouton de validation s'intitule Confirmer le check.
 
@@ -32,7 +32,7 @@ Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) accepten
 
 La [répartition des recherches, les relations et le classement](docs/RECHERCHE_SORTIR_ET_CLASSEMENT.md) précise Accueil général, Carte pour les lieux et Sortir éditorial avec classement mensuel.
 
-Les [quatre profils et publicités fictives](docs/PROFILS_ET_PUBLICITES_DEMO.md) enrichissent le fil. La [revue de cohérence et sécurité](docs/AUDIT_FLUIDITE_SECURITE_2026_10_30.md) distingue les correctifs effectués des pages/menu encore à implémenter.
+Les [quatre profils et publicités fictives](docs/PROFILS_ET_PUBLICITES_DEMO.md) enrichissent le fil. La [revue de cohérence et sécurité](docs/AUDIT_FLUIDITE_SECURITE_2026_10_30.md) décrit les correctifs de sécurité. Le [lot suivant](docs/NAVIGATION_PAGES_ET_MENU.md) implémente les pages, le menu et le profil compact, localement en attente du dépôt privé.
 
 ## Voir la démonstration sans lire le code
 

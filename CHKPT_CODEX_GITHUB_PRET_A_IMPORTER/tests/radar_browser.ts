@@ -16,14 +16,14 @@ export async function checkRadarMap(url:string){
     await map.getByRole('button',{name:'Centrer Yopougon',exact:true}).click();
     await map.getByRole('button',{name:'Centrer Riviera',exact:true}).click();
     await map.getByRole('button',{name:'Mon radar · 250 m',exact:true}).click();
-    await page.getByRole('searchbox',{name:'Rechercher un établissement',exact:true}).fill('etoile');
+    // Text search opens a dedicated page; map geometry stays controlled by chips and filters.
     await map.getByRole('button',{name:"Choisir Maquis L'Étoile d'Abidjan",exact:true}).waitFor();
     await page.waitForFunction(()=>{const circle=document.querySelector('.leaflet-overlay-pane path')?.getBoundingClientRect();const map=document.querySelector('.leaflet-container')?.getBoundingClientRect();return !!circle&&!!map&&circle.width>150&&Math.abs(circle.x+circle.width/2-(map.x+map.width/2))<5;});
     // Successful tiles must expose the same no-results state as the illustrated fallback.
-    const search=page.getByRole('searchbox',{name:'Rechercher un établissement',exact:true});
+    const search=page.getByRole('combobox',{name:'Rechercher un établissement',exact:true});
     for(const mode of ['Carte interactive','Carte illustrée']){
       await page.getByRole('button',{name:mode,exact:true}).click();
-      await search.fill('introuvable-xyz');
+      await page.getByRole('button',{name:'Filtres',exact:true}).click();const filters=page.getByRole('region',{name:'Filtres de la carte'});await filters.getByRole('combobox',{name:'Catégorie de lieu'}).selectOption('clubs');await filters.getByRole('button',{name:'Appliquer les filtres'}).click();
       await page.getByRole('heading',{name:'Aucun lieu ne correspond à votre recherche',exact:true}).waitFor();
       assert.equal(await page.getByRole('button',{name:/^Choisir /}).count(),0);
       assert.equal(await page.getByRole('button',{name:'Détails',exact:true}).count(),0);
@@ -32,7 +32,7 @@ export async function checkRadarMap(url:string){
       await page.getByRole('button',{name:'Détails',exact:true}).waitFor();
     }
     await page.getByRole('button',{name:'Carte interactive',exact:true}).click();
-    await search.fill('etoile');
+
     if(process.env.CHKPT_CAPTURE_DIR){await mkdir(process.env.CHKPT_CAPTURE_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'radar-test-390.png')});}
     await page.getByRole('button',{name:'Carte illustrée',exact:true}).click();assert.equal(await map.count(),0);
     await context.close();

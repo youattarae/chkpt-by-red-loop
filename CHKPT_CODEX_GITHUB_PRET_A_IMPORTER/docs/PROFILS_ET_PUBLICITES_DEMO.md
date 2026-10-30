@@ -68,4 +68,4 @@ Les captures sont préparées localement et ne seront publiées qu’après le p
 
 ## État des autres demandes
 
-Ce lot enrichit les contenus et corrige des points de sécurité. Les pages dédiées, la nouvelle mécanique suggestions/recherche, le menu latéral et le profil compact sont validés mais restent à appliquer. Le classement mensuel est encore dans Sortir jusqu’au déplacement complet vers son nouvel accès, afin de ne pas créer une destination inaccessible. Voir `AUDIT_FLUIDITE_SECURITE_2026_10_30.md`.
+Le lot suivant implémente les pages dédiées, les suggestions puis résultats validés, le menu personnel et le profil compact. Le classement mensuel est désormais accessible seulement dans le menu. Voir [la navigation actualisée](NAVIGATION_PAGES_ET_MENU.md) pour sa validation et ses limites.

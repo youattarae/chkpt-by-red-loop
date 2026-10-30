@@ -49,7 +49,7 @@ export async function checkPresentation(url: string, password: string) {
         await capture('carte');
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
         await capture('fiche');
-        await page.getByRole('button', { name: 'Fermer la fiche', exact: true }).click();
+        await page.getByRole('button', { name: 'Retour', exact: true }).click();
         await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
         await page.getByRole('dialog', { name: 'Check-in', exact: true }).getByRole('button', { name: /Maquis L'Étoile/ }).click();
         await capture('check-confirm');
@@ -65,7 +65,7 @@ export async function checkPresentation(url: string, password: string) {
       await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
       await capture('publication');
       await page.getByRole('button', { name: 'Publier le checkpoint' }).click();
-      await page.getByText(message, { exact: true }).waitFor();
+      await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
       await page.getByRole('region', { name: 'Mes publications' }).getByText(message, { exact: true }).waitFor();
       await page.getByText(/1315 XP au total/).waitFor();
