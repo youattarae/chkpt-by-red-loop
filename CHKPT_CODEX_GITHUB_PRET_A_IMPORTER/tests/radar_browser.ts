@@ -19,6 +19,20 @@ export async function checkRadarMap(url:string){
     await page.getByRole('searchbox',{name:'Rechercher un établissement',exact:true}).fill('etoile');
     await map.getByRole('button',{name:"Choisir Maquis L'Étoile d'Abidjan",exact:true}).waitFor();
     await page.waitForFunction(()=>{const circle=document.querySelector('.leaflet-overlay-pane path')?.getBoundingClientRect();const map=document.querySelector('.leaflet-container')?.getBoundingClientRect();return !!circle&&!!map&&circle.width>150&&Math.abs(circle.x+circle.width/2-(map.x+map.width/2))<5;});
+    // Successful tiles must expose the same no-results state as the illustrated fallback.
+    const search=page.getByRole('searchbox',{name:'Rechercher un établissement',exact:true});
+    for(const mode of ['Carte interactive','Carte illustrée']){
+      await page.getByRole('button',{name:mode,exact:true}).click();
+      await search.fill('introuvable-xyz');
+      await page.getByRole('heading',{name:'Aucun lieu ne correspond à votre recherche',exact:true}).waitFor();
+      assert.equal(await page.getByRole('button',{name:/^Choisir /}).count(),0);
+      assert.equal(await page.getByRole('button',{name:'Détails',exact:true}).count(),0);
+      await page.getByRole('button',{name:'Afficher tous les lieux',exact:true}).click();
+      assert.equal(await search.inputValue(),'');
+      await page.getByRole('button',{name:'Détails',exact:true}).waitFor();
+    }
+    await page.getByRole('button',{name:'Carte interactive',exact:true}).click();
+    await search.fill('etoile');
     if(process.env.CHKPT_CAPTURE_DIR){await mkdir(process.env.CHKPT_CAPTURE_DIR,{recursive:true});await page.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'radar-test-390.png')});}
     await page.getByRole('button',{name:'Carte illustrée',exact:true}).click();assert.equal(await map.count(),0);
     await context.close();

@@ -1,3 +1,7 @@
+## Correction GitHub Actions — 30 octobre 2026
+
+L’exécution [41049586164](https://github.com/youattarae/chkpt-by-red-loop/actions/runs/41049586164) échouait dans `next_features_browser.ts:39` : le message de recherche sans résultat existait uniquement sur la carte illustrée. La carte interactive avec des tuiles disponibles ne l’affichait pas. Le problème a été reproduit localement avec des tuiles neutres simulant une réponse réussie, puis corrigé dans `MapView.tsx` par un état vide commun aux deux modes. Le test radar vérifie désormais recherche vide, absence de repères/fiche et remise à zéro dans chaque mode. Aucun contrôle supprimé ni délai artificiellement allongé. Lint, build et test ciblé réussis ; validation complète et GitHub à suivre.
+
 # Publications multimédias — 30 octobre 2026
 
 Validation locale : lint et build réussis ; 21/21 groupes serveur et 36/36 groupes avec navigateur (les 21 sont compris dans les 36). Import réel de trois images et une vidéo H.264, lecture mobile, rechargement ; refus du cinquième média, doublons et accès tiers ; vidéo privée persistante après redémarrage.

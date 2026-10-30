@@ -101,6 +101,15 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
         />
       </div>
 
+      {filteredPlaces.length === 0 && (
+        <section aria-label="Aucun résultat sur la carte" className="mx-3 my-2 p-4 rounded-2xl border border-line bg-surface text-center relative z-20 shrink-0">
+          <Filter className="w-5 h-5 mx-auto mb-2 text-muted" aria-hidden="true" />
+          <h3 className="text-sm font-bold text-ink">Aucun lieu ne correspond à votre recherche</h3>
+          <p className="text-xs text-muted mt-1">Modifiez le nom ou les catégories pour retrouver les lieux fictifs.</p>
+          <button type="button" onClick={handleResetFilters} className="mt-3 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs cursor-pointer">Afficher tous les lieux</button>
+        </section>
+      )}
+
       {interactive ? <React.Suspense fallback={<p className="p-4 text-xs text-muted">Chargement de la carte interactive…</p>}><DynamicMap places={filteredPlaces} position={userCurrentCoordinates} ready={locationReady} simulated={activeLocationMode==='simulation'} selectedId={activePlace?.id || null} onSelect={setSelectedPlaceId} onFallback={()=>{setInteractive(false);setMapUnavailable(true);}} /></React.Suspense> : <>
       {/* Stylized Vector Map of Abidjan Canvas */}
       <div className="relative flex-1 w-full bg-canvas flex items-center justify-center p-4 pt-16">
@@ -172,25 +181,6 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
           <line x1="190" y1="340" x2="210" y2="440" stroke="var(--tone-rose-400)" strokeWidth="2.5" strokeDasharray="3,3" opacity="0.7" />
           <text x="140" y="380" fill="var(--tone-rose-400)" fontSize="9" fontWeight="bold">Pont De Gaulle</text>
         </svg>
-
-        {/* Empty state overlay when all filtered out */}
-        {filteredPlaces.length === 0 && (
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-canvas/80 backdrop-blur-sm p-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-surface border border-line text-muted flex items-center justify-center mb-3">
-              <Filter className="w-6 h-6" />
-            </div>
-            <h3 className="text-sm font-bold text-ink">Aucun lieu ne correspond à votre recherche</h3>
-            <p className="text-xs text-muted max-w-xs mt-1">
-              Modifiez le nom ou les catégories pour retrouver les lieux fictifs.
-            </p>
-            <button
-              onClick={handleResetFilters}
-              className="mt-3 px-4 py-2 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md transition-colors cursor-pointer"
-            >
-              Afficher tous les lieux
-            </button>
-          </div>
-        )}
 
         {/* Place Markers Overlay for filtered places */}
         <div className="absolute inset-0 max-w-3xl mx-auto pointer-events-none pt-16">
