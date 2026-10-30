@@ -40,7 +40,8 @@ export function installSocialRoutes(app:Express){
       if(item.url.startsWith('/api/media/')){
         const asset=media.find(asset=>'/api/media/'+asset.assetId===item.url&&asset.ownerId===user.id);
         if(!asset||asset.storyId){res.status(403).json({error:'media_owner_required'});return;}
-        if(asset.audience!=='public'&&asset.audience!==audience){res.status(400).json({error:'media_audience_mismatch'});return;}
+        const attached=db.getRawData().posts.some(post=>post.mediaUrl===item.url||post.media?.some(media=>media.url===item.url));
+        if(attached&&asset.audience!==audience){res.status(409).json({error:'media_audience_mismatch',message:'Importez un nouveau média pour choisir une autre visibilité.'});return;}
         media=media.map(entry=>entry.assetId===asset.assetId?{...entry,audience}:entry);
         attachments.push({url:item.url,type:asset.mimeType.startsWith('video/')?'video':'image'});
       }else{

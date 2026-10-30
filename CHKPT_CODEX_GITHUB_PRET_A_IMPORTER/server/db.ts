@@ -1,3 +1,4 @@
+import {DEMO_PROFILES} from '../src/data/demoProfiles';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -280,12 +281,26 @@ export const CANONICAL_PLACES: PlaceEntity[] = [
 
 function creatorDemoProfile(): UserEntity {
   const salt = crypto.randomBytes(16).toString('hex');
-  return { id: 'usr_02', username: 'amara_sound', displayName: 'Amara Koné', salt,
+  return { id: 'usr_02', username: 'georges_armand', displayName: 'Georges Armand', salt,
     passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), salt),
     age: 25, visibility: 'public', role: 'creator', homeZone: 'Cocody, Abidjan',
     avatarUrl: '/illustrations/admin.svg', bio: 'Art, culture et découvertes à Abidjan · profil fictif.',
     followersCount: 0, followingCount: 0, checkinsCount: 0, xpPoints: 0, level: 1,
     createdAt: new Date().toISOString() };
+}
+
+function fourthDemoProfile(users:UserEntity[]=[]):UserEntity{
+ const profile=DEMO_PROFILES.find(profile=>profile.id==='usr_nadia')!;const salt=crypto.randomBytes(16).toString('hex');
+ let username=profile.username;let suffix=0;while(users.some(user=>user.username===username))username=profile.username+'_demo'+(++suffix);
+ return {...profile,username,salt,passwordHash:hashSeedPassword(crypto.randomBytes(32).toString('hex'),salt),age:29,visibility:'public',role:'user',followersCount:0,followingCount:0,checkinsCount:0,xpPoints:0,level:1,createdAt:new Date().toISOString()};
+}
+function enrichDemoProfiles(users:UserEntity[]){
+ const legacy:{[id:string]:{username:string;name:string}}={usr_01:{username:'koffi_urbex',name:'Koffi Kouamé'},usr_sarah:{username:'sarah_dlo',name:'Sarah Diallo'},usr_02:{username:'amara_sound',name:'Amara Koné'}};
+ for(const profile of DEMO_PROFILES){const previous=legacy[profile.id];if(!previous)continue;const user=users.find(user=>user.id===profile.id&&user.username===previous.username);if(user){let username=profile.username;let suffix=0;while(users.some(other=>other.id!==user.id&&other.username===username))username=profile.username+'_demo'+(++suffix);user.username=username;if(user.displayName===previous.name)user.displayName=profile.displayName;}}
+ const oldAvatars=new Set(['/illustrations/koffi.svg','/illustrations/sarah.svg','/illustrations/admin.svg']);
+ const oldBios=new Set(["Explorateur d'Abidjan · Foodie & rooftop chill · Cocody en priorité",'Foodie & sorties branchées entre Cocody et le Plateau.','Art, culture et découvertes à Abidjan · profil fictif.']);
+ for(const profile of DEMO_PROFILES){const user=users.find(user=>user.id===profile.id);if(!user)continue;if(oldAvatars.has(user.avatarUrl))user.avatarUrl=profile.avatarUrl;if(oldBios.has(user.bio))user.bio=profile.bio;}
+ return users;
 }
 
 class Database {
@@ -303,11 +318,11 @@ class Database {
 
   private getFreshSeedState(): DatabaseSchema {
     return {
-      users: [
+      users: enrichDemoProfiles([
         {
           id: 'usr_01',
-          username: 'koffi_urbex',
-          displayName: 'Koffi Kouamé',
+          username: 'yacoub_ouattara',
+          displayName: 'Yacoub Ouattara',
           passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_koffi_demo'),
           salt: 'chkpt_salt_koffi_demo',
           age: 24,
@@ -325,8 +340,8 @@ class Database {
         },
         {
           id: 'usr_sarah',
-          username: 'sarah_dlo',
-          displayName: 'Sarah Diallo',
+          username: 'ingrid_ngoan',
+          displayName: 'Ingrid N’Goan',
           passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_sarah_demo'),
           salt: 'chkpt_salt_sarah_demo',
           age: 23,
@@ -361,15 +376,15 @@ class Database {
           level: 10,
           createdAt: new Date(Date.now() - 90 * 86400000).toISOString(),
         },
-        creatorDemoProfile(),
-      ],
+        creatorDemoProfile(),fourthDemoProfile(),
+      ]),
       sessions: [],
       places: CANONICAL_PLACES,
       checkins: [
         {
           id: 'chk_demo_initial',
           userId: 'usr_01',
-          userName: 'Koffi Kouamé',
+          userName: 'Yacoub Ouattara',
           userAvatar: '/illustrations/koffi.svg',
           placeId: 'plc_cocody_lounge',
           placeName: 'Lagon Bleu Rooftop Lounge',
@@ -447,7 +462,23 @@ class Database {
         parsed.saved_places ??= [{userId:'usr_01',placeId:'plc_cocody_lounge'}];
         parsed.media ??= [];
         parsed.places = CANONICAL_PLACES;
-        if (!parsed.users.some((user: UserEntity) => user.id === 'usr_02' || user.username === 'amara_sound')) parsed.users.push(creatorDemoProfile());
+        if (!parsed.users.some((user: UserEntity) => user.id === 'usr_02' || user.username === 'georges_armand')) parsed.users.push(creatorDemoProfile());
+        if(!parsed.users.some((user:UserEntity)=>user.id==='usr_nadia'))parsed.users.push(fourthDemoProfile(parsed.users));
+        enrichDemoProfiles(parsed.users);
+        const seeds=seedPosts().filter(post=>parsed.users.some((user:UserEntity)=>user.id===post.authorId)).map(post=>({...post,authorUsername:parsed.users.find((user:UserEntity)=>user.id===post.authorId).username}));
+        const seedIds=new Set(seeds.map(post=>post.id));const existingPosts=new Map<string,StoredPost>(parsed.posts.map((post:StoredPost)=>[post.id,post]));
+        parsed.posts=[...parsed.posts.filter((post:StoredPost)=>!seedIds.has(post.id)),...seeds.map(seed=>{
+          const existing=existingPosts.get(seed.id);if(!existing)return seed;
+          const profile=DEMO_PROFILES.find(profile=>profile.id===existing.authorId);
+          if(profile){existing.authorName=profile.displayName;existing.authorUsername=parsed.users.find((user:UserEntity)=>user.id===existing.authorId).username;}
+          const old=['/illustrations/koffi.svg','/illustrations/sarah.svg','/illustrations/admin.svg'];
+          return profile&&old.includes(existing.authorAvatar)?{...existing,authorAvatar:profile.avatarUrl}:existing;
+        })];
+        parsed.media=parsed.media.map((asset:StoredMedia)=>{
+          const url='/api/media/'+asset.assetId;
+          const linked=asset.storyId||parsed.posts.some((post:StoredPost)=>post.mediaUrl===url||post.media?.some(item=>item.url===url))||parsed.users.some((user:UserEntity)=>user.avatarUrl===url);
+          return linked?asset:{...asset,audience:'private'};
+        });
         // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
         for (const user of parsed.users) {
           if (!seedUserIds.has(user.id)) continue;

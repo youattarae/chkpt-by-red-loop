@@ -33,7 +33,7 @@ export async function checkPresentation(url: string, password: string) {
       async function start() {
         await openAccount(page);
         await page.getByRole('button', { name: 'Connexion', exact: true }).click();
-        await page.getByPlaceholder('ex: koffi_urbex').fill('redloop_admin');
+        await page.getByPlaceholder('ex: yacoub_ouattara').fill('redloop_admin');
         await page.locator('input[type=password]').fill(password);
         await page.getByRole('button', { name: /Se connecter/ }).click();
         await page.waitForTimeout(1200);

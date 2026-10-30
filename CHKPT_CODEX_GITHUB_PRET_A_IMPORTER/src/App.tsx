@@ -40,6 +40,7 @@ const AppContent: React.FC = () => {
   const [profileId, setProfileId] = useState<string | null>(null);
   const [businessOpen, setBusinessOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  useEffect(()=>{setIsCheckinOpen(false);},[currentUser.id]);
 
   useEffect(() => {
     const openSharedPlace = () => {

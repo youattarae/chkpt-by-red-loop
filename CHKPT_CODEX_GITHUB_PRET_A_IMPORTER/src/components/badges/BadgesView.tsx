@@ -1,4 +1,3 @@
-import { SafeImage } from '../common/SafeImage';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -28,11 +27,10 @@ interface BadgesViewProps {
 }
 
 export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false }) => {
-  const { badges, currentUser } = useStore();
+  const { badges } = useStore();
   const featuredIds=['bdg_maquis_bronze','bdg_explorateur_bronze','bdg_foodie_bronze'];
   const featured=[...badges.filter(badge=>badge.isUnlocked),...badges.filter(badge=>featuredIds.includes(badge.id))].filter((badge,index,items)=>items.findIndex(item=>item.id===badge.id)===index).slice(0,6);
   const [family,setFamily] = useState('all');
-  const [leaderboardTab, setLeaderboardTab] = useState<'friends' | 'national'>('friends');
 
   const getBadgeIcon = (iconName: string) => {
     switch (iconName) {
@@ -152,70 +150,6 @@ export const BadgesView: React.FC<BadgesViewProps> = ({ onBack, embedded = false
         })}
       </div>
 
-      {/* Leaderboard Preview (Amis / National) */}
-      <div className="bg-surface border border-line rounded-3xl p-4 space-y-3">
-        <div className="flex items-center justify-between border-b border-line pb-2">
-          <h3 className="text-xs font-bold text-ink uppercase tracking-wider">
-            Classement Explorateurs
-          </h3>
-          <div className="flex gap-1">
-            <button
-              onClick={() => setLeaderboardTab('friends')}
-              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
-                leaderboardTab === 'friends' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'text-muted'
-              }`}
-            >
-              Amis
-            </button>
-            <button
-              onClick={() => setLeaderboardTab('national')}
-              className={`px-2 py-0.5 rounded-lg text-[10px] font-bold ${
-                leaderboardTab === 'national' ? 'bg-rose-950 text-rose-300 border border-rose-800' : 'text-muted'
-              }`}
-            >
-              National
-            </button>
-          </div>
-        </div>
-
-        <div className="space-y-2 text-xs">
-          <div className="p-2.5 rounded-2xl bg-canvas border border-line flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 text-center font-bold text-amber-400">#1</span>
-              <SafeImage src="/illustrations/sarah.svg" alt="" className="w-7 h-7 rounded-lg object-cover" />
-              <div>
-                <span className="font-bold text-ink block">Sarah Diallo</span>
-                <span className="text-[10px] text-muted">Cocody · 26 visites</span>
-              </div>
-            </div>
-            <span className="font-bold text-rose-400 font-mono">1 820 XP</span>
-          </div>
-
-          <div className="p-2.5 rounded-2xl bg-rose-950/40 border border-rose-800/80 flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 text-center font-bold text-ink">#2</span>
-              <SafeImage src={currentUser.avatarUrl} alt="" className="w-7 h-7 rounded-lg object-cover" />
-              <div>
-                <span className="font-bold text-ink block">{currentUser.displayName} (Vous)</span>
-                <span className="text-[10px] text-muted">Cocody · {currentUser.checkinsCount} visites</span>
-              </div>
-            </div>
-            <span className="font-bold text-rose-400 font-mono">{currentUser.xpPoints} XP</span>
-          </div>
-
-          <div className="p-2.5 rounded-2xl bg-canvas border border-line flex items-center justify-between">
-            <div className="flex items-center gap-2.5">
-              <span className="w-5 text-center font-bold text-muted">#3</span>
-              <SafeImage src="/illustrations/admin.svg" alt="" className="w-7 h-7 rounded-lg object-cover" />
-              <div>
-                <span className="font-bold text-ink block">Amara Koné</span>
-                <span className="text-[10px] text-muted">Plateau · 14 visites</span>
-              </div>
-            </div>
-            <span className="font-bold text-muted font-mono">980 XP</span>
-          </div>
-        </div>
-      </div>
 
     </div>
   );

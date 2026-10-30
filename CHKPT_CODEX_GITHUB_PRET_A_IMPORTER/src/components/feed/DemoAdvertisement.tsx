@@ -1,0 +1,13 @@
+import {useStore} from '../../services/store';
+import {SafeImage} from '../common/SafeImage';
+export function DemoAdvertisement({number=0}:{number?:number}){
+ const {adCampaigns,currentUser,isServerAuthenticated}=useStore();const bank=adCampaigns[0];if(!bank)return null;
+ const variants=[bank,
+ {...bank,advertiserName:'Onde Mobile · marque fictive',bannerTitle:'Gardez le lien, partout dans la boucle.',bannerSubtitle:'Exemple de communication télécom. Aucune offre réelle.',imageUrl:'/illustrations/pub-mobile-demo.webp'},
+ {...bank,advertiserName:'Brise Lagune · bière fictive',bannerTitle:'Saveur de soirée.',bannerSubtitle:'Exemple fictif réservé aux adultes. L’abus d’alcool est dangereux pour la santé. À consommer avec modération.',imageUrl:'/api/ads/adult-image'},
+ {...bank,advertiserName:'Atelier Boucle · marque fictive',bannerTitle:'Le style en mouvement.',bannerSubtitle:'Exemple de communication pour une marque de vêtements fictive. Aucune vente intégrée.',imageUrl:'/illustrations/pub-vetements-demo.webp'},
+ {...bank,advertiserName:'Mobi Lagune · service fictif',bannerTitle:'La ville, à votre rythme.',bannerSubtitle:'Exemple de communication mobilité. Aucun service réservable.',imageUrl:'/illustrations/pub-mobilite-demo.webp'}];
+ const slot=number%variants.length;const adult=isServerAuthenticated&&(currentUser.age??0)>=18;
+ const ad=variants[slot===2&&!adult?3:slot];
+ return <section aria-label={number===0?'Publicité fictive de banque':`Publicité fictive · ${ad.advertiserName} · insertion ${number}`} data-demo-ad="true" className="bg-surface border border-line rounded-2xl overflow-hidden"><div className="flex items-center justify-between gap-2 text-[10px] text-muted px-3 py-2"><span>Publicité · Exemple fictif</span><span>Non cliquable</span></div><div className="relative aspect-[2/1] bg-[#07182f]"><SafeImage src={ad.imageUrl} alt={`Illustration publicitaire fictive : ${ad.advertiserName}`} className="absolute inset-0 w-full h-full object-cover"/><div className="absolute inset-0 bg-gradient-to-r from-[#07182f]/95 via-[#07182f]/65 to-transparent"/><span className="absolute top-2 right-2 rounded-full border border-white/40 bg-black/50 px-2 py-1 text-[8px] font-bold uppercase tracking-wide text-white">Marque fictive</span><div className="relative h-full w-[70%] flex flex-col justify-center p-4 sm:p-6 text-white"><p className="text-sm sm:text-lg font-extrabold uppercase tracking-wider">{ad.advertiserName.split('·')[0].trim()}</p><h4 className="mt-2 text-xl sm:text-3xl font-bold">{ad.bannerTitle}</h4></div></div><p className="px-3 py-2 text-[10px] text-muted">{ad.bannerSubtitle} Visuel généré par IA. Aucun partenariat réel.</p></section>;
+}

@@ -3,7 +3,7 @@ import { useStore } from '../../services/store';
 /** Private images are fetched with the session header, never with a token in their URL. */
 export function SafeImage({ onError, src, ...props }: React.ImgHTMLAttributes<HTMLImageElement>) {
   const { authSessionToken } = useStore();
-  const protectedMedia=typeof src==='string'&&src.startsWith('/api/media/');
+  const protectedMedia=typeof src==='string'&&(src.startsWith('/api/media/')||src.startsWith('/api/ads/'));
   const [resolved,setResolved]=useState<{src:string;token:string;url:string}|null>(null);
   useEffect(()=>{
     if(!protectedMedia||typeof src!=='string')return;

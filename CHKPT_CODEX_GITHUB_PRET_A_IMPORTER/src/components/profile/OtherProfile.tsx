@@ -7,7 +7,8 @@ import { UserProfile } from '../../types';
 import { SafeImage } from '../common/SafeImage';
 import { PublicationCard } from '../common/PublicationCard';
 
-type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount' | 'xpPoints'>>;
+type PublicBadge={id:string;name:string;family:string;tier:string};
+type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount'>> & {badges?:PublicBadge[]};
 export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClose: () => void; onSelectPlace: (id: string) => void }) {
   const { currentUser, authSessionToken, posts, followingIds, setFollowingIds, setCurrentUser } = useStore();
   const [connections,setConnections]=useState<'followers'|'following'|null>(null);
@@ -52,9 +53,10 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
       {!profile && !error && <p role="status">Chargement du profil…</p>}
       {profile && <>
         <div className="flex gap-4 items-center"><StoryAvatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} className="w-20 h-20"/><div className="min-w-0"><h1 className="text-xl font-extrabold break-words">{profile.displayName}</h1><p className="text-xs text-muted">@{profile.username}</p></div></div>
+        {profile.avatarUrl.startsWith('/illustrations/profil-')&&<p className="text-[10px] text-muted">Portrait fictif généré par IA · illustration de démonstration.</p>}
         {profile.visibility === 'private' ? <p className="flex items-center gap-2 bg-soft rounded-2xl p-4 text-sm"><Lock className="w-5 h-5 shrink-0" />Profil privé. Ses publications ne sont pas accessibles dans cette démo.</p> : <>
           <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · compteurs de démonstration</p>
-          <p className="text-sm font-bold">{profile.xpPoints??0} XP au total</p>
+          <section aria-label="Badges publics" className="space-y-2"><h2 className="font-bold text-sm">Badges</h2>{profile.badges?.length?<div className="flex flex-wrap gap-2">{profile.badges.map(badge=><span key={badge.id} className="rounded-xl bg-soft px-3 py-2 text-xs"><strong className="block">{badge.name}</strong><span className="text-muted">{badge.family} · {({bronze:'Bronze',silver:'Argent',gold:'Or',platinum:'Platine',diamond:'Diamant'} as Record<string,string>)[badge.tier]||badge.tier}</span></span>)}</div>:<p className="text-xs text-muted">Aucun badge public débloqué.</p>}</section>
           <div className="grid grid-cols-2 gap-3"><button type="button" onClick={()=>setConnections('followers')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followersCount}</strong>Abonnés</button><button type="button" onClick={()=>setConnections('following')} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followingCount}</strong>Abonnements</button></div>
           <button type="button" disabled={pending} aria-pressed={following} onClick={toggleFollow} className="w-full p-3 rounded-xl bg-blue-600 text-white font-bold text-sm disabled:opacity-50 cursor-pointer">{pending ? 'En cours…' : following ? 'Ne plus suivre' : 'Suivre'}</button>
           <h2 className="text-sm font-bold">Publications</h2><div className="space-y-3">{visiblePosts.length ? visiblePosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />) : <p className="text-sm text-muted">Aucune publication accessible pour le moment.</p>}</div>

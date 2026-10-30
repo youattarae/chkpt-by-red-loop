@@ -4,7 +4,7 @@ import { Request, Response, NextFunction } from 'express';
 // Only the server can enable the private presentation tools. Client flags are UI only.
 export const privateDemoEnabled = process.env.CHKPT_PRIVATE_DEMO === 'true';
 export const demoAdminPassword = process.env.CHKPT_DEMO_ADMIN_PASSWORD;
-export const seedUserIds = new Set(['usr_01', 'usr_02', 'usr_sarah', 'usr_admin']);
+export const seedUserIds = new Set(['usr_01', 'usr_02', 'usr_sarah', 'usr_nadia', 'usr_admin']);
 
 if (privateDemoEnabled && (!demoAdminPassword || demoAdminPassword.length < 16)) {
   throw new Error('Private demo requires CHKPT_DEMO_ADMIN_PASSWORD (at least 16 characters).');

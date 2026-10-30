@@ -50,6 +50,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
         </div>
       </div>
 
+      {currentUser.avatarUrl.startsWith('/illustrations/profil-')&&<p className="text-[10px] text-muted">Portrait fictif généré par IA · illustration de démonstration.</p>}
       <div aria-label="Statistiques du profil" className="grid grid-cols-4 divide-x divide-line text-center">
         <div className="px-1"><strong className="block text-lg font-extrabold text-ink">{currentUser.checkinsCount}</strong><span className="text-[10px] sm:text-xs text-muted">Checks</span></div>
         <button type="button" onClick={() => setActiveTab('badges')} aria-label="Voir mes badges" className="px-1 hover:text-blue-400 cursor-pointer"><strong className="block text-lg font-extrabold text-ink">{unlockedBadges.length}</strong><span className="text-[10px] sm:text-xs text-muted">Badges</span></button>

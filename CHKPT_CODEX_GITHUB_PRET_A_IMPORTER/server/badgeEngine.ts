@@ -45,3 +45,10 @@ export function awardPublishedPhoto(userId:string,checkinId:string,mediaUrl:stri
   db.recordLedgerEvent(userId,'PHOTO_PUBLISHED',crypto.createHash('sha256').update(bytes).digest('hex'));
   return evaluateBadges(userId);
 }
+
+/** Read-only public award labels: no XP, thresholds, counters, proofs or locations. */
+export function publicBadgeSummaries(userId:string){
+  const ids=new Set(db.getRawData().points_ledger.filter(entry=>entry.userId===userId&&entry.sourceAction==='BADGE_UNLOCKED').map(entry=>entry.referenceId));
+  const demo=privateDemoEnabled&&userId==='usr_01';
+  return BADGE_CATALOG.filter(badge=>ids.has(badge.id)||demo&&DEMO_PROGRESS[badge.family]>=badge.requiredCount).slice(0,6).map(({id,name,family,tier,iconName})=>({id,name,family,tier,iconName}));
+}

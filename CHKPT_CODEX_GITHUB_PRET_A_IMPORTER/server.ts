@@ -1,3 +1,4 @@
+import {fileURLToPath} from 'node:url';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
@@ -18,7 +19,7 @@ import { installBackupRoutes } from './server/backup';
 import { installStoryRoutes, pruneStories } from './server/stories';
 import {installDiscoveryRoutes} from './server/discovery';
 import { installSocialRoutes } from './server/social';
-import { evaluateBadges, awardPublishedPhoto } from './server/badgeEngine';
+import { publicBadgeSummaries, evaluateBadges, awardPublishedPhoto } from './server/badgeEngine';
 import { getEventCatalog } from './server/events';
 import { installRemoteAccess } from './server/remoteAccess';
 import express, { Request, Response } from 'express';
@@ -40,13 +41,16 @@ import { processCheckinSubmission } from './server/checkinEngine';
 
 dotenv.config();
 
+if(process.env.CHKPT_REMOTE_ACCESS==='true'&&process.env.NODE_ENV!=='production')throw new Error('Remote demo requires NODE_ENV=production and compiled assets.');
 const app = express();
+app.disable('x-powered-by');
+app.use((_req,res,next)=>{res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('X-Frame-Options','DENY');next();});
 installRemoteAccess(app);
 app.use('/api',(_req,res,next)=>{res.setHeader('Cache-Control','private, no-store');next();});
 const PORT = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
 
 // Increase JSON body parser limit for base64 media payloads up to 20MB
-app.use(express.json({ limit: '20mb' }));
+app.use(express.json({ limit: '21mb' }));
 app.use(express.urlencoded({ extended: true, limit: '20mb' }));
 
 // Global authentication middleware to resolve session on every request
@@ -231,7 +235,7 @@ app.post('/api/auth/switch-demo', requirePrivateDemo, requireOperator, (req: Req
     res.status(400).json({ error: 'invalid_username' });
     return;
   }
-  const user = db.findUserByUsername(username);
+  const user = seedUserIds.has(username)?db.findUserById(username):db.findUserByUsername(username);
   if (!user || !seedUserIds.has(user.id)) {
     res.status(404).json({ error: 'user_not_found', message: 'Profil démo introuvable.' });
     return;
@@ -289,8 +293,8 @@ app.get('/api/profiles/:id', requireAuth, (req: Request, res: Response) => {
   const hidden = user.visibility === 'private' || user.age < 18;
   const profile = { id: user.id, displayName: user.displayName, username: user.username,
     avatarUrl: user.avatarUrl, visibility: hidden ? 'private' : 'public',
-    ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, xpPoints:user.xpPoints, followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
-  res.json({ profile, following: db.isFollower(req.user!.id, user.id) });
+    ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, badges:publicBadgeSummaries(user.id), followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
+  res.json({ profile:{...profile,...(req.user!.id===user.id?{xpPoints:user.xpPoints}:{})}, following: db.isFollower(req.user!.id, user.id) });
 });
 app.post('/api/profiles/:id/follow', requireAuth, (req: Request, res: Response) => {
   const id = req.params.id as string;
@@ -484,9 +488,8 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
     const effectiveOwnerId = req.user!.id;
     const effectiveOwnerUsername = req.user!.username;
 
-    const validAudiences = ['private', 'followers', 'public'];
-    const chosenAudience = req.user!.age < 18 || req.user!.visibility === 'private' ? 'private'
-      : validAudiences.includes(audience) ? audience : 'private';
+    // Drafts remain owner-only. The publication/story endpoint sets the final audience.
+    const chosenAudience = 'private' as const;
 
     const assetId = `med_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
     const token = crypto.randomBytes(16).toString('hex');
@@ -527,6 +530,14 @@ app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
 /**
  * Read Media with Strict Audience Enforcement (Private / Followers / Public)
  */
+app.delete('/api/media/:assetId',requireAuth,(req,res)=>{
+  const data=db.getRawData();const asset=data.media.find(asset=>asset.assetId===req.params.assetId&&asset.ownerId===req.user!.id);
+  if(!asset){res.status(404).json({error:'media_unavailable'});return;}
+  const url='/api/media/'+asset.assetId;
+  if(asset.storyId||data.posts.some(post=>post.mediaUrl===url||post.media?.some(item=>item.url===url))||data.users.some(user=>user.avatarUrl===url)){res.status(409).json({error:'media_in_use'});return;}
+  db.updateSharedData({media:data.media.filter(item=>item.assetId!==asset.assetId)});res.json({success:true});
+});
+
 app.get('/api/media/:assetId', (req: Request, res: Response) => {
   const { assetId } = req.params;
   const requesterId = req.user?.id || null;
@@ -554,7 +565,6 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
         error: 'private_resource',
         message: 'Accès refusé : ce média est strictement réservé à son auteur (audience privée).',
         audience: 'private',
-        author: asset.ownerUsername,
       });
       return;
     }
@@ -570,7 +580,6 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
         error: 'restricted_audience',
         message: 'Accès restreint : ce média est réservé aux abonnés confirmés de l\'auteur.',
         audience: 'followers',
-        author: asset.ownerUsername,
       });
       return;
     }
@@ -584,8 +593,6 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
   res.setHeader('Content-Length', imageBuffer.length);
   res.setHeader('Cache-Control', 'private, no-store');
   res.setHeader('X-Content-Type-Options', 'nosniff');
-  res.setHeader('X-Media-Audience', asset.audience);
-  res.setHeader('X-Media-Owner', asset.ownerUsername);
 
   res.send(imageBuffer);
 });
@@ -644,6 +651,13 @@ app.post('/api/reports', requireAuth, (req: Request, res: Response) => {
   res.status(201).json({ success: true, report, message: 'Signalement transmis à l\'équipe de modération RED LOOP.' });
 });
 
+// Adult-only fictitious advertising asset; intentionally outside public/dist.
+app.get('/api/ads/adult-image',requireAuth,(req,res)=>{
+  if(req.user!.age<18){res.status(403).json({error:'adult_only'});return;}
+  res.setHeader('Cache-Control','private, no-store');
+  res.sendFile(fileURLToPath(new URL('./server/assets/pub-biere-demo.webp',import.meta.url)));
+});
+
 // ==========================================
 // 7. GOOGLE MAPS GROUNDING (GEMINI 3.8 FLASH)
 // ==========================================
@@ -659,7 +673,7 @@ app.post('/api/places/grounding', async (req: Request, res: Response) => {
       res.json({
         text: 'Les lieux affichés sont une sélection fictive pour la démonstration à Cocody.',
         groundedPlaces: [],
-        note: 'GEMINI_API_KEY non configurée pour le grounding direct.',
+        available: false,
       });
       return;
     }
@@ -704,10 +718,12 @@ app.post('/api/places/grounding', async (req: Request, res: Response) => {
     console.error('Maps grounding error:', err);
     res.status(500).json({
       error: 'grounding_failed',
-      message: err.message || 'Impossible de récupérer les données Google Maps actuellement.',
+      message: 'Recherche externe indisponible. Réessayez plus tard.',
     });
   }
 });
+
+app.use('/api',(_req,res)=>{res.status(404).json({error:'not_found',message:'Ce service est indisponible.'});});
 
 // ==========================================
 // 8. VITE DEV SERVER MIDDLEWARE MOUNTING
@@ -722,11 +738,24 @@ async function startServer() {
     });
     app.use(vite.middlewares);
   } else {
-    app.use(express.static('dist'));
+    // Defense in depth: source, private files and debugging maps are never public assets.
+    app.use((req,res,next)=>{
+      let requested:string;try{requested=decodeURIComponent(req.path);}catch{res.status(400).end();return;}
+      if(/(?:^|\/)(?:\.[^/]+|src|server|shared|scripts|tests|docs|node_modules|@vite|@fs)(?:\/|$)/i.test(requested)||/\.(?:map|ts|tsx|md)$/i.test(requested)||/(?:^|\/)(?:package(?:-lock)?\.json|tsconfig\.json)$/i.test(requested)){res.status(404).end();return;}
+      next();
+    });
+    app.use(express.static('dist',{dotfiles:'deny'}));
     app.get('*', (_req, res) => {
       res.sendFile('index.html', { root: 'dist' });
     });
   }
+
+  app.use((error:any,_req:Request,res:Response,next:import('express').NextFunction)=>{
+    if(res.headersSent){next(error);return;}
+    const status=error?.status===413?413:error?.status===400?400:500;
+    console.error('Request failed:',status,error?.name||'Error');
+    res.status(status).json({error:status===413?'payload_too_large':status===400?'invalid_request':'server_error',message:status===413?'Le fichier ou la demande dépasse la taille autorisée.':status===400?'La demande est invalide.':'Une erreur est survenue. Réessayez.'});
+  });
 
   const httpServer = app.listen(PORT, process.env.HOST || '127.0.0.1', () => {
     const address = httpServer.address();

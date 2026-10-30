@@ -32,6 +32,8 @@ Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) accepten
 
 La [répartition des recherches, les relations et le classement](docs/RECHERCHE_SORTIR_ET_CLASSEMENT.md) précise Accueil général, Carte pour les lieux et Sortir éditorial avec classement mensuel.
 
+Les [quatre profils et publicités fictives](docs/PROFILS_ET_PUBLICITES_DEMO.md) enrichissent le fil. La [revue de cohérence et sécurité](docs/AUDIT_FLUIDITE_SECURITE_2026_10_30.md) distingue les correctifs effectués des pages/menu encore à implémenter.
+
 ## Voir la démonstration sans lire le code
 
 Ouvrir **[la démonstration illustrée en PDF](docs/DEMONSTRATION_PAS_A_PAS.pdf)** : huit étapes avec les écrans réels et les gestes expliqués en français simple. Un navigateur suffit. Il s'agit de captures, pas d'une application interactive.

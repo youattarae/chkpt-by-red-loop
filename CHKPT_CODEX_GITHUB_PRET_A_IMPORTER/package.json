@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsx server.ts",
     "demo": "npm run build && node --import tsx scripts/present.mjs",
-    "start": "node server.ts",
+    "start": "node --import tsx scripts/present.mjs",
     "build": "vite build",
     "preview": "vite preview",
     "test": "tsx tests/lot_a.test.ts",

@@ -1,3 +1,13 @@
+## Revue, quatre profils et publicités diversifiées — 30 octobre 2026
+
+Préparé localement : quatre profils fictifs aux noms fournis (Ingrid N’Goan, Grâce Agbomi, Yacoub Ouattara, Georges Armand), portraits IA WebP, bios et cinq publications chacun ; conservation des données et migration idempotente. Publicité avant le fil puis toutes les cinq publications : banque, téléphonie, bière réservée aux majeurs côté serveur, vêtements, mobilité ; marques/slogans sur le visuel, fictifs et non cliquables.
+
+Corrections de revue : XP totaux propriétaire uniquement et badges publics minimaux ; suppression du classement obsolète chiffré en dur ; sources/maps bloquées en production, minification explicite, démo distante en développement refusée ; retrait des jetons en URL et détails techniques superflus ; brouillons privés jusqu’à confirmation, nettoyage des imports non utilisés, fichiers publiés protégés et réinitialisation du brouillon lors du changement de compte.
+
+Vérifications : lint/build réussis, 43/43 groupes complets ; après les derniers contrôles, 25/25 groupes serveur et recette dédiée quatre profils/publicités réussis (mineurs inclus). Les 11 tests historiques font partie du compte, pas un ajout. Navigation par pages, recherche validée/suggestions, menu latéral et profil compact encore à implémenter : ne pas déclarer ces décisions terminées.
+
+Le dépôt GitHub a été constaté Public et l’accès API répond Forbidden. Le nouveau lot ne doit pas être poussé publiquement : passage en privé à effectuer par le propriétaire. Aucun déploiement ni fusion. Voir [audit et limites](docs/AUDIT_FLUIDITE_SECURITE_2026_10_30.md), [contenus](docs/PROFILS_ET_PUBLICITES_DEMO.md).
+
 ## Recherche, éditorial et classement mensuel — 30 octobre 2026
 
 Décisions clarifiées : Accueil général avec filtres (profils, établissements, événements, publications), recherche intelligente et filtres de lieux sur Carte, Sortir éditorial avec petite recherche interne. Point bordeaux sous l’icône active. Listes réelles d’abonnés/abonnements au toucher des compteurs sur les profils accessibles. Rubrique classement en bas de Sortir, ouverte sur Amis/Global ; XP mensuels uniquement ; Amis = suivis réciproques + soi. Totaux publics sur les profils accessibles, sans historique, preuves ni registre.

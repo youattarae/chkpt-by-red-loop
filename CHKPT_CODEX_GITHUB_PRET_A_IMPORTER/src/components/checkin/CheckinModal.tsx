@@ -468,7 +468,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               />
             </div>
 
-            <PostMediaUploader value={postMedia} onChange={setPostMedia} onBusy={setMediaBusy} />
+            <PostMediaUploader disabled={publishing} value={postMedia} onChange={setPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex gap-2 pt-2">
               <button

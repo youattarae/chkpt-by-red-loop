@@ -12,6 +12,11 @@ export async function checkSharedState(start:any,stop:any,password:string){
   assert.ok(checked.success);
   const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
   const upload=await (await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'public'},owner.token)).json();
+  assert.equal((await call(upload.readUrl,undefined,outsider.token)).status,403,'Un import non publié reste privé');
+  const orphan=await (await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'public'},owner.token)).json();assert.equal(orphan.audience,'private');
+  assert.equal((await fetch(server.url+orphan.readUrl,{method:'DELETE',headers:{Authorization:'Bearer '+outsider.token}})).status,404);
+  assert.equal((await fetch(server.url+orphan.readUrl,{method:'DELETE',headers:{Authorization:'Bearer '+owner.token}})).status,200);
+  assert.equal((await call(orphan.readUrl,undefined,owner.token)).status,404);
   const uploaded=[];
   for(let index=0;index<4;index++)uploaded.push((await (await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'private'},owner.token)).json()).readUrl);
   const four={text:'Quatre souvenirs privés.',media:uploaded.map(url=>({url,type:'video'})),audience:'private',clientRequestId:'four-media-test-001'};
@@ -30,12 +35,13 @@ export async function checkSharedState(start:any,stop:any,password:string){
   const draft={text:'Une publication privée synchronisée.',mediaUrl:upload.readUrl,linkedPlaceId:place.id,linkedCheckinId:checked.checkIn.id,audience:'private',authorId:outsider.user.id,clientRequestId:'shared-private-001'};
   const response=await call('/api/posts',draft,owner.token);assert.equal(response.status,201);const post=(await response.json()).post;
   assert.equal(post.authorId,owner.user.id);assert.equal(post.isVerifiedVisit,true);
+  assert.equal((await fetch(server.url+upload.readUrl,{method:'DELETE',headers:{Authorization:'Bearer '+owner.token}})).status,409,'Un média publié ne peut pas être effacé par un brouillon');
   assert.equal((await call('/api/posts',draft,owner.token)).status,200,'La répétition du même identifiant ne crée pas un doublon');
   assert.equal((await call('/api/posts/'+post.id+'/like',{liked:true},outsider.token)).status,404);
   assert.equal((await call('/api/posts/'+post.id+'/comments',{text:'Interdit',clientRequestId:'comment-private'},outsider.token)).status,404);
   assert.equal((await call('/api/posts',{...draft,clientRequestId:'steal-media-001',linkedCheckinId:undefined},outsider.token)).status,403);
   assert.equal((await call(upload.readUrl)).status,403);
-  assert.equal((await call(upload.readUrl,undefined,outsider.token)).status,403);
+  const deniedMedia=await call(upload.readUrl,undefined,outsider.token);assert.equal(deniedMedia.status,403);assert.ok(!(await deniedMedia.text()).includes(owner.user.username));
   assert.equal((await call(upload.readUrl,undefined,owner.token)).status,200);
   assert.equal((await call('/api/account/state')).status,401);
   const otherState=await (await call('/api/account/state?userId='+owner.user.id,undefined,outsider.token)).json();

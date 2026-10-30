@@ -1,3 +1,5 @@
+Revue suivante : quatre profils nommés, vingt publications de départ, cinq publicités fictives en rotation, XP totaux privés et durcissement des accès/sources. [Revue complète et points encore ouverts](AUDIT_FLUIDITE_SECURITE_2026_10_30.md) ; [profils et publicités](PROFILS_ET_PUBLICITES_DEMO.md). Le nouveau menu et les pages dédiées restent à réaliser ; ce lot est préparé localement en attente du dépôt privé.
+
 Dernières demandes intégrées : Accueil général (profils, établissements, événements, publications), Carte pour les recherches de lieux, Sortir éditorial avec classement mensuel Amis/Global, listes d’abonnés consultables et point bordeaux de navigation. Voir [le fonctionnement](RECHERCHE_SORTIR_ET_CLASSEMENT.md).
 
 Stories du 30 octobre : ajout par +, lecture accueil/profil/avatar, 24 h, suppression et permissions serveur. Voir [le guide pour essayer](STORIES_PROTOTYPE.md).

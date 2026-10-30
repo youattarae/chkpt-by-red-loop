@@ -7,6 +7,7 @@ export async function checkDiscovery(start:any,stop:any,password:string){
   const me=await register('discover_me','Léa Fictive'),friend=await register('discover_friend','Ami fictif'),oneWay=await register('discover_oneway','Suivi simple'),minor=await register('discover_minor','Mineur fictif',16);
   for(const route of ['/api/search/profiles?q=lea','/api/profiles/'+me.user.id+'/connections?kind=followers','/api/explorers/monthly'])assert.equal((await call(route)).status,401);
   const searched=await (await call('/api/search/profiles?q=lea',undefined,friend.token)).json();assert.ok(searched.profiles.some((profile:any)=>profile.id===me.user.id));assert.ok(!('passwordHash' in searched.profiles[0]));
+  const demoBadgeView=await (await call('/api/profiles/usr_01',undefined,friend.token)).json();assert.ok(demoBadgeView.profile.badges.length>0);assert.ok(!('xpPoints' in demoBadgeView.profile));for(const badge of demoBadgeView.profile.badges)assert.deepEqual(Object.keys(badge).sort(),['family','iconName','id','name','tier']);
   const minors=await (await call('/api/search/profiles?q=mineur',undefined,me.token)).json();assert.equal(minors.profiles.length,0);
   assert.equal((await call('/api/profiles/'+minor.user.id+'/connections?kind=following',undefined,me.token)).status,404);
   assert.equal((await call('/api/profiles/'+minor.user.id+'/connections?kind=following',undefined,minor.token)).status,200);
@@ -27,7 +28,9 @@ export async function checkDiscovery(start:any,stop:any,password:string){
   friends=await (await call('/api/explorers/monthly?scope=friends',undefined,me.token)).json();assert.equal(friends.profiles.length,2);assert.equal(friends.profiles[0].id,me.user.id);assert.equal(friends.profiles[0].monthlyXp,75);assert.equal(friends.profiles[1].monthlyXp,0);
   assert.ok(!JSON.stringify(friends).includes('plc_maquis'));assert.ok(!JSON.stringify(friends).includes('latitude'));assert.ok(!('xpPoints' in friends.profiles[0]));
   const global=await (await call('/api/explorers/monthly?scope=global',undefined,me.token)).json();assert.ok(global.profiles.some((profile:any)=>profile.id===oneWay.user.id));assert.ok(!global.profiles.some((profile:any)=>profile.id===minor.user.id));
-  const profile=await (await call('/api/profiles/'+me.user.id,undefined,friend.token)).json();assert.equal(profile.profile.xpPoints,75);
+  const profile=await (await call('/api/profiles/'+me.user.id,undefined,friend.token)).json();assert.ok(!('xpPoints' in profile.profile));assert.ok(Array.isArray(profile.profile.badges));
+  for(const badge of profile.profile.badges)assert.deepEqual(Object.keys(badge).sort(),['family','iconName','id','name','tier']);
+  const ownProfile=await (await call('/api/profiles/'+me.user.id,undefined,me.token)).json();assert.equal(ownProfile.profile.xpPoints,75);
   assert.equal((await call('/api/checkins/history?userId='+me.user.id,undefined,friend.token)).status,403);
   await stop(server.child);
 }

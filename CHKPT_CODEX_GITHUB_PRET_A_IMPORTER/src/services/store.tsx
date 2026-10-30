@@ -263,12 +263,12 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         recipientId: 'usr_01',
         category: 'friends_checkin',
         title: 'Check-in d\'ami vérifié 📍',
-        body: 'Sarah Diallo vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
+        body: 'Ingrid N’Goan vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
         targetType: 'place',
         targetId: 'plc_cocody_lounge',
         isRead: false,
         createdAt: 'Il y a 12 min',
-        avatarUrl: '/illustrations/sarah.svg',
+        avatarUrl: '/illustrations/profil-sarah.webp',
       },
       {
         id: 'notif_02',
@@ -819,10 +819,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       recipientId: currentUser.id,
       category: 'friends_checkin',
       title: 'Check-in d\'ami vérifié 📍',
-      body: 'Sarah Diallo vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
+      body: 'Ingrid N’Goan vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
       targetType: 'place',
       targetId: 'plc_cocody_lounge',
-      avatarUrl: '/illustrations/sarah.svg',
+      avatarUrl: '/illustrations/profil-sarah.webp',
       dedupeKey: `friend_checkin_${Date.now()}`,
     });
   };

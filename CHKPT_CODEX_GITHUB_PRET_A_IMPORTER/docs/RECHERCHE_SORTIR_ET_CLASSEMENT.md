@@ -1,3 +1,5 @@
+> Précisions ultérieures : XP totaux privés, badges publics ; classement uniquement dans le futur menu latéral ; fiches, profils, relations et résultats en pages dédiées. Ces transformations de navigation restent à appliquer. Voir [la revue actualisée](AUDIT_FLUIDITE_SECURITE_2026_10_30.md).
+
 # Recherche, Sortir, relations et classement
 
 Décisions utilisateur du 30 octobre 2026, après clarification. Ces choix remplacent l’ancienne recherche détaillée de lieux dans Sortir.
@@ -35,7 +37,7 @@ Après ouverture : deux onglets **Amis** et **Global**. La dernière décision r
 - Les XP mensuels sont calculés côté serveur à partir des entrées positives `CHECKIN_VERIFIED` du PointsLedger du mois courant, selon le mois calendaire d’Abidjan. Les autres mois, les dates futures et les paliers de badge sans XP ne comptent pas. Une entrée identique n’est pas comptée deux fois.
 - Tri décroissant des XP mensuels ; en cas d’égalité, identifiants par ordre alphabétique. Limite de 100 profils pour le prototype.
 - Aucun lieu visité, trajet, preuve GPS ni détail du registre n’est envoyé avec le classement.
-- Le **total des XP** reste visible sur le profil de chacun, y compris sur un profil public accessible. Le profil privé d’autrui ne dévoile pas ce total.
+- Le **total des XP** reste visible uniquement par le propriétaire du compte. Les autres personnes peuvent voir les badges, pas ce total. Le profil privé d’autrui ne dévoile pas ce total.
 - Les anciens totaux fictifs de départ ne sont pas artificiellement répartis dans le mois : seules les visites figurant dans le registre du mois donnent le score mensuel. Le classement reste une démonstration, pas une compétition avec des utilisateurs réels.
 
 ## Abonnés et abonnements

@@ -1,3 +1,4 @@
+import {DEMO_PROFILES} from '../../data/demoProfiles';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -265,64 +266,66 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </p>
 
             <button
-              onClick={() => handleSwitchDemo('koffi_urbex')}
+              onClick={() => handleSwitchDemo('usr_01')}
               disabled={isLoading}
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                currentUser.username === 'koffi_urbex'
+                currentUser.username === 'yacoub_ouattara'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
                   : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
-                  src="/illustrations/koffi.svg"
+                  src="/illustrations/profil-koffi.webp"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Koffi Kouamé</span>
+                    <span className="text-sm font-bold text-ink">Yacoub Ouattara</span>
                     <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Utilisateur normal
                     </span>
                   </div>
-                  <span className="text-xs text-muted">@koffi_urbex · Niv. {currentUser.level} · Cocody</span>
+                  <span className="text-xs text-muted">@yacoub_ouattara · Niv. {currentUser.level} · Cocody</span>
                 </div>
               </div>
-              {currentUser.username === 'koffi_urbex' && (
+              {currentUser.username === 'yacoub_ouattara' && (
                 <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
               )}
             </button>
 
             <button
-              onClick={() => handleSwitchDemo('sarah_dlo')}
+              onClick={() => handleSwitchDemo('usr_sarah')}
               disabled={isLoading}
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                currentUser.username === 'sarah_dlo'
+                currentUser.username === 'ingrid_ngoan'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
                   : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
-                  src="/illustrations/sarah.svg"
+                  src="/illustrations/profil-sarah.webp"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Sarah Diallo</span>
+                    <span className="text-sm font-bold text-ink">Ingrid N’Goan</span>
                     <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Abonnée confirmée
                     </span>
                   </div>
-                  <span className="text-xs text-muted">@sarah_dlo · 512 abonnés · Cocody</span>
+                  <span className="text-xs text-muted">@ingrid_ngoan · 512 abonnés · Cocody</span>
                 </div>
               </div>
-              {currentUser.username === 'sarah_dlo' && (
+              {currentUser.username === 'ingrid_ngoan' && (
                 <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
               )}
             </button>
+
+            {DEMO_PROFILES.filter(profile=>['usr_02','usr_nadia'].includes(profile.id)).map(profile=><button type="button" key={profile.id} disabled={isLoading} onClick={()=>handleSwitchDemo(profile.id)} className="w-full p-3 rounded-2xl border border-line bg-canvas text-left flex gap-3 items-center"><SafeImage src={profile.avatarUrl} alt="" className="w-10 h-10 rounded-xl object-cover"/><span><strong className="block text-sm">{profile.displayName}</strong><span className="block text-xs text-muted">@{profile.username} · profil fictif</span></span></button>)}
 
             <button
               onClick={() => handleSwitchDemo('redloop_admin')}
@@ -385,7 +388,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="ex: koffi_urbex"
+                placeholder="ex: yacoub_ouattara"
                 required
                 className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />

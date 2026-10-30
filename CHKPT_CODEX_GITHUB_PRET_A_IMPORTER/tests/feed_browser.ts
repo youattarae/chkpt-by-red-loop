@@ -31,14 +31,14 @@ export async function checkFeed(url: string, password: string) {
       const tabs = page.getByRole('tablist', { name: 'Fil d’actualité', exact: true });
       assert.deepEqual(await tabs.getByRole('tab').allTextContents(), ['Pour toi', 'Amis']);
       await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
-      assert.equal(await page.locator('article img[src="/illustrations/rooftop-demo.png"]:not([alt=""])').count(), 1);
-      assert.equal(await page.locator('article img[src="/illustrations/culture-demo.png"]:not([alt=""])').count(), 1);
-      assert.equal(await page.getByText(/image générée par IA/).count(), 3);
+      assert.equal(await page.locator('article img[src="/illustrations/rooftop-demo.png"]:not([alt=""])').count(), INITIAL_POSTS.filter(post=>post.mediaUrl==='/illustrations/rooftop-demo.png').length);
+      assert.equal(await page.locator('article img[src="/illustrations/culture-demo.png"]:not([alt=""])').count(), INITIAL_POSTS.filter(post=>post.mediaUrl==='/illustrations/culture-demo.png').length);
+      assert.equal(await page.getByText(/image générée par IA/).count(), INITIAL_POSTS.length);
       const album=page.getByRole('article').filter({hasText:'Une belle découverte à Cocody'});
       assert.equal(await album.locator('img[alt*="photo"]').count(),4);
       assert.equal(new Set(await album.locator('img[alt*="photo"]').evaluateAll(images=>images.map(image=>(image as HTMLImageElement).src))).size,4);
       const bankAd = page.getByRole('region', { name: 'Publicité fictive de banque', exact: true });
-      await bankAd.getByText('Banque Boucle · banque imaginaire', { exact: true }).waitFor();
+      await bankAd.getByText('Banque Boucle', { exact: true }).waitFor();
       assert.equal(await bankAd.locator('a, button, [role="button"], [onclick], [tabindex]').count(), 0, 'Publicité sans lien ni contrôle interactif');
       assert.equal(await bankAd.locator('img[src="/illustrations/banque-demo.png"]').count(), 1);
       const beforeAdClick = page.url();
@@ -56,8 +56,8 @@ export async function checkFeed(url: string, password: string) {
             await album.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'publication-album-4-images-390.png'),style:'nav, header[aria-label="En-tête CHKPT"] { visibility: hidden !important; }'});
             await bankAd.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publicite-banque-390.png') });
             const detailStyle = 'nav, header[aria-label="En-tête CHKPT"] { visibility: hidden !important; }';
-            await page.getByRole('article').filter({ hasText: '@sarah_dlo' }).screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publication-rooftop.png'), style: detailStyle });
-            await page.getByRole('article').filter({ hasText: '@amara_sound' }).screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publication-culture.png'), style: detailStyle });
+            await page.getByRole('article').filter({ hasText: '@ingrid_ngoan' }).first().screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publication-rooftop.png'), style: detailStyle });
+            await page.getByRole('article').filter({ hasText: '@georges_armand' }).first().screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'publication-culture.png'), style: detailStyle });
             await page.evaluate(() => scrollTo(0, 0));
           }
         }
@@ -66,15 +66,15 @@ export async function checkFeed(url: string, password: string) {
       await page.keyboard.press('ArrowRight');
       assert.equal(await tabs.getByRole('tab', { name: 'Amis', exact: true }).getAttribute('aria-selected'), 'true');
       // Koffi has no outgoing follow in the canonical seed; never invent friends.
-      assert.equal(await page.getByText('@sarah_dlo', { exact: true }).count(), 0);
-      assert.equal(await page.getByText('@amara_sound', { exact: true }).count(), 0);
+      assert.equal(await page.getByText('@ingrid_ngoan', { exact: true }).count(), 0);
+      assert.equal(await page.getByText('@georges_armand', { exact: true }).count(), 0);
       await page.keyboard.press('Home');
-      await page.getByText('@amara_sound', { exact: true }).waitFor();
+      await page.getByText('@georges_armand', { exact: true }).first().waitFor();
       await page.getByRole('button', { name: 'Filtrer les publications', exact: true }).click();
       await page.locator('#feed-filters').getByRole('button', { name: /^Maquis/ }).click();
-      assert.equal(await page.getByRole('article').count(), 1);
+      assert.equal(await page.getByRole('article').count(), 5);
       await page.locator('#feed-filters').getByTitle('Afficher toutes les catégories', { exact: true }).click();
-      assert.equal(await page.getByRole('article').count(), 3);
+      assert.equal(await page.getByRole('article').count(), INITIAL_POSTS.length);
       await page.getByRole('button', { name: 'Filtrer les publications', exact: true }).click();
       await page.getByRole('button', { name: /Qu’as-tu découvert/ }).click();
       const message = `Une découverte à partager — accueil ${width}`;
@@ -107,7 +107,7 @@ export async function checkFeed(url: string, password: string) {
       const operator = await fetch(url + '/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username: 'redloop_admin', password }) });
       assert.equal(operator.status, 200);
       const operatorSession = await operator.json();
-      const switched = await fetch(url + '/api/auth/switch-demo', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${operatorSession.token}` }, body: JSON.stringify({ username: 'sarah_dlo' }) });
+      const switched = await fetch(url + '/api/auth/switch-demo', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${operatorSession.token}` }, body: JSON.stringify({ username: 'ingrid_ngoan' }) });
       assert.equal(switched.status, 200);
       const sarah = await switched.json();
       const friendContext = await browser.newContext({ viewport: { width, height: 950 } });
@@ -120,9 +120,9 @@ export async function checkFeed(url: string, password: string) {
       const friends = await friendContext.newPage();
       await friends.goto(url);
       await friends.getByRole('tab', { name: 'Amis', exact: true }).click();
-      await friends.getByText('@koffi_urbex', { exact: true }).first().waitFor();
-      assert.equal(await friends.getByText('@amara_sound', { exact: true }).count(), 0);
-      assert.equal(await friends.getByText('@sarah_dlo', { exact: true }).count(), 0);
+      await friends.getByText('@yacoub_ouattara', { exact: true }).first().waitFor();
+      assert.equal(await friends.getByText('@georges_armand', { exact: true }).count(), 0);
+      assert.equal(await friends.getByText('@ingrid_ngoan', { exact: true }).count(), 0);
       await friendContext.close();
       console.log(`  Accueil ${width}px : deux onglets, filtres, nouveaux visuels sur cache ancien, publication et réaction partagée ; Confirmer le check explicite`);
     }

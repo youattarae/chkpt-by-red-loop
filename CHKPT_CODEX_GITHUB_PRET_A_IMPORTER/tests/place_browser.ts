@@ -56,7 +56,7 @@ export async function checkLargePlace(url: string) {
         assert.equal(await dialog.count(), 0);
       }
       if (viewport.width === 390) {
-        await page.getByRole('article').filter({ hasText: '@sarah_dlo' }).getByRole('button', { name: /Lagon Bleu Rooftop/ }).click();
+        await page.getByRole('article').filter({ hasText: '@ingrid_ngoan' }).first().getByRole('button', { name: /Lagon Bleu Rooftop/ }).click();
         const gallery = page.getByRole('dialog', { name: 'Lagon Bleu Rooftop Lounge', exact: true });
         await gallery.getByRole('button', { name: 'Voir l’illustration 2', exact: true }).click();
         assert.equal(await gallery.getByRole('img', { name: /Illustration :/ }).getAttribute('src'), '/illustrations/cafe.svg');

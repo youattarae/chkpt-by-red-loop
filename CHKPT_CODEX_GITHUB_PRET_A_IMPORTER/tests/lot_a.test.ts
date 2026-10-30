@@ -84,8 +84,8 @@ try {
     for (const url of [safe.url, demo.url]) {
       for (const [username, oldPassword, token] of [
         ['redloop_admin', 'admin123', 'demo_session_admin_token_67890'],
-        ['koffi_urbex', 'koffi123', 'demo_session_koffi_token_12345'],
-        ['sarah_dlo', 'sarah123', 'demo_session_sarah_token_99999'],
+        ['yacoub_ouattara', 'koffi123', 'demo_session_koffi_token_12345'],
+        ['ingrid_ngoan', 'sarah123', 'demo_session_sarah_token_99999'],
       ]) {
         assert.equal((await request(url, '/api/auth/login', { username, password: oldPassword })).status, 401);
         assert.equal((await request(url, '/api/auth/me', undefined, token)).status, 200);
@@ -131,10 +131,10 @@ try {
     const route = '/api/profiles/usr_sarah';
     assert.equal((await request(demo.url, route)).status, 401);
     const profile = await (await request(demo.url, route, undefined, user.token)).json();
-    assert.equal(profile.profile.displayName, 'Sarah Diallo');
-    for (const forbidden of ['passwordHash', 'salt', 'age', 'role', 'checkins', 'checkin_proofs', 'points_ledger']) assert.ok(!(forbidden in profile.profile));
-    // Requested public aggregate; individual visits and ledger remain private.
-    assert.equal(typeof profile.profile.xpPoints,'number');
+    assert.equal(profile.profile.displayName, 'Ingrid N’Goan');
+    for (const forbidden of ['passwordHash', 'salt', 'age', 'role', 'checkins', 'checkin_proofs', 'points_ledger', 'xpPoints']) assert.ok(!(forbidden in profile.profile));
+    // Latest decision: only monthly XP are public via ranking; totals stay owner-only.
+    assert.ok(Array.isArray(profile.profile.badges));
     const follow = route + '/follow';
     const before = profile.profile.followersCount;
     for (let i = 0; i < 2; i++) {
@@ -204,7 +204,7 @@ try {
     assert.equal((await request(demo.url, route, { rating: 5, comment: 'Exemple' }, admin)).status,403);
   });
   await check('Badges serveur : 40 paliers, preuves événement/photo et absence de doublons', async () => {
-    const switched = await request(demo.url,'/api/auth/switch-demo',{username:'koffi_urbex'},admin);
+    const switched = await request(demo.url,'/api/auth/switch-demo',{username:'yacoub_ouattara'},admin);
     const actor = await switched.json();
     const state = await (await request(demo.url,'/api/badges',undefined,actor.token)).json();
     assert.equal(state.badges.length,40);assert.equal(new Set(state.badges.map((badge:any)=>badge.family)).size,8);
@@ -258,7 +258,7 @@ try {
   });
   await check('Opérateur autorisé : personas, refus de cible arbitraire et reset', async () => {
     assert.equal((await request(demo.url, '/api/auth/switch-demo', { username: 'lot_a_user' }, admin)).status, 404);
-    assert.equal((await request(demo.url, '/api/auth/switch-demo', { username: 'koffi_urbex' }, admin)).status, 200);
+    assert.equal((await request(demo.url, '/api/auth/switch-demo', { username: 'yacoub_ouattara' }, admin)).status, 200);
     assert.equal((await request(demo.url, '/api/demo/reset', {}, admin)).status, 200);
     assert.equal((await (await request(demo.url, '/api/auth/me', undefined, admin)).json()).authenticated, false);
   });
@@ -327,6 +327,10 @@ try {
       assert.equal(await readFile(file, 'utf8'), contents);
     }
   });
+  const {checkDemoProfiles}=await import('./demo_profiles_test');
+  await check('Quatre profils : vingt publications et migration sans perte ni doublon',()=>checkDemoProfiles(start,stop,password));
+  const {checkBuildExposure}=await import('./build_exposure_test');
+  await check('Version compilée : sources et cartes de débogage bloquées, jetons hors URL',()=>checkBuildExposure(start,stop,project,password));
   const {checkDiscovery}=await import('./discovery_test');
   await check('Recherche publique, relations protégées et classement mensuel réciproque',()=>checkDiscovery(start,stop,password));
   const {checkStories}=await import('./stories_test');
@@ -377,6 +381,8 @@ try {
     await check('Stories mobiles : ajout, profil, avatar, deux appareils et suppression',()=>checkStoryBrowsers(demo.url,password));
     const {checkNavigationSearch}=await import('./navigation_search_browser');
     await check('Accueil général, Sortir éditorial, relations et classement mensuel',()=>checkNavigationSearch(demo.url,password));
+    const {checkDemoProfileBrowsers}=await import('./demo_profiles_browser');
+    await check('Profils générés : cinq publications chacun, badges sans XP et publicité par cinq',()=>checkDemoProfileBrowsers(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

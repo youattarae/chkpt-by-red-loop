@@ -1,3 +1,5 @@
+import {DemoProfileDirectory} from './DemoProfileDirectory';
+import {DemoAdvertisement} from './DemoAdvertisement';
 import {GlobalSearch} from './GlobalSearch';
 import {StoryStrip} from '../stories/Stories';
 import { SafeImage } from '../common/SafeImage';
@@ -8,7 +10,7 @@ import { SafeImage } from '../common/SafeImage';
  * Features local category filter state and Chip-Based CategoryFilterBar (Maquis, Cafés, Culture, Bars)
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useStore } from '../../services/store';
 import { PlaceCategory } from '../../types';
 import { PLACE_CATEGORIES } from '../../data/categories';
@@ -25,7 +27,7 @@ interface FeedViewProps {
 
 export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const { 
-    currentUser,
+    currentUser, authSessionToken,
     followingIds,
     posts, 
     places, 
@@ -45,6 +47,9 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [publishing,setPublishing]=useState(false);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
+
+  // Drafts belong to the authenticated account, never to the next person on this device.
+  useEffect(()=>{setNewPostText('');setNewPostMedia([]);setIsCreatingPost(false);setPublishing(false);setMediaBusy(false);},[authSessionToken]);
 
   // Toggle category visibility
   const handleToggleCategory = (catId: PlaceCategory) => {
@@ -143,6 +148,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
       <h1 className="sr-only">Accueil</h1>
       <GlobalSearch onSelectPlace={onSelectPlace}/>
       <StoryStrip/>
+      <DemoProfileDirectory/>
       <div role="tablist" aria-label="Fil d’actualité" className="grid grid-cols-2 border-b border-line"
         onKeyDown={event => {
           if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
@@ -192,7 +198,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
               className="w-full bg-canvas border border-line rounded-2xl p-3 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
             />
 
-            <PostMediaUploader value={newPostMedia} onChange={setNewPostMedia} onBusy={setMediaBusy} />
+            <PostMediaUploader disabled={publishing} value={newPostMedia} onChange={setNewPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex items-center justify-between pt-1">
               <button
@@ -219,30 +225,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
         )}
       </div>
 
-      {/* Initial Non-clickable Ad Banner (Section 11 Contractual Compliance) */}
-      {activeAd && (
-        <section aria-label="Publicité fictive de banque" className="bg-surface border border-line rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between gap-2 text-[10px] text-muted px-3 py-2 font-medium">
-            <span className="uppercase tracking-wider">Publicité · Exemple fictif</span>
-            <span>Non cliquable</span>
-          </div>
-          <div className="relative aspect-[2/1] bg-[#07182f]">
-            <SafeImage
-              src={activeAd.imageUrl}
-              alt="Illustration fictive : une entrepreneuse dans un café d’Abidjan, tenant une carte bancaire imaginaire."
-              className="absolute inset-0 w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#07182f]/95 via-[#07182f]/65 to-transparent" />
-            <div className="relative h-full w-[70%] flex flex-col justify-center p-4 sm:p-6 text-white">
-              <p className="text-[10px] sm:text-xs font-semibold tracking-wide">{activeAd.advertiserName}</p>
-              <h4 className="mt-2 text-xl sm:text-3xl font-bold leading-tight">{activeAd.bannerTitle}</h4>
-            </div>
-          </div>
-          <p className="px-3 py-2 text-[10px] text-muted leading-relaxed">
-            {activeAd.bannerSubtitle} Visuel généré par IA. Aucun partenariat réel.
-          </p>
-        </section>
-      )}
+      <DemoAdvertisement/>
 
       {/* Posts List or Empty Filter State */}
       <div role="tabpanel" id="feed-posts" aria-labelledby={feedFilter === 'for_you' ? 'feed-for-you' : 'feed-friends'}>
@@ -267,7 +250,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
         </div>
       ) : (
         <div className="space-y-4">
-          {filteredPosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />)}
+          {filteredPosts.map((post,index)=><React.Fragment key={post.id}><PublicationCard post={post} onSelectPlace={onSelectPlace}/>{(index+1)%5===0&&<DemoAdvertisement number={(index+1)/5}/>}</React.Fragment>)}
         </div>
       )}
       </div>
