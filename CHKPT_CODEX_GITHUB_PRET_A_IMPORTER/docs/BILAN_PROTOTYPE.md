@@ -1,6 +1,8 @@
+Stories du 30 octobre : ajout par +, lecture accueil/profil/avatar, 24 h, suppression et permissions serveur. Voir [le guide pour essayer](STORIES_PROTOTYPE.md).
+
 La publication fictive du maquis dispose maintenant d’un album de quatre illustrations : terrasse, braisé, boissons et soirée. Les publications personnelles et les exemples à une image sont conservés.
 
-Mise à jour du 30 octobre : publications de quatre images ou vidéos maximum. Voir [les détails et la proposition de stories](PUBLICATIONS_MEDIAS_ET_STORIES.md). Stories non intégrées à ce stade.
+Mise à jour du 30 octobre : publications de quatre images ou vidéos maximum. Voir [les détails et la proposition de stories](PUBLICATIONS_MEDIAS_ET_STORIES.md). Stories ajoutées : voir [le guide](STORIES_PROTOTYPE.md).
 
 # CHKPT by RED LOOP — bilan du prototype
 

@@ -1,3 +1,4 @@
+import {StoryStrip} from '../stories/Stories';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -139,6 +140,7 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace }) => {
     <div className="max-w-xl mx-auto px-3 sm:px-4 pt-1 pb-24 space-y-3">
       
       <h1 className="sr-only">Accueil</h1>
+      <StoryStrip/>
       <div role="tablist" aria-label="Fil d’actualité" className="grid grid-cols-2 border-b border-line"
         onKeyDown={event => {
           if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;

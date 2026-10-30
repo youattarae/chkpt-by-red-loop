@@ -4,6 +4,7 @@
  * CHKPT by RED LOOP — Main Application Shell
  */
 
+import {StoriesProvider} from './components/stories/Stories';
 import { OtherProfile } from './components/profile/OtherProfile';
 import { BusinessPreview } from './components/demo/BusinessPreview';
 import { Welcome } from './components/demo/Welcome';
@@ -173,7 +174,7 @@ const AppContent: React.FC = () => {
 export default function App() {
   return (
     <StoreProvider>
-      <AppContent />
+      <StoriesProvider><AppContent /></StoriesProvider>
     </StoreProvider>
   );
 }

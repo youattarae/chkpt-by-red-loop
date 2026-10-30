@@ -1,3 +1,9 @@
+## Stories intégrées et vérification — 30 octobre 2026
+
+Demande explicite : stories et vérification complète. Accueil, profil et avatar des publications ; ajout + ; un média, texte facultatif, visibilité, durée serveur de 24 h, lecture plein écran et suppression propriétaire. Métadonnées persistantes ajoutées sans effacer les données existantes ; anciens backups compatibles. Médias dédiés, expiration de leur accès et nettoyage ; aucune récompense ni preuve de visite.
+
+Validation locale : lint/build réussis, suite complète 38/38 groupes ; après les derniers ajustements, 22/22 groupes serveur et recette stories ciblée réussis. Tests : mineurs, abonnés, propriétaire, expiration du lien, nettoyage, redémarrage, vidéo, deux appareils, accès depuis accueil/profil/publication et suppression. Capture `docs/captures/story-lecture-390.png`. Aucune fusion ni mise en ligne. Voir [le guide et les limites](docs/STORIES_PROTOTYPE.md).
+
 ## Album illustré de quatre images — 30 octobre 2026
 
 La publication fictive du maquis montre quatre vues en grille 2 × 2, dont trois nouvelles images générées (braisé, boissons, soirée). Mention IA/fictive commune à l’album. Mise à jour des seuls exemples intacts au chargement de la base, sans changer commentaires/réactions ni publications personnelles. Lint, build, 21/21 groupes serveur et recette ciblée Accueil sur 390/1280 px en clair/sombre réussis. Voir `docs/PUBLICATIONS_MEDIAS_ET_STORIES.md` et `docs/VISUELS_ET_DROITS.md`.
@@ -8,7 +14,7 @@ L’exécution [41049586164](https://github.com/youattarae/chkpt-by-red-loop/act
 
 # Publications multimédias — 30 octobre 2026
 
-Jusqu’à quatre images/vidéos par publication, contrôles serveur et lecture protégée ; anciennes publications conservées. Voir [fonctionnement, limites et proposition de stories](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md). Les stories ne sont pas encore intégrées.
+Jusqu’à quatre images/vidéos par publication, contrôles serveur et lecture protégée ; anciennes publications conservées. Voir [fonctionnement, limites et proposition de stories](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md). Historique : stories intégrées ensuite, voir `docs/STORIES_PROTOTYPE.md`.
 
 # Accueil, confirmation et illustrations — 27 octobre 2026
 

@@ -325,6 +325,8 @@ try {
       assert.equal(await readFile(file, 'utf8'), contents);
     }
   });
+  const {checkStories}=await import('./stories_test');
+  await check('Stories : expiration serveur, confidentialité, suppression et stockage',()=>checkStories(start,stop,password));
   const {checkSharedState}=await import('./shared_state_test');
   await check('Données partagées, médias persistants, confidentialité et sauvegarde chiffrée restaurable',()=>checkSharedState(start,stop,password));
   if (process.argv.includes('--browser')) {
@@ -367,6 +369,8 @@ try {
     await check('Deux navigateurs : publications, favoris, visites et photo privée, reprise sans doublon',()=>checkSharedBrowsers(demo.url,password));
     const {checkPostMedia}=await import('./post_media_browser');
     await check('Publication : quatre photos/vidéos, import, lecture et rechargement mobile',()=>checkPostMedia(demo.url,password));
+    const {checkStoryBrowsers}=await import('./stories_browser');
+    await check('Stories mobiles : ajout, profil, avatar, deux appareils et suppression',()=>checkStoryBrowsers(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

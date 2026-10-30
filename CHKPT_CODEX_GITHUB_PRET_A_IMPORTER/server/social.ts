@@ -39,7 +39,7 @@ export function installSocialRoutes(app:Express){
     for(const item of requested){
       if(item.url.startsWith('/api/media/')){
         const asset=media.find(asset=>'/api/media/'+asset.assetId===item.url&&asset.ownerId===user.id);
-        if(!asset){res.status(403).json({error:'media_owner_required'});return;}
+        if(!asset||asset.storyId){res.status(403).json({error:'media_owner_required'});return;}
         if(asset.audience!=='public'&&asset.audience!==audience){res.status(400).json({error:'media_audience_mismatch'});return;}
         media=media.map(entry=>entry.assetId===asset.assetId?{...entry,audience}:entry);
         attachments.push({url:item.url,type:asset.mimeType.startsWith('video/')?'video':'image'});

@@ -1,3 +1,4 @@
+import {StoryAvatar} from '../stories/Stories';
 import { useEffect, useRef, useState } from 'react';
 import { ArrowLeft, Lock } from 'lucide-react';
 import { useStore } from '../../services/store';
@@ -23,7 +24,7 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
     return () => { active.current = false; controller.abort(); };
   }, [id, authSessionToken]);
   useEffect(() => {
-    const close = (event: KeyboardEvent) => { if (event.key === 'Escape' && !document.querySelector('.place-detail')) onClose(); };
+    const close = (event: KeyboardEvent) => { if (event.key === 'Escape' && !document.querySelector('.place-detail, dialog[open]')) onClose(); };
     window.addEventListener('keydown', close);
     return () => window.removeEventListener('keydown', close);
   }, [onClose]);
@@ -47,7 +48,7 @@ export function OtherProfile({ id, onClose, onSelectPlace }: { id: string; onClo
       {error && <p role="alert" className="text-sm text-rose-400">{error}</p>}
       {!profile && !error && <p role="status">Chargement du profil…</p>}
       {profile && <>
-        <div className="flex gap-4 items-center"><SafeImage src={profile.avatarUrl} alt="" className="w-20 h-20 rounded-full object-cover" /><div className="min-w-0"><h1 className="text-xl font-extrabold break-words">{profile.displayName}</h1><p className="text-xs text-muted">@{profile.username}</p></div></div>
+        <div className="flex gap-4 items-center"><StoryAvatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} className="w-20 h-20"/><div className="min-w-0"><h1 className="text-xl font-extrabold break-words">{profile.displayName}</h1><p className="text-xs text-muted">@{profile.username}</p></div></div>
         {profile.visibility === 'private' ? <p className="flex items-center gap-2 bg-soft rounded-2xl p-4 text-sm"><Lock className="w-5 h-5 shrink-0" />Profil privé. Ses publications ne sont pas accessibles dans cette démo.</p> : <>
           <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · {profile.followersCount} abonnés · {profile.followingCount} abonnements · compteurs de démonstration</p>
           <button type="button" disabled={pending} aria-pressed={following} onClick={toggleFollow} className="w-full p-3 rounded-xl bg-blue-600 text-white font-bold text-sm disabled:opacity-50 cursor-pointer">{pending ? 'En cours…' : following ? 'Ne plus suivre' : 'Suivre'}</button>

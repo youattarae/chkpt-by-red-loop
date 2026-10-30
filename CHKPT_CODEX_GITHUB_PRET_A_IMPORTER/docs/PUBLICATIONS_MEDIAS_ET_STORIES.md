@@ -22,22 +22,13 @@ La publication fictive de Koffi « Une belle découverte à Cocody » montre qua
 
 Au démarrage, les anciennes publications de démonstration intactes reçoivent cet album ; leurs réactions et commentaires sont conservés. Aucun album n’est ajouté aux publications personnelles. Il n’est pas nécessaire de réinitialiser la démo pour voir cet exemple.
 
-## Stories : proposition, pas encore intégrée
+## Stories intégrées
 
-Oui, ce mécanisme peut être ajouté sans refaire l’application. Proposition pour le prototype :
-
-- Une rangée de stories au-dessus du fil Accueil.
-- Une photo ou une vidéo par story, avec texte facultatif.
-- Consultation plein écran, fermeture et passage à la suivante.
-- Visibilité pendant 24 heures, expiration contrôlée par le serveur, y compris pour l’accès au média.
-- Respect du profil privé et des mineurs ; aucune exposition de l’historique des lieux.
-- Suppression possible par l’auteur avant expiration.
-
-Pas de messagerie, de live ni de compteur d’audience inventé. Le stockage et le nettoyage des médias expirés devront être traités avant activation, surtout avec le budget gratuit. Cette proposition remplace l’ancienne exclusion des stories uniquement si leur intégration est retenue ; aucune fonction story n’est livrée dans ce changement.
+Les stories convenues sont maintenant disponibles depuis l’accueil, la photo de profil et l’avatar des publications, avec ajout par + et expiration serveur après 24 h. Voir [le guide des stories](STORIES_PROTOTYPE.md).
 
 ## Résultats
 
-Lint et build réussis. Suite serveur : 21/21 groupes ; suite complète avec navigateur : 36/36 groupes, incluant les groupes serveur. Test de lecture effectué sur Chromium mobile simulé ; Safari et Windows restent à essayer sur les appareils de présentation.
+Lint et build réussis. Suite serveur : 22/22 groupes ; suite complète avec navigateur : 38/38 groupes, incluant les groupes serveur. Test de lecture effectué sur Chromium mobile simulé ; Safari et Windows restent à essayer sur les appareils de présentation.
 
 ## Vérification reproductible
 

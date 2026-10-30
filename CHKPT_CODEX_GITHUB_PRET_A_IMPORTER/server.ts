@@ -15,6 +15,7 @@
  */
 
 import { installBackupRoutes } from './server/backup';
+import { installStoryRoutes, pruneStories } from './server/stories';
 import { installSocialRoutes } from './server/social';
 import { evaluateBadges, awardPublishedPhoto } from './server/badgeEngine';
 import { getEventCatalog } from './server/events';
@@ -80,6 +81,7 @@ const mediaRegistry = {
   clear: () => db.updateSharedData({media:[]}),
 };
 installSocialRoutes(app);
+installStoryRoutes(app);
 installBackupRoutes(app);
 
 // Allowed media types & limits
@@ -444,6 +446,7 @@ app.post(['/api/demo/reset', '/api/demo/start'], requirePrivateDemo, requireOper
  */
 app.post('/api/media/upload', requireAuth, (req: Request, res: Response) => {
   try {
+    pruneStories();
     const { dataBase64, mimeType, sizeBytes, audience } = req.body;
 
     if (!dataBase64 || typeof dataBase64 !== 'string') {
@@ -536,6 +539,8 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
     return;
   }
 
+  if(asset.storyId&&!req.user){res.status(401).json({error:'auth_required'});return;}
+  if(asset.storyId&&!db.getRawData().stories.some(story=>story.id===asset.storyId&&Date.parse(story.expiresAt)>Date.now())){res.status(404).json({error:'story_expired'});return;}
   const owner=db.findUserById(asset.ownerId);
   if(!owner||((owner.visibility==='private'||owner.age<18)&&requesterId!==owner.id)){res.status(403).json({error:'private_resource'});return;}
   // Scenario A: Audience is "private" (Moi uniquement)

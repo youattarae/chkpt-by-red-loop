@@ -1,3 +1,4 @@
+import {StoryAvatar} from '../stories/Stories';
 import { RewardDemo } from '../demo/RewardDemo';
 import { VisitedPlaces } from './VisitedPlaces';
 import React, { useId, useState } from 'react';
@@ -33,7 +34,7 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ onOpenBadges, onSelect
   return <div className="profile-social max-w-2xl mx-auto pb-24">
     <section aria-label="Mon profil" className="bg-canvas p-4 sm:p-6 space-y-5">
       <div className="flex items-start gap-4">
-        <div className="profile-avatar-ring shrink-0"><SafeImage src={currentUser.avatarUrl} alt={currentUser.displayName} className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover" /></div>
+        <StoryAvatar id={currentUser.id} name={currentUser.displayName} src={currentUser.avatarUrl} own className="w-20 h-20 sm:w-24 sm:h-24"/>
         <div className="min-w-0 flex-1 pt-1">
           <div className="flex items-start justify-between gap-2">
             <h1 className="text-lg sm:text-xl font-extrabold text-ink leading-tight break-words">{currentUser.displayName}</h1>

@@ -28,7 +28,7 @@ Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINA
 
 La [synchronisation entre appareils et la sauvegarde chiffrée](docs/SYNCHRONISATION_ET_SAUVEGARDE.md) permettent de retrouver les publications, photos, favoris et visites avec le même compte. Le budget reste gratuit ; la persistance du disque de l’hébergeur n’est pas garantie.
 
-Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) acceptent jusqu’à quatre photos ou vidéos mélangées. Les stories sont décrites comme proposition, pas encore intégrées.
+Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) acceptent jusqu’à quatre photos ou vidéos mélangées. Les [stories](docs/STORIES_PROTOTYPE.md) sont accessibles depuis l’accueil et les avatars, avec une durée de 24 h.
 
 ## Voir la démonstration sans lire le code
 
