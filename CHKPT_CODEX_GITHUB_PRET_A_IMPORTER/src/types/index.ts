@@ -103,7 +103,10 @@ export interface PostComment {
   createdAt: string;
 }
 
+export interface PostMedia { url: string; type: 'image' | 'video'; }
+
 export interface Post {
+  media?: PostMedia[];
   isSimulated?: boolean;
   id: string;
   authorId: string;
@@ -126,6 +129,8 @@ export interface Post {
 }
 
 export interface EventItem {
+  placeId?: string;
+  endsAt?: string;
   id: string;
   title: string;
   dateLabel: string;
@@ -157,7 +162,7 @@ export interface Badge {
   id: string;
   name: string;
   family: BadgeFamily;
-  tier: 'bronze' | 'silver' | 'gold' | 'diamond';
+  tier: 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
   description: string;
   iconName: string;
   requiredCount: number;

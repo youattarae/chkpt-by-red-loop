@@ -1,3 +1,4 @@
+import { openAccount } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 
@@ -24,15 +25,15 @@ export async function checkDeepReview(url: string, password: string) {
       await route.fulfill({response}).catch(() => {}); // The old request should be aborted.
     });
     await page.goto(url);
-    await page.getByTitle('Profil & Compte Démo').click();
+    await openAccount(page);
     await page.getByRole('button',{name:'Profils Démo (opérateur)',exact:true}).click();
-    const sarah = page.getByRole('button').filter({hasText:'Sarah Diallo'}).last();
+    const sarah = page.getByRole('button').filter({hasText:'Ingrid N’Goan'}).last();
     await page.evaluate(() => document.fonts.ready);
     await sarah.scrollIntoViewIfNeeded();
     const box = await sarah.boundingBox();
     assert.ok(box && box.y >= 0 && box.y+box.height <= 568, `Le bouton doit être accessible avant sélection : ${JSON.stringify(box)}`);
     await sarah.click();
-    await page.waitForFunction(() => JSON.parse(localStorage.getItem('chkpt_abidjan_v1_user')!).username === 'sarah_dlo');
+    await page.waitForFunction(() => JSON.parse(localStorage.getItem('chkpt_abidjan_v1_user')!).username === 'ingrid_ngoan');
     release();
     await page.waitForTimeout(150);
     assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem('chkpt_abidjan_v1_user')!).role),'user');
@@ -59,14 +60,14 @@ export async function checkDeepReview(url: string, password: string) {
     });
     await gps.goto(url);
     await ready;
-    await gps.getByRole('button',{name:'Amis & Abonnés',exact:true}).click();
-    await gps.waitForFunction(() => !document.body.innerText.includes('@amara_sound'));
-    assert.equal(await gps.getByText('@sarah_dlo',{exact:true}).count(),0);
-    await gps.getByRole('button',{name:/Pour toi/}).click();
-    await gps.getByText('@amara_sound',{exact:true}).waitFor();
+    await gps.getByRole('tab',{name:'Amis',exact:true}).click();
+    await gps.waitForFunction(() => !document.body.innerText.includes('@georges_armand'));
+    assert.equal(await gps.getByText('@ingrid_ngoan',{exact:true}).count(),0);
+    await gps.getByRole('tab',{name:'Pour toi',exact:true}).click();
+    await gps.getByText('@georges_armand',{exact:true}).first().waitFor();
     await gps.getByRole('button',{name:'Valider ma présence physique',exact:true}).click();
     await gps.getByRole('dialog',{name:'Check-in',exact:true}).getByRole('button',{name:/Maquis L'Étoile/}).click();
-    await gps.getByRole('button',{name:'Simuler ma visite',exact:true}).click();
+    await gps.getByRole('button',{name:'Confirmer le check',exact:true}).click();
     await gps.getByRole('heading',{name:'Visite simulée enregistrée !'}).waitFor();
     releaseProfile();
     await gps.waitForTimeout(250);
@@ -74,12 +75,13 @@ export async function checkDeepReview(url: string, password: string) {
     await gps.getByRole('button',{name:'Profil',exact:true}).click();
     await gps.getByText(/1315 XP au total/).waitFor({timeout:3000});
     await gps.evaluate(() => { navigator.geolocation.getCurrentPosition = () => {}; });
-    await gps.getByTitle('Simulateur de position GPS pour la démo').click();
-    await gps.getByRole('button',{name:'GPS Réel',exact:true}).click();
+    await gps.getByRole('button', { name: 'GPS', exact: true }).click();
+    await gps.getByRole('region', { name: 'Réglages GPS', exact: true }).getByRole('button',{name:'GPS Réel',exact:true}).click();
     let submissions=0;
     gps.on('request',req=>{if(req.url().endsWith('/api/checkins') && req.method()==='POST') submissions++;});
     await gps.getByRole('button',{name:'Valider ma présence physique',exact:true}).click();
-    await gps.getByRole('button',{name:'Confirmer ma présence physique',exact:true}).click();
+    await gps.getByRole('dialog',{name:'Check-in',exact:true}).getByRole('button',{name:/Maquis L'Étoile/}).click();
+    await gps.getByRole('button',{name:'Confirmer le check',exact:true}).click();
     await gps.getByText(/Position GPS en cours de recherche/).waitFor();
     assert.equal(submissions,0,'Aucune coordonnée simulée ne doit être envoyée comme un GPS réel en attente');
     await gpsContext.close();

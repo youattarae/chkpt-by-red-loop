@@ -15,7 +15,7 @@ export async function checkDevStability() {
   let server: ReturnType<typeof spawn> | undefined;
   let browser: Awaited<ReturnType<typeof chromium.launch>> | undefined;
   try {
-    for (const file of ['src', 'server', 'server.ts', 'public', 'index.html', 'vite.config.ts', 'tsconfig.json', 'package.json', 'package-lock.json']) {
+    for (const file of ['src', 'shared', 'server', 'server.ts', 'public', 'index.html', 'vite.config.ts', 'tsconfig.json', 'package.json', 'package-lock.json']) {
       await cp(path.join(project, file), path.join(runtime, file), { recursive: true });
     }
     await symlink(path.join(project, 'node_modules'), path.join(runtime, 'node_modules'));
@@ -26,7 +26,7 @@ export async function checkDevStability() {
       `server: { fs: { allow: [${JSON.stringify(runtime)}, ${JSON.stringify(path.join(project, 'node_modules'))}] },`));
     const password = randomBytes(24).toString('hex');
     server = spawn(process.execPath, ['--import', path.join(project, 'node_modules/tsx/dist/loader.mjs'), path.join(runtime, 'server.ts')], {
-      cwd: runtime, env: { ...process.env, NODE_ENV: 'development', DISABLE_HMR: 'false', PORT: '0', HOST: '127.0.0.1',
+      cwd: runtime, env: { ...process.env, CHKPT_DATA_DIR:path.join(runtime,'.data'), CHKPT_REMOTE_ACCESS:'false', NODE_ENV: 'development', DISABLE_HMR: 'false', PORT: '0', HOST: '127.0.0.1',
         CHKPT_PRIVATE_DEMO: 'true', CHKPT_DEMO_ADMIN_PASSWORD: password }, stdio: ['ignore', 'pipe', 'pipe'],
     });
     let logs = '';
@@ -70,7 +70,7 @@ export async function checkDevStability() {
     await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
     const beforeNavigations = navigations;
     const beforeHot = hotMessages.length;
-    await dialog.getByRole('button', { name: 'Simuler ma visite', exact: true }).click();
+    await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).click();
     await dialog.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();
     await dialog.getByText(/Nouveau Badge débloqué : Initié du Braisé/).waitFor();
     // The watcher reacts asynchronously; verify the confirmation stays readable.

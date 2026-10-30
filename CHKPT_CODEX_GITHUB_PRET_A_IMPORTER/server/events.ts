@@ -1,0 +1,10 @@
+import { privateDemoEnabled } from './demoConfig';
+const date=(days:number,hour:number)=>{const d=new Date();d.setUTCDate(d.getUTCDate()+days);d.setUTCHours(hour,0,0,0);return d.toISOString();};
+const UPCOMING_EVENTS=[
+  {id:'evt_01',placeId:'plc_cocody_lounge',title:'Nuit Urbaine Abidjan & Live Beats',utcDate:date(1,19),endsAt:date(2,2),locationName:'Lagon Bleu Rooftop Lounge',commune:'Cocody',description:'Session DJ set de démonstration.',coverImage:'/illustrations/night.svg',timeLabel:'19h00 - 02h00',dateLabel:'Demain',priceLabel:'Entrée libre (Conso requise)',organizerName:'Collectif fictif Babi Groove',category:'Musique & Nuit',interestedCount:88,goingCount:34},
+  {id:'evt_02',placeId:'plc_galerie_ceci',title:'Vernissage & Céramique Contemporaine',utcDate:date(4,18),endsAt:date(4,22),locationName:'Centre d’Art Urbain Babi',commune:'Cocody',description:'Vernissage fictif de démonstration.',coverImage:'/illustrations/art.svg',timeLabel:'18h00 - 22h00',dateLabel:'Dans 4 jours',priceLabel:'Accès gratuit sur inscription',organizerName:'Fondation fictive Babi Arts',category:'Culture & Art',interestedCount:54,goingCount:19},
+];
+export function getEventCatalog(){return [...UPCOMING_EVENTS,
+  ...(privateDemoEnabled?[{id:`evt_demo_${new Date().toISOString().slice(0,10)}`,placeId:'plc_maquis_etoile',title:'Session de présentation CHKPT · fictive',utcDate:date(0,0),endsAt:date(1,0),locationName:'Maquis L’Étoile d’Abidjan',commune:'Cocody',description:'Événement fictif actif pour essayer la présence validée. « J’y serai » seul ne compte pas pour un badge.',coverImage:'/illustrations/maquis-demo.png',timeLabel:'Session de démo du jour',dateLabel:'Aujourd’hui',priceLabel:'Démonstration sans réservation',organizerName:'Équipe de démonstration CHKPT',category:'Présentation',interestedCount:0,goingCount:0}]:[]),
+];}
+export function eligibleEvent(id:string,placeId:string){const event=getEventCatalog().find(event=>event.id===id&&event.placeId===placeId);return event&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt)>=Date.now()?event:null;}

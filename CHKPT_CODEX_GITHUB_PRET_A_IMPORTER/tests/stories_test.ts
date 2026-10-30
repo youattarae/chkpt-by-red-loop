@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+export async function checkStories(start:any,stop:any,password:string){
+  let server=await start('stories',true);
+  const call=(path:string,body?:unknown,token?:string,method=body===undefined?'GET':'POST')=>fetch(server.url+path,{method,headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const register=async(username:string,age=25)=>(await (await call('/api/auth/register',{username,password,age})).json());
+  const owner=await register('story_owner'),other=await register('story_other'),minor=await register('story_minor',16);
+  const png='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+  async function upload(token:string){const response=await call('/api/media/upload',{mimeType:'image/png',dataBase64:png,audience:'private'},token);assert.equal(response.status,201);return (await response.json()).readUrl;}
+  const url=await upload(owner.token);
+  const draft={mediaUrl:url,text:'Un souvenir pour 24 heures.',audience:'public',clientRequestId:'story-public-test'};
+  assert.equal((await call('/api/stories',draft)).status,401);
+  assert.equal((await call('/api/stories',draft,other.token)).status,403);
+  const created=await call('/api/stories',draft,owner.token);assert.equal(created.status,201);const story=(await created.json()).story;
+  assert.equal(Date.parse(story.expiresAt)-Date.parse(story.createdAt),86400000);
+  assert.equal((await call('/api/stories',draft,owner.token)).status,200);
+  assert.equal((await call('/api/stories')).status,401);
+  assert.equal((await call(url)).status,401);
+  assert.equal((await call(url,undefined,other.token)).status,200);
+  assert.equal((await call('/api/stories/'+story.id,undefined,other.token,'DELETE')).status,404);
+  assert.equal((await call('/api/posts',{text:'Ne pas réutiliser.',mediaUrl:url,clientRequestId:'story-post-reuse'},owner.token)).status,403);
+  assert.equal((await call('/api/stories',{...draft,clientRequestId:'story-duplicate-media'},owner.token)).status,403);
+  const privateUrl=await upload(owner.token);const privateStory=(await (await call('/api/stories',{...draft,mediaUrl:privateUrl,audience:'private',clientRequestId:'story-private-test'},owner.token)).json()).story;
+  assert.equal((await call(privateUrl,undefined,other.token)).status,403);
+  const followsUrl=await upload(owner.token);const followers=(await (await call('/api/stories',{...draft,mediaUrl:followsUrl,audience:'followers',clientRequestId:'story-follow-test'},owner.token)).json()).story;
+  assert.equal((await call(followsUrl,undefined,other.token)).status,403);
+  await call('/api/profiles/'+owner.user.id+'/follow',{following:true},other.token);
+  assert.equal((await call(followsUrl,undefined,other.token)).status,200);
+  const minorUrl=await upload(minor.token);const minorStory=(await (await call('/api/stories',{...draft,mediaUrl:minorUrl,clientRequestId:'story-minor-test'},minor.token)).json()).story;
+  assert.equal(minorStory.audience,'private');assert.equal((await call(minorUrl,undefined,other.token)).status,403);
+  const videoBytes=await readFile(new URL('./fixtures/blue-demo.mp4',import.meta.url));
+  const videoUpload=await (await call('/api/media/upload',{mimeType:'video/mp4',dataBase64:'data:video/mp4;base64,'+videoBytes.toString('base64'),audience:'private'},owner.token)).json();
+  const videoStory=await (await call('/api/stories',{...draft,mediaUrl:videoUpload.readUrl,audience:'private',clientRequestId:'video-story-test'},owner.token)).json();assert.equal(videoStory.story.mediaType,'video');
+  assert.deepEqual(Buffer.from(await (await call(videoUpload.readUrl,undefined,owner.token)).arrayBuffer()),videoBytes);
+  const visible=(await (await call('/api/stories',undefined,other.token)).json()).stories;
+  assert.ok(visible.some((item:any)=>item.id===story.id));assert.ok(visible.some((item:any)=>item.id===followers.id));assert.ok(!visible.some((item:any)=>item.id===privateStory.id||item.id===minorStory.id));
+  await stop(server.child);
+  const dbPath=server.cwd+'/.data/chkpt_db.json';const snapshot=JSON.parse(await readFile(dbPath,'utf8'));snapshot.stories.find((item:any)=>item.id===story.id).expiresAt=new Date(Date.now()-1000).toISOString();await writeFile(dbPath,JSON.stringify(snapshot));
+  server=await start('stories',true);
+  assert.equal((await call(url,undefined,owner.token)).status,404,'Même le lien direct expire');
+  const after=(await (await call('/api/stories',undefined,owner.token)).json()).stories;assert.ok(!after.some((item:any)=>item.id===story.id));assert.ok(after.some((item:any)=>item.id===privateStory.id),'Les autres stories survivent au redémarrage');
+  const stored=JSON.parse(await readFile(dbPath,'utf8'));assert.ok(!stored.media.some((asset:any)=>asset.storyId===story.id),'Nettoyage du stockage');
+  assert.equal((await call('/api/stories/'+privateStory.id,undefined,owner.token,'DELETE')).status,200);assert.equal((await call(privateUrl,undefined,owner.token)).status,404);
+  const account=await (await call('/api/account/state',undefined,owner.token)).json();assert.equal(account.user.xpPoints,0);assert.equal(account.checkins.length,0);
+  await stop(server.child);
+}

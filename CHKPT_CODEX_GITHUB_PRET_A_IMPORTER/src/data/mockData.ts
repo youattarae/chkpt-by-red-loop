@@ -1,9 +1,11 @@
+import {DEMO_PROFILES} from './demoProfiles';
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
  * Canonical Reference Data for Abidjan (Cocody priority)
  */
 
+import { demoBadges } from '../../shared/badgeCatalog';
 import { 
   Place, 
   UserProfile, 
@@ -17,9 +19,9 @@ import {
 
 export const CURRENT_USER: UserProfile = {
   id: 'usr_01',
-  username: 'koffi_urbex',
-  displayName: 'Koffi Kouamé',
-  avatarUrl: '/illustrations/koffi.svg',
+  username: 'yacoub_ouattara',
+  displayName: 'Yacoub Ouattara',
+  avatarUrl: '/illustrations/profil-koffi.webp',
   bio: "Explorateur urbain d'Abidjan · Foodie & rooftops chill · Spécialiste Cocody",
   homeZone: 'Cocody, Abidjan',
   level: 4,
@@ -197,13 +199,14 @@ export const INITIAL_PLACES: Place[] = [
   }
 ];
 
-export const INITIAL_POSTS: Post[] = [
+const ORIGINAL_POSTS: Post[] = [
   {
-    id: 'pst_maquis_demo', authorId: 'usr_01', authorName: 'Koffi Kouamé',
-    authorUsername: 'koffi_urbex', authorAvatar: '/illustrations/koffi.svg',
+    id: 'pst_maquis_demo', authorId: 'usr_01', authorName: 'Yacoub Ouattara',
+    authorUsername: 'yacoub_ouattara', authorAvatar: '/illustrations/profil-koffi.webp',
     createdAt: 'Publication de démonstration',
     text: 'Une belle découverte à Cocody : une terrasse, du braisé et une soirée entre amis.',
     mediaUrl: '/illustrations/maquis-demo.png', mediaType: 'image',
+    media: ['maquis-demo.png','maquis-braise-demo.png','maquis-boissons-demo.png','maquis-soiree-demo.png'].map(file=>({url:'/illustrations/'+file,type:'image' as const})),
     linkedPlaceId: 'plc_maquis_etoile', linkedPlaceName: "Maquis L’Étoile d’Abidjan",
     isVerifiedVisit: false, audience: 'public', likesCount: 0, isLikedByCurrentUser: false,
     commentsCount: 0, comments: [],
@@ -211,12 +214,12 @@ export const INITIAL_POSTS: Post[] = [
   {
     id: 'pst_01',
     authorId: 'usr_sarah',
-    authorName: 'Sarah Diallo',
-    authorUsername: 'sarah_dlo',
-    authorAvatar: '/illustrations/sarah.svg',
+    authorName: 'Ingrid N’Goan',
+    authorUsername: 'ingrid_ngoan',
+    authorAvatar: '/illustrations/profil-sarah.webp',
     createdAt: 'Il y a 32 min',
     text: 'Coucher de soleil magique sur la lagune Ébrié depuis le Lagon Bleu ! Les brochettes d\'escargots braisés et le cocktail kinkeliba sont tout simplement parfaits.',
-    mediaUrl: '/illustrations/rooftop.svg',
+    mediaUrl: '/illustrations/rooftop-demo.png',
     mediaType: 'image',
     linkedPlaceId: 'plc_cocody_lounge',
     linkedPlaceName: 'Lagon Bleu Rooftop Lounge',
@@ -229,8 +232,8 @@ export const INITIAL_POSTS: Post[] = [
       {
         id: 'cmt_1',
         authorId: 'usr_01',
-        authorName: 'Koffi Kouamé',
-        authorAvatar: '/illustrations/koffi.svg',
+        authorName: 'Yacoub Ouattara',
+        authorAvatar: '/illustrations/profil-koffi.webp',
         text: 'La vue au crépuscule reste imbattable à Cocody Danga !',
         createdAt: 'Il y a 15 min'
       }
@@ -239,12 +242,12 @@ export const INITIAL_POSTS: Post[] = [
   {
     id: 'pst_02',
     authorId: 'usr_02',
-    authorName: 'Amara Koné',
-    authorUsername: 'amara_sound',
+    authorName: 'Georges Armand',
+    authorUsername: 'georges_armand',
     authorAvatar: '/illustrations/admin.svg',
     createdAt: 'Il y a 2h',
     text: 'Ambiance live acoustique ce soir aux Deux-Plateaux Vallons. Des toiles magnifiques et un accueil chaleureux.',
-    mediaUrl: '/illustrations/art.svg',
+    mediaUrl: '/illustrations/culture-demo.png',
     mediaType: 'image',
     linkedPlaceId: 'plc_galerie_ceci',
     linkedPlaceName: "Centre d'Art Urbain & Céramique Babi",
@@ -256,6 +259,20 @@ export const INITIAL_POSTS: Post[] = [
     comments: []
   }
 ];
+
+const captions=[
+ ["Une belle découverte à Cocody : une terrasse, du braisé et une soirée entre amis.","Le braisé du soir et l’attiéké : une association qui fait toujours plaisir. Sortie fictive au maquis.","Bissap ou gingembre ? Aujourd’hui je prends le temps de profiter de la terrasse.","Les lumières s’allument, la soirée commence tranquillement à Cocody. Une ambiance à partager.","Mon carnet du week-end : une table dehors, quelques amis et de nouvelles découvertes. Démonstration CHKPT."],
+ ["Coucher de soleil magique sur la lagune Ébrié depuis le Lagon Bleu ! Les brochettes d'escargots braisés et le cocktail kinkeliba sont tout simplement parfaits.","Une pause en terrasse, des boissons fraîches et une vue qui donne envie de rester. Lieu fictif de démonstration.","Une belle assiette et une conversation qui dure : ma définition d’une bonne sortie entre amis.","La lumière de fin de journée change toute l’ambiance. Petite parenthèse au bord de la lagune, en illustration.","Cinq adresses à explorer un jour, mais ce soir je garde simplement ce coucher de soleil. Scénario fictif."],
+ ["Ambiance live acoustique ce soir aux Deux-Plateaux Vallons. Des toiles magnifiques et un accueil chaleureux.","Couleurs, céramiques et conversations : un après-midi culturel dans cette cour fictive d’Abidjan.","Prendre le temps de regarder une œuvre, puis d’échanger autour d’un verre. Une idée de sortie simple.","Quand la musique rencontre les arts visuels, la soirée prend une autre dimension. Illustration de démonstration.","Mon prochain détour ? Un lieu culturel, une petite exposition et une découverte à raconter. Profil de prototype."],
+ ["Un rooftop, la lagune et le soleil qui descend : tout ce qu’il faut pour une soirée fictive réussie.","Les terrasses d’Abidjan ont quelque chose de spécial au coucher du soleil. Visuel généré pour la démo.","Le programme du week-end : retrouver les amis et découvrir une nouvelle ambiance. Sans se presser.","Un verre de bissap bien frais pour commencer la soirée. La meilleure place, c’est celle qu’on partage.","Dernières lumières sur la terrasse avant de rentrer. Une sortie imaginée pour montrer CHKPT."],
+];
+const mediaFiles=[['maquis-demo.png','maquis-braise-demo.png','maquis-boissons-demo.png','maquis-soiree-demo.png','maquis-demo.png'],['rooftop-demo.png','maquis-boissons-demo.png','maquis-braise-demo.png','rooftop-demo.png','rooftop-demo.png'],['culture-demo.png','culture-demo.png','maquis-boissons-demo.png','culture-demo.png','culture-demo.png'],['rooftop-demo.png','rooftop-demo.png','maquis-soiree-demo.png','maquis-boissons-demo.png','rooftop-demo.png']];
+export const INITIAL_POSTS:Post[]=Array.from({length:5},(_,round)=>DEMO_PROFILES.map((profile,index)=>{
+ const original=round===0?ORIGINAL_POSTS.find(post=>post.authorId===profile.id):undefined;
+ if(original)return {...original,authorAvatar:profile.avatarUrl};
+ const cultural=index===2;const maquis=index===0;
+ return {id:`pst_demo_${profile.id}_${round}`,authorId:profile.id,authorName:profile.displayName,authorUsername:profile.username,authorAvatar:profile.avatarUrl,createdAt:`Publication de démonstration · ${round+1}/5`,text:captions[index][round],mediaUrl:'/illustrations/'+mediaFiles[index][round],mediaType:'image' as const,linkedPlaceId:cultural?'plc_galerie_ceci':maquis?'plc_maquis_etoile':'plc_cocody_lounge',linkedPlaceName:cultural?"Centre d'Art Urbain & Céramique Babi":maquis?"Maquis L’Étoile d’Abidjan":'Lagon Bleu Rooftop Lounge',isVerifiedVisit:false,audience:'public' as const,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[]};
+})).flat();
 
 const upcomingDate = (days: number, hour: number) => {
   const date = new Date();
@@ -302,114 +319,15 @@ export const INITIAL_EVENTS: EventItem[] = [
 ];
 
 // The 8 Canonical Badge Families of CHKPT
-export const INITIAL_BADGES: Badge[] = [
-  {
-    id: 'bdg_maquis_bronze',
-    name: 'Initié du Braisé',
-    family: 'Maquis Master',
-    tier: 'bronze',
-    description: 'Validez votre présence dans 5 maquis certifiés d\'Abidjan.',
-    iconName: 'Flame',
-    requiredCount: 5,
-    currentCount: 4, // Set to 4 so checking into Maquis L'Etoile triggers unlock 5/5!
-    isUnlocked: false,
-    xpReward: 100
-  },
-  {
-    id: 'bdg_explorateur_bronze',
-    name: 'Flâneur de Cocody',
-    family: 'Explorateur',
-    tier: 'bronze',
-    description: 'Validez votre présence dans au moins 10 lieux différents à Cocody.',
-    iconName: 'Compass',
-    requiredCount: 10,
-    currentCount: 8,
-    isUnlocked: false,
-    xpReward: 150
-  },
-  {
-    id: 'bdg_foodie_bronze',
-    name: 'Gourmet de Babi',
-    family: 'Foodie',
-    tier: 'bronze',
-    description: 'Check-in dans 5 restaurants et cafés réputés.',
-    iconName: 'Utensils',
-    requiredCount: 5,
-    currentCount: 5,
-    isUnlocked: true,
-    unlockedAt: '2026-10-12T14:20:00Z',
-    xpReward: 100
-  },
-  {
-    id: 'bdg_culture_bronze',
-    name: 'Amateur d\'Art Babi',
-    family: 'Culture Hunter',
-    tier: 'bronze',
-    description: 'Visitez 3 galeries d\'art ou musées à Abidjan.',
-    iconName: 'Palette',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 80
-  },
-  {
-    id: 'bdg_event_bronze',
-    name: 'Noctambule Festif',
-    family: 'Event Hunter',
-    tier: 'bronze',
-    description: 'Confirmez votre présence lors de 3 événements culturels.',
-    iconName: 'CalendarCheck',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 120
-  },
-  {
-    id: 'bdg_pionnier_bronze',
-    name: 'Éclaireur Urbain',
-    family: 'Pionnier',
-    tier: 'bronze',
-    description: 'Soyez parmi les 5 premiers explorateurs à valider un nouveau lieu.',
-    iconName: 'Sparkles',
-    requiredCount: 1,
-    currentCount: 1,
-    isUnlocked: true,
-    unlockedAt: '2026-09-04T18:00:00Z',
-    xpReward: 150
-  },
-  {
-    id: 'bdg_photographe_bronze',
-    name: 'Regard Visuel',
-    family: 'Photographe',
-    tier: 'bronze',
-    description: 'Publiez 5 photographies de lieux vérifiés purgées d\'EXIF.',
-    iconName: 'Camera',
-    requiredCount: 5,
-    currentCount: 3,
-    isUnlocked: false,
-    xpReward: 80
-  },
-  {
-    id: 'bdg_multi_bronze',
-    name: 'Traverseur de Ponts',
-    family: 'Multi-Explorer',
-    tier: 'bronze',
-    description: 'Validez au moins 1 check-in dans 3 communes différentes (Cocody, Plateau, Marcory).',
-    iconName: 'Map',
-    requiredCount: 3,
-    currentCount: 2,
-    isUnlocked: false,
-    xpReward: 200
-  }
-];
+export const INITIAL_BADGES: Badge[] = demoBadges();
 
 export const INITIAL_AD_CAMPAIGNS: AdCampaign[] = [
   {
     id: 'ad_01',
-    advertiserName: 'Votre enseigne ici · exemple fictif',
-    bannerTitle: 'Les bonnes adresses méritent de se faire connaître',
-    bannerSubtitle: 'Emplacement publicitaire de démonstration, sans annonceur réel.',
-    imageUrl: '/illustrations/rooftop.svg',
+    advertiserName: 'Banque Boucle · banque imaginaire',
+    bannerTitle: 'Vos projets prennent de l’élan.',
+    bannerSubtitle: 'Banque imaginaire · Aucun service financier proposé.',
+    imageUrl: '/illustrations/banque-demo.png',
     ctaText: 'Campagne fictive · non cliquable',
     isNonClickableNotice: true,
     targetCommune: 'Cocody'
@@ -436,7 +354,7 @@ export const INITIAL_PLACE_PROPOSALS: PlaceProposal[] = [
     landmark: 'En face du supermarché Cash & Carry',
     coordinates: { lat: 5.3621, lng: -3.9912 },
     contributorId: 'usr_sarah',
-    contributorName: 'Sarah Diallo',
+    contributorName: 'Ingrid N’Goan',
     submittedAt: '2026-10-25T11:20:00Z',
     status: 'pending'
   }

@@ -1,3 +1,4 @@
+import { openAccount, toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -9,7 +10,7 @@ export async function checkPresentation(url: string, password: string) {
     for (const width of [390, 1280]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
       await context.route('https://**/*', route => route.abort());
-      await context.route('**/illustrations/rooftop.svg', route => route.abort());
+      await context.route('**/illustrations/rooftop-demo.png', route => route.abort());
       const page = await context.newPage();
       page.setDefaultTimeout(10000);
       const errors: string[] = [];
@@ -17,7 +18,7 @@ export async function checkPresentation(url: string, password: string) {
       await page.goto(url);
       // Exercise the entire scenario in light on mobile and dark on desktop.
       const theme = width === 1280 ? 'dark' : 'light';
-      if (theme === 'dark') await page.getByRole('button', { name: 'Mode sombre', exact: true }).click();
+      if (theme === 'dark') await toggleTheme(page);
       async function capture(name: string) {
         await page.evaluate(() => document.fonts.ready);
         await page.waitForFunction(() => [...document.images].every(image => image.complete));
@@ -25,20 +26,22 @@ export async function checkPresentation(url: string, password: string) {
         assert.equal(broken, 0, 'Toutes les illustrations doivent charger sans réseau externe');
         if (process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
+          await page.locator('img:visible').evaluateAll(images=>Promise.all(images.map(image=>(image as HTMLImageElement).decode().catch(()=>{}))));
           await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `${name}-${width}.png`) });
         }
       }
       await capture('accueil');
       async function start() {
-        await page.getByTitle('Profil & Compte Démo').click();
+        await openAccount(page);
         await page.getByRole('button', { name: 'Connexion', exact: true }).click();
-        await page.getByPlaceholder('ex: koffi_urbex').fill('redloop_admin');
+        await page.getByPlaceholder('ex: yacoub_ouattara').fill('redloop_admin');
         await page.locator('input[type=password]').fill(password);
         await page.getByRole('button', { name: /Se connecter/ }).click();
         await page.waitForTimeout(1200);
-        await page.getByTitle('Profil & Compte Démo').click();
+        await openAccount(page);
         await page.getByRole('button', { name: 'Profils Démo (opérateur)', exact: true }).click();
         await page.getByRole('button', { name: 'Démarrer la démo', exact: true }).click();
+        await page.getByRole('button',{name:'Confirmer la remise à zéro',exact:true}).click();
         await page.getByRole('button', { name: 'Carte', exact: true }).waitFor();
         assert.equal(await page.locator('html').getAttribute('data-theme'), theme, 'La remise à zéro du scénario conserve le thème');
       }
@@ -48,8 +51,11 @@ export async function checkPresentation(url: string, password: string) {
         await capture('carte');
         await page.getByRole('button', { name: 'Détails', exact: true }).click();
         await capture('fiche');
-        await page.getByRole('button', { name: 'Faire un check-in ici' }).click();
-        await page.getByRole('button', { name: /Simuler ma visite|Confirmer ma présence physique/ }).click();
+        await page.getByRole('button', { name: 'Retour', exact: true }).click();
+        await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+        await page.getByRole('dialog', { name: 'Check-in', exact: true }).getByRole('button', { name: /Maquis L'Étoile/ }).click();
+        await capture('check-confirm');
+        await page.getByRole('button', { name: 'Confirmer le check' }).click();
         await page.getByRole('heading', { name: 'Visite simulée enregistrée !' }).waitFor();
         await page.getByText('Nouveau Badge débloqué : Initié du Braisé !').waitFor();
       }
@@ -60,8 +66,9 @@ export async function checkPresentation(url: string, password: string) {
       const message = `Une soirée à Cocody — recette ${width}`;
       await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
       await capture('publication');
+      await page.getByRole('combobox',{name:'Visibilité de la publication',exact:true}).selectOption('public');
       await page.getByRole('button', { name: 'Publier le checkpoint' }).click();
-      await page.getByText(message, { exact: true }).waitFor();
+      await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
       await page.getByRole('button', { name: 'Profil', exact: true }).click();
       await page.getByRole('region', { name: 'Mes publications' }).getByText(message, { exact: true }).waitFor();
       await page.getByText(/1315 XP au total/).waitFor();

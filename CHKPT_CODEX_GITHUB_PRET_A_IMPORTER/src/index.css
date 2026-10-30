@@ -194,14 +194,13 @@
 .reward-card { background: linear-gradient(145deg, var(--surface), var(--tone-rose-950)); }
 .reward-medal { width: 118px; height: 126px; display: flex; align-items: center; justify-content: center; background: linear-gradient(145deg,#b65078,#67223f 60%,#351a32); border: 3px solid #c47797; border-radius: 30px; box-shadow: inset 0 0 0 5px #ffffff18, 0 8px 16px #67223f20; }
 .checkin-brand-button { box-shadow: 0 4px 18px #1763c61c; }
-@media (max-width: 359px) {
-  header > div { flex-wrap: wrap; }
-  .header-actions { width: 100%; justify-content: flex-end; }
-  .brand-lockup > span { font-size: 16px; }
-  .brand-lockup > img { width: 28px; height: 28px; }
-  .header-actions { gap: 0; }
-  .header-actions > button, .theme-toggle { padding: 6px; }
-}
+.publication-avatar-ring { padding: 2px; border-radius: 50%; background: linear-gradient(145deg, #1763c6, #7aceff 40%, #892c4d 85%); }
+.publication-avatar-ring img { border: 2px solid var(--canvas); }
+.profile-avatar-ring { padding: 3px; border-radius: 50%; background: linear-gradient(145deg, #1763c6, #7aceff 40%, #892c4d 85%); }
+.profile-avatar-ring img { border: 3px solid var(--canvas); }
+.social-tab { position: relative; }
+.social-tab.is-active { font-weight: 800; }
+.social-tab.is-active::after { content: ''; position: absolute; height: 3px; left: 8px; right: 8px; bottom: -1px; border-radius: 4px; background: linear-gradient(90deg, #1763c6, #7aceff 48%, #892c4d); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

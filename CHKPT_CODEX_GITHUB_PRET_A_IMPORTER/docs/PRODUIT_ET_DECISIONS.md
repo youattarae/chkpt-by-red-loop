@@ -14,6 +14,10 @@ CHKPT (prononcé « checkpoint ») est une application de sorties et de découve
 - Présentation à des partenaires ou investisseurs : expliquer le potentiel du réseau, la découverte d'établissements et le modèle économique envisagé.
 - **Ne pas faire passer les comptes, visites, chiffres, lieux fictifs ou récompenses de démonstration pour des données réellement acquises.**
 
+## Parcours de check-in actualisé
+
+Le bouton central est le seul point d’entrée. La personne sélectionne un lieu, appuie sur Confirmer le check, puis peut créer une publication. Les publications, la carte et les fiches ne comportent pas de raccourci Check.
+
 ## Les cinq écrans-clés
 1. **Accueil** : publications et découvertes ; onglets « Pour toi » et « Amis ».
 2. **Carte** : lieux et événements, recherche et filtres, repères de lieux vérifiés (vert) / non vérifiés (gris) ; pas de publicité.

@@ -1,0 +1,36 @@
+import assert from 'node:assert/strict';
+import {readFile,writeFile} from 'node:fs/promises';
+export async function checkDiscovery(start:any,stop:any,password:string){
+  let server=await start('discovery',true);
+  const call=(route:string,body?:unknown,token?:string)=>fetch(server.url+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
+  const register=async(username:string,displayName:string,age=25)=>(await (await call('/api/auth/register',{username,displayName,password,age})).json());
+  const me=await register('discover_me','Léa Fictive'),friend=await register('discover_friend','Ami fictif'),oneWay=await register('discover_oneway','Suivi simple'),minor=await register('discover_minor','Mineur fictif',16);
+  for(const route of ['/api/search/profiles?q=lea','/api/profiles/'+me.user.id+'/connections?kind=followers','/api/explorers/monthly'])assert.equal((await call(route)).status,401);
+  const searched=await (await call('/api/search/profiles?q=lea',undefined,friend.token)).json();assert.ok(searched.profiles.some((profile:any)=>profile.id===me.user.id));assert.ok(!('passwordHash' in searched.profiles[0]));
+  const demoBadgeView=await (await call('/api/profiles/usr_01',undefined,friend.token)).json();assert.ok(demoBadgeView.profile.badges.length>0);assert.ok(!('xpPoints' in demoBadgeView.profile));for(const badge of demoBadgeView.profile.badges)assert.deepEqual(Object.keys(badge).sort(),['family','iconName','id','name','tier']);
+  const minors=await (await call('/api/search/profiles?q=mineur',undefined,me.token)).json();assert.equal(minors.profiles.length,0);
+  assert.equal((await call('/api/profiles/'+minor.user.id+'/connections?kind=following',undefined,me.token)).status,404);
+  assert.equal((await call('/api/profiles/'+minor.user.id+'/connections?kind=following',undefined,minor.token)).status,200);
+  assert.equal((await call('/api/explorers/monthly?scope=invalid',undefined,me.token)).status,400);
+  const follow=(a:any,b:any)=>call('/api/profiles/'+b.user.id+'/follow',{following:true},a.token);
+  await follow(me,friend);await follow(me,oneWay);await follow(minor,me);
+  let friends=await (await call('/api/explorers/monthly?scope=friends',undefined,me.token)).json();assert.deepEqual(friends.profiles.map((profile:any)=>profile.id),[me.user.id]);
+  await follow(friend,me);
+  const connections=await (await call('/api/profiles/'+me.user.id+'/connections?kind=followers',undefined,oneWay.token)).json();assert.deepEqual(connections.profiles.map((profile:any)=>profile.id),[friend.user.id]);
+  const following=await (await call('/api/profiles/'+me.user.id+'/connections?kind=following',undefined,me.token)).json();assert.equal(following.profiles.length,2);
+  const venue=(await (await call('/api/places')).json()).places.find((place:any)=>place.id==='plc_maquis_etoile');
+  assert.equal((await call('/api/checkins',{placeId:venue.id,latitude:venue.coordinates.lat,longitude:venue.coordinates.lng,isSimulated:true,audience:'private'},me.token)).status,201);
+  await stop(server.child);const file=server.cwd+'/.data/chkpt_db.json';const data=JSON.parse(await readFile(file,'utf8'));const now=new Date();
+  data.points_ledger.push({id:'old_month',userId:friend.user.id,amount:9000,sourceAction:'CHECKIN_VERIFIED',referenceId:'fixture',timestamp:new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()-1,15)).toISOString()});
+  data.points_ledger.push({id:'future_month',userId:friend.user.id,amount:9000,sourceAction:'CHECKIN_VERIFIED',referenceId:'fixture',timestamp:new Date(Date.UTC(now.getUTCFullYear(),now.getUTCMonth()+1,15)).toISOString()});
+  data.points_ledger.push({id:'not_visit',userId:friend.user.id,amount:9000,sourceAction:'BADGE_UNLOCKED',referenceId:'fixture',timestamp:now.toISOString()});
+  await writeFile(file,JSON.stringify(data));server=await start('discovery',true);
+  friends=await (await call('/api/explorers/monthly?scope=friends',undefined,me.token)).json();assert.equal(friends.profiles.length,2);assert.equal(friends.profiles[0].id,me.user.id);assert.equal(friends.profiles[0].monthlyXp,75);assert.equal(friends.profiles[1].monthlyXp,0);
+  assert.ok(!JSON.stringify(friends).includes('plc_maquis'));assert.ok(!JSON.stringify(friends).includes('latitude'));assert.ok(!('xpPoints' in friends.profiles[0]));
+  const global=await (await call('/api/explorers/monthly?scope=global',undefined,me.token)).json();assert.ok(global.profiles.some((profile:any)=>profile.id===oneWay.user.id));assert.ok(!global.profiles.some((profile:any)=>profile.id===minor.user.id));
+  const profile=await (await call('/api/profiles/'+me.user.id,undefined,friend.token)).json();assert.ok(!('xpPoints' in profile.profile));assert.ok(Array.isArray(profile.profile.badges));
+  for(const badge of profile.profile.badges)assert.deepEqual(Object.keys(badge).sort(),['family','iconName','id','name','tier']);
+  const ownProfile=await (await call('/api/profiles/'+me.user.id,undefined,me.token)).json();assert.equal(ownProfile.profile.xpPoints,75);
+  assert.equal((await call('/api/checkins/history?userId='+me.user.id,undefined,friend.token)).status,403);
+  await stop(server.child);
+}

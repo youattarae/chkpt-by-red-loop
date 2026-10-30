@@ -1,0 +1,27 @@
+# Preparation only: no resource is provisioned until approved in the Render dashboard.
+services:
+  - type: web
+    name: chkpt-demo-privee
+    runtime: node
+    plan: free
+    branch: feat/profil-social
+    rootDir: CHKPT_CODEX_GITHUB_PRET_A_IMPORTER
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: node --import tsx scripts/present.mjs
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: PORT
+        value: 10000
+      - key: CHKPT_PRIVATE_DEMO
+        value: "true"
+      - key: CHKPT_REMOTE_ACCESS
+        value: "true"
+      - key: CHKPT_ACCESS_PASSWORD
+        sync: false
+      - key: CHKPT_DEMO_ADMIN_PASSWORD
+        sync: false

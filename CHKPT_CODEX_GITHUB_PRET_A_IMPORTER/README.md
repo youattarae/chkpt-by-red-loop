@@ -4,9 +4,43 @@
 
 CHKPT est un réseau social de découverte de lieux et sorties, centré sur Cocody/Abidjan pour la démonstration. RED LOOP désigne l'écosystème et le projet porteur. L'objectif immédiat est de présenter le fonctionnement devant un jury FrancoTech et de potentiels financeurs, **pas** de commercialiser une application finie.
 
+## Guide complet et dernière vérification
+
+[Guide PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx) · [Sommaire](docs/guide-utilisation/README.md).
+
+41 pages illustrées de la version actuelle, fichiers inférieurs à 3 Mo. Les dix cas limites de la revue ont été corrigés et la suite complète compte **44/44 groupes réussis**. Voir [les corrections et les limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md).
+
 ## Direction visuelle actualisée
 
 Interface claire par défaut, mode sombre au choix, symbole CHKPT pour le bouton central. Voir [les choix et les captures réelles](docs/DIRECTION_VISUELLE_2026_10.md).
+
+Le [profil compact et la navigation actualisée](docs/NAVIGATION_PAGES_ET_MENU.md) affichent rapidement les publications. Le menu personnel regroupe les enregistrés, visites privées, progression, récompenses et classement. Les recherches validées et les fiches s’ouvrent dans des pages avec Retour.
+
+L'[accueil social actualisé](docs/ACCUEIL_SOCIAL.md) propose Pour toi et Amis, des cartes cohérentes avec le profil et des illustrations locales générées pour les publications fictives. Le bouton de validation s'intitule Confirmer le check.
+
+Le [GPS et les fiches lieu](docs/GPS_ET_FICHE_LIEU.md) disposent d’un choix de position par liste et d’un affichage grand format, sans raccourci de check dans les fiches.
+
+Le [partage des établissements et l’historique personnel](docs/PARTAGE_ET_HISTORIQUE.md) complètent les fiches et le profil. L’historique est réservé au propriétaire.
+
+Voir aussi le [bilan complet du prototype](docs/BILAN_PROTOTYPE.md).
+
+Pour répéter sans lire de code : [guide Ingrid](docs/GUIDE_PRESENTATION.md), [PDF illustré de dix étapes](docs/DEMONSTRATION_PAS_A_PAS.pdf) et [support de secours hors connexion](docs/DEMO_SECOURS.html), actualisés avec les nouveaux écrans.
+
+Les [compléments de démonstration](docs/EVOLUTIONS_DEMO.md) ajoutent bienvenue, recherche, filtres Carte, récompense fictive, aperçu établissement, profils suivis et avis.
+
+L’[accès privé à distance](docs/ACCES_PRIVE_DISTANCE.md) est préparé pour Render avec un mot de passe visiteur distinct de l’opérateur. Aucun hébergement n’est créé automatiquement.
+
+La [carte interactive et le moteur de progression](docs/CARTE_RADAR_ET_40_BADGES.md) utilisent un radar de 250 m et un barème de prototype calculé côté serveur. Seule une petite sélection de badges est affichée.
+
+Le [questionnaire de conception](docs/QUESTIONS_CONCEPTION_PROTO_ET_VERSION_FINALE.md) peut être copié dans la conversation de conception pour préparer le prototype et la version finale.
+
+La [synchronisation entre appareils et la sauvegarde chiffrée](docs/SYNCHRONISATION_ET_SAUVEGARDE.md) permettent de retrouver les publications, photos, favoris et visites avec le même compte. Le budget reste gratuit ; la persistance du disque de l’hébergeur n’est pas garantie.
+
+Les [publications multimédias](docs/PUBLICATIONS_MEDIAS_ET_STORIES.md) acceptent jusqu’à quatre photos ou vidéos mélangées. Les [stories](docs/STORIES_PROTOTYPE.md) sont accessibles depuis l’accueil et les avatars, avec une durée de 24 h.
+
+La [répartition des recherches, les relations et le classement](docs/RECHERCHE_SORTIR_ET_CLASSEMENT.md) précise Accueil général, Carte pour les lieux et Sortir éditorial avec classement mensuel.
+
+Les [quatre profils et publicités fictives](docs/PROFILS_ET_PUBLICITES_DEMO.md) enrichissent le fil. La [revue de cohérence et sécurité](docs/AUDIT_FLUIDITE_SECURITE_2026_10_30.md) décrit les correctifs de sécurité. Le [lot suivant](docs/NAVIGATION_PAGES_ET_MENU.md) implémente les pages, le menu et le profil compact, localement en attente du dépôt privé.
 
 ## Voir la démonstration sans lire le code
 

@@ -1,3 +1,5 @@
+import {SimpleDialog} from '../common/SimpleDialog';
+import {DEMO_PROFILES} from '../../data/demoProfiles';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -32,7 +34,7 @@ interface AuthModalProps {
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const { 
-    currentUser, 
+    currentUser, isServerAuthenticated,
     setCurrentUser, 
     setAuthSessionToken,
     authSessionToken,
@@ -49,6 +51,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [resetIntent,setResetIntent]=useState<'start'|'reset'|null>(null);
 
   if (!isOpen) return null;
 
@@ -159,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       await resetDemoPitchState(true);
       onClose();
     } catch (err: any) { setErrorMsg(err.message); }
-    finally { setIsLoading(false); }
+    finally { setIsLoading(false);setResetIntent(null); }
   };
 
   const handleResetPitch = async () => {
@@ -173,7 +176,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } catch (err: any) {
       setErrorMsg('Erreur lors de la réinitialisation : ' + err.message);
     } finally {
-      setIsResetting(false);
+      setIsResetting(false);setResetIntent(null);
     }
   };
 
@@ -198,12 +201,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
           <button
             onClick={onClose}
+            aria-label="Fermer le compte"
             className="p-2 text-muted hover:text-ink hover:bg-soft rounded-xl transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
+        {isServerAuthenticated && <button type="button" disabled={isLoading} onClick={async()=>{setIsLoading(true);try{await fetch('/api/auth/logout',{method:'POST',headers:{Authorization:`Bearer ${authSessionToken}`}});}catch{/* Clear this device even when the server is unreachable. */}finally{setAuthSessionToken('');setIsLoading(false);onClose();}}} className="mx-4 my-2 text-xs text-rose-400 underline cursor-pointer">Se déconnecter de cet appareil</button>}
         <div className="bg-canvas/80 border-b border-line/80 px-4 py-2.5 text-xs text-amber-300">
           Prototype de démonstration — données fictives
         </div>
@@ -263,64 +268,66 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </p>
 
             <button
-              onClick={() => handleSwitchDemo('koffi_urbex')}
+              onClick={() => handleSwitchDemo('usr_01')}
               disabled={isLoading}
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                currentUser.username === 'koffi_urbex'
+                currentUser.username === 'yacoub_ouattara'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
                   : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
-                  src="/illustrations/koffi.svg"
+                  src="/illustrations/profil-koffi.webp"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Koffi Kouamé</span>
+                    <span className="text-sm font-bold text-ink">Yacoub Ouattara</span>
                     <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Utilisateur normal
                     </span>
                   </div>
-                  <span className="text-xs text-muted">@koffi_urbex · Niv. {currentUser.level} · Cocody</span>
+                  <span className="text-xs text-muted">@yacoub_ouattara · Niv. {currentUser.level} · Cocody</span>
                 </div>
               </div>
-              {currentUser.username === 'koffi_urbex' && (
+              {currentUser.username === 'yacoub_ouattara' && (
                 <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
               )}
             </button>
 
             <button
-              onClick={() => handleSwitchDemo('sarah_dlo')}
+              onClick={() => handleSwitchDemo('usr_sarah')}
               disabled={isLoading}
               className={`w-full p-3 rounded-2xl border text-left flex items-center justify-between transition-all cursor-pointer ${
-                currentUser.username === 'sarah_dlo'
+                currentUser.username === 'ingrid_ngoan'
                   ? 'bg-blue-950/60 border-blue-600/70 shadow-sm'
                   : 'bg-canvas/40 border-line hover:border-line-strong'
               }`}
             >
               <div className="flex items-center gap-3">
                 <SafeImage
-                  src="/illustrations/sarah.svg"
+                  src="/illustrations/profil-sarah.webp"
                   alt=""
                   className="w-10 h-10 rounded-xl object-cover border border-line-strong"
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Sarah Diallo</span>
+                    <span className="text-sm font-bold text-ink">Ingrid N’Goan</span>
                     <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Abonnée confirmée
                     </span>
                   </div>
-                  <span className="text-xs text-muted">@sarah_dlo · 512 abonnés · Cocody</span>
+                  <span className="text-xs text-muted">@ingrid_ngoan · 512 abonnés · Cocody</span>
                 </div>
               </div>
-              {currentUser.username === 'sarah_dlo' && (
+              {currentUser.username === 'ingrid_ngoan' && (
                 <CheckCircle2 className="w-5 h-5 text-blue-400 shrink-0" />
               )}
             </button>
+
+            {DEMO_PROFILES.filter(profile=>['usr_02','usr_nadia'].includes(profile.id)).map(profile=><button type="button" key={profile.id} disabled={isLoading} onClick={()=>handleSwitchDemo(profile.id)} className="w-full p-3 rounded-2xl border border-line bg-canvas text-left flex gap-3 items-center"><SafeImage src={profile.avatarUrl} alt="" className="w-10 h-10 rounded-xl object-cover"/><span><strong className="block text-sm">{profile.displayName}</strong><span className="block text-xs text-muted">@{profile.username} · profil fictif</span></span></button>)}
 
             <button
               onClick={() => handleSwitchDemo('redloop_admin')}
@@ -351,7 +358,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </button>
 
             {['admin', 'superadmin', 'moderator'].includes(currentUser.role) && (
-              <button onClick={handleStartPitch} disabled={isLoading}
+              <button onClick={()=>setResetIntent('start')} disabled={isLoading}
                 className="w-full py-3 bg-blue-600 text-white rounded-xl font-bold text-sm">
                 Démarrer la démo
               </button>
@@ -360,7 +367,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div className="pt-3 border-t border-line">
               <button
                 type="button"
-                onClick={handleResetPitch}
+                onClick={()=>setResetIntent('reset')}
                 disabled={isResetting}
                 className="w-full py-2.5 px-3 bg-canvas hover:bg-rose-950/40 text-rose-300 hover:text-ink border border-dashed border-rose-800/80 rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
@@ -368,7 +375,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 <span>Réinitialiser le scénario Pitch (Démo vierge)</span>
               </button>
               <span className="block text-[10px] text-muted text-center mt-1">
-                Remet à zéro les check-ins d'aujourd'hui, le fil et les points pour rejouer le scénario.
+                Efface tous les comptes et contenus ajoutés à cette base de démonstration. Une confirmation est requise.
               </span>
             </div>
           </div>
@@ -383,7 +390,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="ex: koffi_urbex"
+                placeholder="ex: yacoub_ouattara"
                 required
                 className="w-full bg-canvas border border-line rounded-xl px-3 py-2 text-sm text-ink placeholder-slate-600 focus:outline-none focus:border-rose-500"
               />
@@ -498,6 +505,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
         )}
 
       </div>
+      {resetIntent&&<SimpleDialog title="Remettre toute la démo à zéro ?" onClose={()=>{if(!isLoading&&!isResetting)setResetIntent(null);}}><p className="text-sm">Cette action supprime tous les comptes ajoutés, publications, médias, visites et points de cette base, puis rétablit les personnages fictifs. Elle est irréversible sans sauvegarde.</p><p className="mt-3 text-xs text-muted">Pour continuer votre démo actuelle, annulez. Vous pouvez changer de personnage sans réinitialiser. La sauvegarde chiffrée est disponible dans les réglages de l’opérateur.</p><div className="flex flex-wrap gap-3 mt-5"><button type="button" disabled={isLoading||isResetting} onClick={()=>setResetIntent(null)} className="p-3 rounded-xl bg-soft text-sm">Annuler</button><button type="button" disabled={isLoading||isResetting} onClick={()=>void (resetIntent==='start'?handleStartPitch():handleResetPitch())} className="p-3 rounded-xl bg-rose-700 text-white text-sm font-bold">{isLoading||isResetting?'Remise à zéro…':'Confirmer la remise à zéro'}</button></div></SimpleDialog>}
     </div>
   );
 };

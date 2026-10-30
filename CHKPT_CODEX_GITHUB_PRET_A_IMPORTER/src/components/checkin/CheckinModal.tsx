@@ -1,3 +1,4 @@
+import {AudienceSelect} from '../common/AudienceSelect';
 import { BrandSymbol } from '../common/BrandSymbol';
 import { SafeImage } from '../common/SafeImage';
 /**
@@ -10,11 +11,11 @@ import { SafeImage } from '../common/SafeImage';
  *  - Non-coercive follow-up post creation
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { useStore } from '../../services/store';
 import { Place, CheckInAudience, CheckIn } from '../../types';
 import { calculateDistanceMeters, DEFAULT_CHECKIN_RADIUS_METERS } from '../../services/geoService';
-import { MediaUploader } from '../common/MediaUploader';
+import { PostMediaUploader } from '../common/PostMediaUploader';
 import { 
   X, 
   Crosshair, 
@@ -34,21 +35,21 @@ import {
 interface CheckinModalProps {
   isOpen: boolean;
   onClose: () => void;
-  preselectedPlaceId?: string | null;
   onPostPublishedSuccess?: () => void;
 }
 
 export const CheckinModal: React.FC<CheckinModalProps> = ({
   isOpen,
   onClose,
-  preselectedPlaceId,
   onPostPublishedSuccess
 }) => {
   const { 
     places,
+    events,
     badges,
     userCurrentCoordinates, 
-    submitCheckIn, 
+    submitCheckIn,
+    recoverCheckIn,
     createPost, 
     submitPlaceProposal,
     activeLocationMode 
@@ -58,7 +59,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     'select_place'
   );
   
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>(preselectedPlaceId || places[0]?.id || '');
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
+  const [eventId,setEventId]=useState('');
   const [audience, setAudience] = useState<CheckInAudience>('private');
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationResult, setVerificationResult] = useState<{
@@ -68,11 +70,19 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     earnedXp?: number;
     unlockedBadgeName?: string;
     checkIn?: CheckIn;
+    recovered?:boolean;
+    uncertain?:boolean;
   } | null>(null);
 
   // Optional post state
+  const [postAudience,setPostAudience]=useState<CheckInAudience>('private');
+  const [discard,setDiscard]=useState(false);
+  const dialog=useRef<HTMLDialogElement>(null);
+  const closeRef=useRef<()=>void>(()=>{});
+  const [publishing,setPublishing]=useState(false);
   const [postText, setPostText] = useState('');
-  const [postPhotoUrl, setPostPhotoUrl] = useState('');
+  const [postMedia, setPostMedia] = useState<import('../../types').PostMedia[]>([]);
+  const [mediaBusy,setMediaBusy]=useState(false);
 
   // Propose place state
   const [newPlaceName, setNewPlaceName] = useState('');
@@ -90,10 +100,12 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     })).sort((a, b) => a.distance - b.distance);
   }, [places, userCurrentCoordinates]);
 
+  const requestClose=()=>{if(publishing||mediaBusy)return;if(step==='optional_post'&&(postText.trim()||postMedia.length)){setDiscard(true);return;}onClose();};
+  closeRef.current=requestClose;
+  useEffect(()=>{if(!isOpen)return;const previous=document.activeElement as HTMLElement|null;const overflow=document.body.style.overflow;dialog.current?.showModal();document.body.style.overflow='hidden';return()=>{dialog.current?.close();document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus();};},[isOpen]);
   if (!isOpen) return null;
 
-  const currentPlace = places.find(p => p.id === selectedPlaceId) ||
-    (preselectedPlaceId ? undefined : sortedPlaces[0]);
+  const currentPlace = places.find(p => p.id === selectedPlaceId);
 
   const handleExecuteCheckIn = async () => {
     if (!currentPlace) return;
@@ -101,7 +113,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     setStep('verifying');
 
     try {
-      const res = await submitCheckIn(currentPlace.id, audience);
+      const res = await submitCheckIn(currentPlace.id, audience,eventId||undefined);
       setVerificationResult(res);
       setIsVerifying(false);
       setStep('result');
@@ -116,18 +128,21 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     }
   };
 
-  const handlePublishFollowupPost = (e: React.FormEvent) => {
+  const handlePublishFollowupPost = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!verificationResult?.checkIn || !currentPlace) return;
+    if (mediaBusy || !verificationResult?.checkIn || !currentPlace) return;
 
-    createPost({
+    setPublishing(true);
+    const published=await createPost({
       text: postText.trim() || `Découverte de ${currentPlace.name} (${currentPlace.commune}) — ${verificationResult.checkIn.isSimulated ? 'visite simulée de démonstration' : 'check-in validé'}. ✨`,
       linkedPlaceId: currentPlace.id,
       linkedCheckinId: verificationResult.checkIn.id,
       isVerifiedVisit: true,
-      mediaUrl: postPhotoUrl || currentPlace.coverImage
+      audience:postAudience,
+      media: postMedia.length?postMedia:[{url:currentPlace.coverImage,type:'image'}]
     });
 
+    setPublishing(false);if(!published)return;
     onClose();
     if (onPostPublishedSuccess) onPostPublishedSuccess();
   };
@@ -149,10 +164,11 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
   };
 
   return (
-    <div role="dialog" aria-label="Check-in"
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
+    <dialog ref={dialog} aria-label="Check-in" onCancel={event=>{event.preventDefault();closeRef.current();}}
+      className="fixed inset-0 m-0 w-full max-w-none h-dvh max-h-none border-0 z-50 flex items-end sm:items-center justify-center bg-black/70 backdrop-blur-sm p-0 sm:p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-lg bg-surface border border-line rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl max-h-[92vh] overflow-y-auto no-scrollbar">
         
+        {discard&&<section role="alert" className="p-4 mb-4 border border-line rounded-xl bg-soft space-y-3"><p className="text-sm">Abandonner ce brouillon ? Son texte et ses imports non publiés seront supprimés.</p><button type="button" onClick={()=>setDiscard(false)} className="p-2 text-sm font-bold">Continuer la rédaction</button><button type="button" onClick={onClose} className="p-2 text-sm text-rose-500">Abandonner le brouillon</button></section>}
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-line">
           <div className="flex items-center gap-2">
@@ -174,7 +190,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
           </div>
 
           <button
-            onClick={onClose} aria-label="Fermer le check-in"
+            onClick={requestClose} disabled={publishing||mediaBusy} aria-label="Fermer le check-in"
             className="p-2 text-muted hover:text-ink rounded-full bg-soft/60 cursor-pointer"
           >
             <X className="w-4 h-4" />
@@ -185,6 +201,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
         {step === 'select_place' && (
           <div className="pt-4 space-y-4">
             
+            {currentPlace && events.some(event=>event.placeId===currentPlace.id&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt||'')>=Date.now()) && <label className="block text-xs font-semibold">Événement au même lieu (facultatif)<select value={eventId} onChange={event=>setEventId(event.target.value)} className="block w-full mt-2 p-2 rounded-xl border border-line bg-canvas text-ink"><option value="">Visite du lieu uniquement</option>{events.filter(event=>event.placeId===currentPlace.id&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt||'')>=Date.now()).map(event=><option key={event.id} value={event.id}>{event.title}</option>)}</select></label>}
             {/* GPS Status pill */}
             <div className="flex items-center justify-between p-2.5 rounded-xl bg-canvas/80 border border-line text-xs">
               <div className="flex items-center gap-2 text-body">
@@ -207,12 +224,12 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               <div className="space-y-2 max-h-56 overflow-y-auto no-scrollbar pr-1">
                 {sortedPlaces.map(place => {
                   const isEligible = place.distance <= DEFAULT_CHECKIN_RADIUS_METERS;
-                  const isSelected = (selectedPlaceId || sortedPlaces[0]?.id) === place.id;
+                  const isSelected = selectedPlaceId === place.id;
 
                   return (
                     <button
                       key={place.id}
-                      onClick={() => setSelectedPlaceId(place.id)}
+                      onClick={() => {setSelectedPlaceId(place.id);setEventId('');}}
                       aria-pressed={isSelected}
                       className={`w-full p-3 rounded-2xl border text-left transition-all flex items-center justify-between cursor-pointer ${
                         isSelected
@@ -325,7 +342,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-40 text-white font-bold text-sm rounded-xl shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition-all active:scale-[0.98] cursor-pointer"
               >
                 <Crosshair className="w-4 h-4" />
-                <span>{activeLocationMode === 'simulation' ? 'Simuler ma visite' : 'Confirmer ma présence physique'}</span>
+                <span>Confirmer le check</span>
               </button>
             </div>
 
@@ -358,7 +375,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-ink tracking-tight">
-                    {activeLocationMode === 'simulation' ? 'Visite simulée enregistrée !' : 'Visite vérifiée avec succès !'}
+                    {verificationResult.recovered?'Visite déjà enregistrée':verificationResult.checkIn?.isSimulated ? 'Visite simulée enregistrée !' : 'Visite vérifiée avec succès !'}
                   </h3>
                   <p className="text-xs text-emerald-300 font-medium mt-1">
                     {verificationResult.message}
@@ -367,7 +384,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-950/70 border border-rose-800/80 rounded-lg text-rose-200 text-xs font-bold">
                       <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-                      <span>+{verificationResult.earnedXp} XP crédités au profil</span>
+                      <span>{verificationResult.recovered?'Aucun nouveau point : visite déjà comptabilisée':`+${verificationResult.earnedXp} XP crédités au profil`}</span>
                     </div>
 
                     {verificationResult.unlockedBadgeName && (
@@ -380,6 +397,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   </div>
                 </div>
 
+                {verificationResult.checkIn?.placeId === 'plc_maquis_etoile' && <p className="text-xs text-blue-400">Récompense fictive débloquée : retrouve-la dans Profil.</p>}
                 <div className="p-3 bg-canvas/80 border border-line rounded-xl text-left text-xs text-body space-y-1">
                   <p className="font-semibold text-ink">{activeLocationMode === 'simulation' ? 'Démonstration — visite fictive comptabilisée.' : 'Votre visite est comptabilisée.'}</p>
                   <p className="text-[11px] text-muted">
@@ -395,7 +413,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                     Plus tard (Terminer)
                   </button>
                   <button
-                    onClick={() => setStep('optional_post')}
+                    onClick={() => {setPostAudience(verificationResult.checkIn?.audience||audience);setStep('optional_post');}}
                     className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
                   >
                     <Camera className="w-4 h-4" />
@@ -410,7 +428,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-ink tracking-tight">
-                    Présence non confirmée
+                    {verificationResult.uncertain?'Résultat à vérifier':'Présence non confirmée'}
                   </h3>
                   <p className="text-xs text-rose-300 font-medium mt-1">
                     {verificationResult.message}
@@ -424,6 +442,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   </p>
                 </div>
 
+                {verificationResult.uncertain&&<button type="button" disabled={isVerifying} onClick={async()=>{if(!currentPlace)return;setIsVerifying(true);const result=await recoverCheckIn(currentPlace.id);setVerificationResult(result);setIsVerifying(false);}} className="w-full p-3 bg-blue-600 text-white rounded-xl text-sm disabled:opacity-50">{isVerifying?'Vérification…':'Vérifier l’enregistrement'}</button>}
                 <button
                   onClick={() => setStep('select_place')}
                   className="w-full py-3 bg-soft hover:bg-raised text-ink font-semibold text-xs rounded-xl transition-colors cursor-pointer"
@@ -463,12 +482,8 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               />
             </div>
 
-            <MediaUploader
-              initialMediaUrl={postPhotoUrl || currentPlace.coverImage}
-              onMediaUploaded={(url) => setPostPhotoUrl(url)}
-              onMediaCleared={() => setPostPhotoUrl('')}
-              label="Photo de la visite (EXIF GPS purgé automatiquement)"
-            />
+            <AudienceSelect value={postAudience} onChange={setPostAudience} disabled={publishing}/>
+            <PostMediaUploader disabled={publishing} value={postMedia} onChange={setPostMedia} onBusy={setMediaBusy} />
 
             <div className="flex gap-2 pt-2">
               <button
@@ -480,6 +495,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               </button>
               <button
                 type="submit"
+                disabled={mediaBusy || publishing}
                 className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
               >
                 Publier le checkpoint
@@ -595,6 +611,6 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
         )}
 
       </div>
-    </div>
+    </dialog>
   );
 };

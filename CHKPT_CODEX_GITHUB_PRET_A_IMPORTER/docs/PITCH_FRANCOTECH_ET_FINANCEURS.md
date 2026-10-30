@@ -9,11 +9,11 @@ Ce parcours est maintenant vérifié par la recette navigateur. Le [guide opéra
 | 0:00–0:25 | Elle ouvre CHKPT puis l'Accueil « Pour toi ». | On découvre les sorties des autres, comme sur un réseau social. |
 | 0:25–0:55 | Elle ouvre Carte et sélectionne le filtre « Maquis ». | On trouve rapidement un lieu à Cocody. |
 | 0:55–1:15 | Elle ouvre la fiche du maquis de démonstration. | On voit photos, description, emplacement et actions. |
-| 1:15–1:45 | Elle clique « Check-in ici », active la **position simulée** de la démo puis confirme. | Un check-in est distinct d'une publication ; la simulation est transparente. |
+| 1:15–1:45 | Elle appuie sur Retour, puis sur le **symbole central Check-in**, choisit le maquis et appuie sur **Confirmer le check** avec la position simulée. | Un check-in est distinct d'une publication ; la simulation est transparente. |
 | 1:45–2:05 | Elle montre ses XP et la progression du badge « Maquis Master ». | La gamification récompense les sorties. |
 | 2:05–2:30 | Elle partage une courte publication facultative. | Son activité peut apparaître dans le fil et le profil. |
 | 2:30–2:50 | Elle consulte Sortir et choisit « J'y serai ». | On peut préparer sa prochaine sortie. |
-| 2:50–3:00 | Elle revient sur le Profil. | Elle retrouve son parcours et ses badges. |
+| 2:50–3:00 | Elle revient sur le Profil. | Ses publications sont visibles rapidement ; son menu regroupe la progression et les visites privées. |
 
 **Conclusion possible :** « CHKPT donne envie de sortir, de découvrir Cocody et de partager ses expériences. Sors. Check. Partage. »
 
@@ -31,3 +31,11 @@ Expliquer d'abord le problème (difficulté à découvrir et choisir une sortie)
 - [ ] Créer une publication test puis revenir au profil.
 - [ ] Montrer l'indication « mode démonstration / données fictives ».
 - [ ] Disposer d'un support alternatif si le service n'est pas disponible.
+
+## Si la connexion ou l’application ne répond plus
+
+Ouvrir `DEMO_SECOURS.html` déjà enregistré sur l’ordinateur. Annoncer : « Voici des captures du parcours vérifié, pas une session en direct. » Le PDF `DEMONSTRATION_PAS_A_PAS.pdf` complète ce secours avec dix étapes. Aucun de ces supports ne contient de session opérateur ou de mot de passe.
+
+## À montrer seulement si le temps le permet
+
+Recherche d’un profil depuis l’accueil, retour à la page de résultats, menu personnel et classement mensuel. Le classement n’est plus dans Sortir. Les profils d’autrui montrent leurs badges publics, jamais leurs XP totaux ni leur historique de visites.
