@@ -8,7 +8,7 @@ CHKPT est un réseau social de découverte de lieux et sorties, centré sur Coco
 
 [Guide PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx) · [Sommaire](docs/guide-utilisation/README.md).
 
-41 pages illustrées de la version actuelle, fichiers inférieurs à 3 Mo. Les dix cas limites de la revue ont été corrigés et la suite complète compte **44/44 groupes réussis**. Voir [les corrections et les limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md).
+43 pages illustrées, messagerie et menu gauche inclus, fichiers inférieurs à 3 Mo. Les dix cas limites de la revue ont été corrigés et la suite complète compte désormais **45/45 groupes réussis**. Voir [les corrections et les limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md) et [la messagerie privée](docs/MESSAGERIE_ET_MENU_GAUCHE.md).
 
 ## Direction visuelle actualisée
 

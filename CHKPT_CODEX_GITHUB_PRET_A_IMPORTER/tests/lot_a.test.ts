@@ -385,6 +385,8 @@ try {
     await check('Profils générés : cinq publications chacun, badges sans XP et publicité par cinq',()=>checkDemoProfileBrowsers(demo.url,password));
     const {checkEdgeCases}=await import('./edge_cases_browser');
     await check('Cas limites : confidentialité par compte, reprise réseau, cache et actions cohérentes',()=>checkEdgeCases(demo.url,password));
+    const {checkMessages}=await import('./messages_browser');
+    await check('Messagerie : accès privés, refus mineurs, anti-doublon, menu à gauche et échange persistant',()=>checkMessages(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

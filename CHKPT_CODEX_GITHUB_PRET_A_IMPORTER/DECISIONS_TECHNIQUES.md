@@ -1,3 +1,7 @@
+# Mise à jour — messagerie et menu à gauche (2 novembre 2026)
+
+Conversations privées texte à deux et menu gauche avec avatar rond et nom. [Utilisation et limites](docs/MESSAGERIE_ET_MENU_GAUCHE.md). Vérifications locales réussies : `npm run lint`, `npm run build`, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` : **45/45 groupes**. PDF et PowerPoint régénérés : **43 pages/diapositives**, moins de 3 Mo chacun, images intégrées et PDF sans débordement. Pas de test sur téléphone physique ni PowerPoint natif. Lot conservé sur la branche de travail, non publié automatiquement ; résultats historiques ci-dessous.
+
 ## Dix corrections et guide complet — 30 octobre 2026
 
 Les dix défauts de la revue sont corrigés : séparation des comptes, audience explicite, confirmation destructive, cache défensif, reprise du check sans double XP, filtres cohérents, favoris et erreurs fiables, clavier/focus. Lint/build réussis et **44/44 groupes complets réussis**, dont les contrôles de cas limites ajoutés. [Détails et limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md).

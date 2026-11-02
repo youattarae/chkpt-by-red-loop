@@ -1,3 +1,4 @@
+import {installMessageRoutes} from './server/messages';
 import {fileURLToPath} from 'node:url';
 /**
  * @license
@@ -86,6 +87,7 @@ const mediaRegistry = {
   clear: () => db.updateSharedData({media:[]}),
 };
 installSocialRoutes(app);
+installMessageRoutes(app);
 installDiscoveryRoutes(app);
 installStoryRoutes(app);
 installBackupRoutes(app);

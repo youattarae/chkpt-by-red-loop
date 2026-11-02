@@ -1,9 +1,9 @@
 # Guide complet de l’application actuelle
 
-Version du 30 octobre 2026 : navigation par pages et corrections des dix cas limites incluses.
+Version du 2 novembre 2026 : messagerie privée texte et menu à gauche ajoutés.
 
-- [Lire le PDF — 41 pages, environ 2,6 Mo](../GUIDE_UTILISATION_COMPLET.pdf)
-- [Ouvrir le PowerPoint modifiable — 41 diapositives, environ 2,7 Mo](../GUIDE_UTILISATION_COMPLET.pptx)
+- [Lire le PDF — 43 pages, environ 2,6 Mo](../GUIDE_UTILISATION_COMPLET.pdf)
+- [Ouvrir le PowerPoint modifiable — 43 diapositives, environ 2,7 Mo](../GUIDE_UTILISATION_COMPLET.pptx)
 
 Le PDF s’ouvre dans un navigateur ou un lecteur PDF. Le PowerPoint s’ouvre avec Microsoft PowerPoint, Keynote ou un lecteur compatible. Aucun logiciel de programmation n’est nécessaire pour les lire. Tous les visuels et scénarios sont fictifs.
 
@@ -52,6 +52,8 @@ Le PDF s’ouvre dans un navigateur ou un lecteur PDF. Le PowerPoint s’ouvre a
 | 39 | La répétition d’Ingrid en trois minutes |
 | 40 | Les blocages les plus fréquents |
 | 41 | Avant de partir présenter |
+| 42 | Le menu personnel à gauche |
+| 43 | Envoyer et retrouver ses messages privés |
 
 ## Reprendre le guide
 

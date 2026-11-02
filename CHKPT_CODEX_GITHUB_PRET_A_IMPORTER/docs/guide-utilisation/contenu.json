@@ -4,7 +4,7 @@
     "title": "CHKPT — guide d’utilisation complet",
     "steps": [
       "Sors. Check. Partage.",
-      "Version du prototype actualisée au 30 octobre 2026.",
+      "Version du prototype actualisée au 2 novembre 2026.",
       "Un guide pour utiliser l’application, la présenter et retrouver les gestes utiles."
     ],
     "note": "Captures de la version testée · personnages, lieux et contenus fictifs · prototype, pas application de production.",
@@ -524,5 +524,29 @@
     ],
     "note": "Ce guide explique l’application actuelle. Son PowerPoint est modifiable ; son PDF est lisible sans logiciel de programmation.",
     "image": "menu"
+  },
+  {
+    "chapter": "MESSAGERIE",
+    "title": "Le menu personnel à gauche",
+    "steps": [
+      "Toucher ☰ pour ouvrir le menu depuis la gauche.",
+      "La photo ronde et le nom en haut identifient le compte connecté.",
+      "Messages privés ouvre vos discussions ; les autres accès personnels restent disponibles.",
+      "Fermer avec la croix ou toucher la zone assombrie pour retrouver sa page."
+    ],
+    "note": "Le menu reste personnel, même lorsque vous consultez le profil de quelqu’un d’autre.",
+    "image": "menu"
+  },
+  {
+    "chapter": "MESSAGERIE",
+    "title": "Envoyer et retrouver ses messages privés",
+    "steps": [
+      "Dans Accueil, rechercher un profil, ouvrir sa page puis toucher Message.",
+      "Écrire jusqu’à 2 000 caractères et toucher Envoyer.",
+      "Retrouver les échanges dans ☰ → Messages privés ; les messages reçus sont marqués lus en ouvrant la discussion.",
+      "Les messages se conservent sur le même serveur ; rafraîchissement toutes les cinq secondes, sans appels ni pièces jointes."
+    ],
+    "note": "Profils majeurs publics uniquement. Seuls les deux participants lisent la conversation dans l’app. Pas de chiffrement de bout en bout ; les sauvegardes serveur incluent ces textes.",
+    "image": "messagerie"
   }
 ]

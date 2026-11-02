@@ -4,9 +4,9 @@ import {useStore} from '../services/store';
 export type SearchScope='all'|'places'|'sortir';
 export interface SearchFilters {type:string;sort:string;category:string;radius:string;categories?:string[]}
 export const defaultFilters:SearchFilters={type:'all',sort:'relevance',category:'all',radius:'all'};
-export type Route={page:'main';tab:MainTab}|{page:'place'|'event'|'profile'|'followers'|'following';id:string;tab:MainTab}|{page:'search';scope:SearchScope;query:string;filters:SearchFilters;tab:MainTab}|{page:'saved'|'history'|'progress'|'rewards'|'ranking'|'help'|'business';tab:MainTab};
+export type Route={page:'main';tab:MainTab}|{page:'place'|'event'|'profile'|'followers'|'following'|'conversation';id:string;tab:MainTab}|{page:'search';scope:SearchScope;query:string;filters:SearchFilters;tab:MainTab}|{page:'saved'|'history'|'progress'|'rewards'|'ranking'|'help'|'business'|'messages';tab:MainTab};
 export interface Entry {key:string;route:Route;depth:number}
-const tabs=['feed','map','sortir','profile'];const personal=['saved','history','progress','rewards','ranking','help','business'];const entities=['place','event','profile','followers','following'];
+const tabs=['feed','map','sortir','profile'];const personal=['saved','history','progress','rewards','ranking','help','business','messages'];const entities=['place','event','profile','followers','following','conversation'];
 const key=()=>Array.from(crypto.getRandomValues(new Uint8Array(8)),byte=>byte.toString(16).padStart(2,'0')).join('');
 const safeId=(value:string|null)=>value&&/^[a-zA-Z0-9_-]{1,100}$/.test(value)?value:null;
 export function readRoute(hash=window.location.hash):Route{

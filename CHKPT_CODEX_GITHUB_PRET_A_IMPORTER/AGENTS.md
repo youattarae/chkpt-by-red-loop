@@ -27,6 +27,8 @@
 - Couleurs cible : bleu nuit, bleu clair lumineux, bordeaux, noir, blanc. Garder l'emplacement des logos officiels s'ils ne sont pas fournis.
 - Mineurs 13–17 ans privés par défaut ; médias et historiques respectent les permissions.
 
+- Demande du 2 novembre 2026 : messagerie privée à deux et menu latéral à gauche, photo ronde et nom en haut. Le premier lot est limité au texte entre profils majeurs publics, sans changer les protections des mineurs. Voir `docs/MESSAGERIE_ET_MENU_GAUCHE.md`.
+
 ## Sécurité PRIORITAIRE (précondition à toute publication)
 - Ne jamais présenter ce dépôt comme « prêt pour la production ».
 - Corriger `/api/auth/switch-demo` : jamais de prise de rôle admin à partir d'un paramètre contrôlé par un visiteur ; réserver les personas aux environnements de démo privés, avec accès serveur vérifié.

@@ -1,3 +1,4 @@
+import {MessagesPage} from './components/messages/MessagesPage';
 /** @license SPDX-License-Identifier: Apache-2.0 */
 import {useEffect,useState} from 'react';
 import {StoreProvider,useStore} from './services/store';
@@ -46,6 +47,8 @@ function AppContent(){
    case 'event':return <EventDialog id={page.id} onClose={nav.back}/>;
    case 'profile':if(isServerAuthenticated&&page.id===currentUser.id)return <section aria-label="Mon profil depuis la recherche" className="max-w-2xl mx-auto"><button type="button" onClick={nav.back} className="p-4 text-sm font-bold">Retour</button><ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:activeTab})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/></section>;return <OtherProfile isVisible={isVisible} id={page.id} onClose={nav.back} onSelectPlace={place}/>;
    case 'followers':case 'following':return <ConnectionsDialog isVisible={isVisible} id={page.id} kind={page.page} onClose={nav.back}/>;
+   case 'messages':return <MessagesPage isVisible={isVisible}/>;
+   case 'conversation':return <MessagesPage peerId={page.id} isVisible={isVisible}/>;
    case 'ranking':return <ExplorerRanking isVisible={isVisible} onClose={nav.back}/>;
    case 'search':return <SearchResultsPage scope={page.scope} query={page.query} filters={page.filters} onBack={nav.back}/>;
    case 'business':return <BusinessPreview onClose={nav.back}/>;

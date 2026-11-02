@@ -140,7 +140,9 @@ export interface StoredMedia { storyId?:string; assetId:string; ownerId:string; 
 export interface SavedPlace { userId:string; placeId:string }
 function seedPosts():StoredPost[]{return INITIAL_POSTS.map(post=>({...post,likedBy:post.isLikedByCurrentUser?['usr_01']:[],baseLikesCount:Math.max(0,post.likesCount-(post.isLikedByCurrentUser?1:0)),baseCommentsCount:Math.max(0,post.commentsCount-post.comments.length)}));}
 
+export interface DirectMessage {id:string;senderId:string;recipientId:string;text:string;createdAt:string;readAt?:string}
 export interface DatabaseSchema {
+  messages: DirectMessage[];
   stories: StoryEntity[];
   posts: StoredPost[];
   saved_places: SavedPlace[];
@@ -430,6 +432,7 @@ class Database {
           createdAt: new Date().toISOString(),
         },
       ],
+      messages: [],
       stories: [],
       posts: seedPosts(),
       saved_places: [{userId:'usr_01',placeId:'plc_cocody_lounge'}],
@@ -451,7 +454,8 @@ class Database {
         if (!tables.every(table => Array.isArray(parsed[table]))) throw new Error('Invalid database tables');
         if (parsed.reviews !== undefined && !Array.isArray(parsed.reviews)) throw new Error('Invalid reviews table');
         parsed.reviews ??= [];
-        for(const table of ['stories','posts','saved_places','media']) if(parsed[table]!==undefined&&!Array.isArray(parsed[table])) throw new Error('Invalid shared data table');
+        for(const table of ['messages','stories','posts','saved_places','media']) if(parsed[table]!==undefined&&!Array.isArray(parsed[table])) throw new Error('Invalid shared data table');
+        parsed.messages ??= [];
         parsed.stories ??= [];
         parsed.posts ??= seedPosts();
         // Enrich only untouched demo illustrations, preserving personal posts and reactions.
@@ -664,6 +668,7 @@ class Database {
   public validateSnapshot(data:unknown):void {
     if(!data||typeof data!=='object')throw new Error('Invalid snapshot');
     const value=data as DatabaseSchema;
+    if(value.messages!==undefined&&(!Array.isArray(value.messages)||value.messages.some(m=>!m||typeof m.id!=='string'||typeof m.senderId!=='string'||typeof m.recipientId!=='string'||typeof m.text!=='string'||m.text.length>2000||!Number.isFinite(Date.parse(m.createdAt)))))throw new Error('Invalid messages');
     if(value.stories!==undefined&&(!Array.isArray(value.stories)||value.stories.some(story=>!story||typeof story.id!=='string'||!Number.isFinite(Date.parse(story.expiresAt)))))throw new Error('Invalid stories');
     for(const field of ['users','sessions','places','checkins','checkin_proofs','points_ledger','follows','reviews','posts','saved_places','media','reports'] as const)if(!Array.isArray(value[field]))throw new Error('Invalid snapshot table');
     for(const field of ['users','sessions','places','checkins','checkin_proofs','points_ledger','follows','reviews','posts','saved_places','media','reports'] as const)if(value[field].some(row=>!row||typeof row!=='object'))throw new Error('Invalid snapshot row');
@@ -679,7 +684,7 @@ class Database {
     catch(error){this.save(previous);this.data=previous;throw error;}
   }
 
-  public updateSharedData(next: Partial<Pick<DatabaseSchema,'stories'|'posts'|'saved_places'|'media'>>):void {
+  public updateSharedData(next: Partial<Pick<DatabaseSchema,'messages'|'stories'|'posts'|'saved_places'|'media'>>):void {
     const updated={...this.data,...next};
     this.save(updated);
     this.data=updated;
