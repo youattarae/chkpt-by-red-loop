@@ -14,3 +14,9 @@ Branche dédiée créée sans perte de modifications ; AGENTS annoté avec les s
 - Barre basse conservée sur principaux et fiches ; masquée en conversation et éditeur pour le clavier.
 - Brouillons par compte, conservés sur cet appareil avec références privées, sans médias en clair dans le stockage ; suppression explicite ou publication.
 - Cadence Accueil cinq provisoire, pas de cadence Sortir ajoutée ; badges et XP inchangés.
+
+## Socle additif et première intégration
+
+Contrats d'entités lieu/événement ajoutés aux messages/posts ; collections distinctes de contenus enregistrés et d'activité, anciennes collections conservées. Migrations optionnelles compatibles avec anciennes sauvegardes. Jeux de conversations synthétiques ajoutés une seule fois en mode démo, sans remplacement des messages personnels. Contacts de partage filtrés serveur sur relations réciproques majeures publiques.
+
+Vérification intermédiaire : `npm test` **25/25 groupes réussis**, suite historique de 11 comprise ; lint et build réussis. Nouvelle recette navigateur 320/390/1280 : navigation/profil, recherche, exploration, carte, partage, carte en DM et retour, brouillon/publication, article réussis. Les anciens scénarios navigateur sont en cours d'adaptation aux décisions explicites (aucun abaissement des droits serveur).

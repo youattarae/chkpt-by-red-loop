@@ -1,0 +1,14 @@
+import type {Express} from 'express';import crypto from 'node:crypto';import {db} from './db';import {requireAuth} from './auth';import {entityCard} from './entities';import {validRef} from '../shared/entities';import {canReadPost} from './social';
+export function installExperienceRoutes(app:Express){
+ app.get('/api/experience',requireAuth,(req,res)=>{const id=req.user!.id;res.json({saved:db.getRawData().saved_content.filter(item=>item.userId===id),activity:db.getRawData().activity.filter(item=>item.recipientId===id).slice(-100).reverse()});});
+ app.get('/api/entities/:type/:id',(req,res)=>{const ref={type:req.params.type,id:req.params.id};if(!validRef(ref)){res.status(400).json({message:'Référence invalide.'});return;}const card=entityCard(ref);res.status(card.unavailable?404:200).json({card});});
+ app.get('/api/share/contacts',requireAuth,(req,res)=>{const me=req.user!;const contacts=me.age>=18&&me.visibility==='public'?db.getRawData().users.filter(user=>user.id!==me.id&&user.age>=18&&user.visibility==='public'&&['user','creator','pro'].includes(user.role)&&db.isFollower(me.id,user.id)&&db.isFollower(user.id,me.id)).map(user=>({id:user.id,displayName:user.displayName,avatarUrl:user.avatarUrl})):[];res.json({contacts});});
+ app.post('/api/account/saved-content',requireAuth,(req,res)=>{const {type,id,saved}=req.body;const me=req.user!;
+  if(typeof id!=='string'||!['post','event'].includes(type)||typeof saved!=='boolean'){res.status(400).json({message:'Enregistrement invalide.'});return;}
+  const allowed=type==='post'?db.getRawData().posts.some(post=>post.id===id&&canReadPost(post,me)):!entityCard({type:'event',id}).unavailable;
+  if(saved&&!allowed){res.status(404).json({message:'Contenu indisponible.'});return;}
+  const rows=db.getRawData().saved_content.filter(item=>!(item.userId===me.id&&item.type===type&&item.id===id));if(saved)rows.push({userId:me.id,type,id});db.updateSharedData({saved_content:rows});res.json({saved:rows.filter(item=>item.userId===me.id)});
+ });
+ app.post('/api/activity/:id/read',requireAuth,(req,res)=>{const id=req.params.id;const mine=db.getRawData().activity.find(item=>item.id===id&&item.recipientId===req.user!.id);if(!mine){res.status(404).json({message:'Notification indisponible.'});return;}db.updateSharedData({activity:db.getRawData().activity.map(item=>item===mine?{...item,readAt:item.readAt||new Date().toISOString()}:item)});res.json({ok:true});});
+}
+export function notifyActivity(recipientId:string,actorId:string,title:string,body:string,targetId:string){if(recipientId===actorId)return;const owner=db.findUserById(recipientId),actor=db.findUserById(actorId);if(!owner||!actor||owner.age<18||owner.visibility==='private'||actor.age<18||actor.visibility==='private')return;db.updateSharedData({activity:[...db.getRawData().activity,{id:crypto.randomUUID(),recipientId,title,body,targetType:'post' as const,targetId,createdAt:new Date().toISOString()}].slice(-1000)});}

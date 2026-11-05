@@ -1,3 +1,6 @@
+import {notifyActivity} from './experience';
+import {validRef} from '../shared/entities';
+import {entityCard} from './entities';
 import { Express, Request } from 'express';
 import crypto from 'node:crypto';
 import { db, StoredPost, UserEntity } from './db';
@@ -25,6 +28,7 @@ export function installSocialRoutes(app:Express){
   });
   app.post('/api/posts',requireAuth,(req,res)=>{
     const user=req.user!;const data=req.body;
+    if(data.entity!==undefined&&(!validRef(data.entity)||entityCard(data.entity).unavailable)){res.status(400).json({error:'invalid_entity'});return;}
     if(typeof data.text!=='string'||!data.text.trim()||data.text.trim().length>3000){res.status(400).json({error:'invalid_post',message:'Le texte doit contenir de 1 à 3 000 caractères.'});return;}
     const place=data.linkedPlaceId?db.findPlaceById(data.linkedPlaceId):undefined;
     const check=data.linkedCheckinId?db.findCheckinById(data.linkedCheckinId):undefined;
@@ -56,7 +60,7 @@ export function installSocialRoutes(app:Express){
     const id='post_'+crypto.createHash('sha256').update(user.id+':'+nonce).digest('hex').slice(0,32);
     const existing=db.getRawData().posts.find(item=>item.id===id);
     if(existing){const awards=existing.linkedCheckinId&&existing.mediaUrl?awardPublishedPhoto(user.id,existing.linkedCheckinId,existing.mediaUrl):null;res.json({post:postDTO(existing,user),awards});return;}
-    const post:StoredPost={id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),media:attachments,mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:!!check,isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
+    const post:StoredPost={entity:data.entity,id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),media:attachments,mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:!!check,isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
     db.updateSharedData({posts:[post,...db.getRawData().posts],media});
     const awards=check&&mediaUrl?awardPublishedPhoto(user.id,check.id,mediaUrl):null;
     res.status(201).json({post:postDTO(post,user),awards});
@@ -66,7 +70,7 @@ export function installSocialRoutes(app:Express){
     const post=findPost(req);if(!post){res.status(404).json({error:'post_unavailable'});return;}
     if(typeof req.body.liked!=='boolean'){res.status(400).json({error:'invalid_like'});return;}
     const ids=post.likedBy.filter(id=>id!==req.user!.id);if(req.body.liked)ids.push(req.user!.id);
-    const updated={...post,likedBy:ids};db.updateSharedData({posts:db.getRawData().posts.map(item=>item.id===post.id?updated:item)});res.json({post:postDTO(updated,req.user)});
+    const updated={...post,likedBy:ids};db.updateSharedData({posts:db.getRawData().posts.map(item=>item.id===post.id?updated:item)});if(req.body.liked&&!post.likedBy.includes(req.user!.id))notifyActivity(post.authorId,req.user!.id,'Nouveau J’aime',req.user!.displayName+' aime votre publication.',post.id);res.json({post:postDTO(updated,req.user)});
   });
   app.post('/api/posts/:id/comments',requireAuth,(req,res)=>{
     const post=findPost(req);if(!post){res.status(404).json({error:'post_unavailable'});return;}
@@ -76,7 +80,7 @@ export function installSocialRoutes(app:Express){
     const id='comment_'+crypto.createHash('sha256').update(user.id+':'+post.id+':'+req.body.clientRequestId).digest('hex').slice(0,32);
     if(post.comments.some(item=>item.id===id)){res.json({post:postDTO(post,user)});return;}
     const updated={...post,comments:[...post.comments,{id,authorId:user.id,authorName:user.displayName,authorAvatar:user.avatarUrl,text:req.body.text.trim(),createdAt:new Date().toISOString()}]};
-    db.updateSharedData({posts:db.getRawData().posts.map(item=>item.id===post.id?updated:item)});res.json({post:postDTO(updated,user)});
+    db.updateSharedData({posts:db.getRawData().posts.map(item=>item.id===post.id?updated:item)});notifyActivity(post.authorId,user.id,'Nouveau commentaire',user.displayName+' : '+req.body.text.trim().slice(0,120),post.id);res.json({post:postDTO(updated,user)});
   });
   app.post('/api/account/saved-places',requireAuth,(req,res)=>{
     const {placeId,saved}=req.body;

@@ -117,6 +117,7 @@ export interface Post {
   text: string;
   mediaUrl?: string;
   mediaType?: 'image' | 'video';
+  entity?: import('../../shared/entities').EntityRef;
   linkedPlaceId?: string;
   linkedPlaceName?: string;
   linkedCheckinId?: string;

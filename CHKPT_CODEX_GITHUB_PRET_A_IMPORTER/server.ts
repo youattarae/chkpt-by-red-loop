@@ -1,3 +1,4 @@
+import {installExperienceRoutes} from './server/experience';
 import {installMessageRoutes} from './server/messages';
 import {fileURLToPath} from 'node:url';
 /**
@@ -88,6 +89,7 @@ const mediaRegistry = {
 };
 installSocialRoutes(app);
 installMessageRoutes(app);
+installExperienceRoutes(app);
 installDiscoveryRoutes(app);
 installStoryRoutes(app);
 installBackupRoutes(app);
