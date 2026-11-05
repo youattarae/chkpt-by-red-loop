@@ -1,3 +1,4 @@
+import {openMenu} from './browser_ui';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 export async function checkMessages(url:string,password:string){
@@ -21,7 +22,7 @@ export async function checkMessages(url:string,password:string){
  try{
  const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();await page.addInitScript(token=>localStorage.setItem('chkpt_session_token',token),b.token);
  await page.goto(url);await page.getByRole('tab',{name:'Pour toi',exact:true}).waitFor();
- await page.getByRole('button',{name:'Ouvrir mon menu',exact:true}).click();
+ await openMenu(page);
  const menu=page.getByRole('dialog',{name:'Mon menu'});await menu.waitFor();assert.equal(Math.round((await menu.boundingBox())!.x),0);await menu.locator('img').waitFor();await page.screenshot({path:'/tmp/chkpt-dm-menu.png'});
  await menu.getByRole('button',{name:'Messages privés',exact:true}).click();await page.getByRole('button',{name:/Ingrid N’Goan/}).click();
  await page.locator('[aria-label="Conversation"]').getByText(body.text,{exact:true}).waitFor();await page.getByLabel('Votre message',{exact:true}).fill('Oui, à tout à l’heure !');await page.getByRole('button',{name:'Envoyer',exact:true}).click();await page.locator('[aria-label="Conversation"]').getByText('Oui, à tout à l’heure !',{exact:true}).waitFor();

@@ -1,3 +1,4 @@
+import {openComposer} from './browser_ui';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 export async function checkPostMedia(url:string,password:string){
@@ -7,7 +8,7 @@ export async function checkPostMedia(url:string,password:string){
     const context=await browser.newContext({viewport:{width:390,height:900}});
     await context.addInitScript(token=>localStorage.setItem('chkpt_session_token',token),actor.token);
     const page=await context.newPage();await page.goto(url);
-    await page.getByRole('button',{name:/Qu’as-tu découvert/}).click();
+    await openComposer(page);
     await page.getByPlaceholder('Partage tes bonnes adresses, tes coups de cœur…',{exact:true}).fill('Mon album photo et vidéo.');
     const input=page.getByLabel('Images ou vidéos de la publication');
     await input.setInputFiles([new URL('../public/illustrations/maquis-demo.png',import.meta.url).pathname,new URL('./fixtures/blue-demo.mp4',import.meta.url).pathname]);

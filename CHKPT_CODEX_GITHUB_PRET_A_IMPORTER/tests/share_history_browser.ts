@@ -1,3 +1,5 @@
+import {openMenu} from './browser_ui';
+import {goProfile} from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -34,8 +36,8 @@ export async function checkShareHistory(url: string, password: string) {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
-      await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
+      await goProfile(page);
+      await openMenu(page);await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
       const history = page.getByRole('region', { name: 'Historique des lieux visités', exact: true });
       await history.getByText(/2 visites/).waitFor();
       assert.equal(await history.getByRole('button').count(), 1, 'Deux visites du même lieu donnent une fiche');
@@ -43,7 +45,7 @@ export async function checkShareHistory(url: string, password: string) {
       assert.equal(await history.getByText(/Historique autre personne|Tentative refusée/).count(), 0);
       assert.equal(await history.getByText(/Maquis L'Étoile/).count(),0,'Les visites forgées dans le cache local ne sont pas synchronisées');
       for (const theme of ['light', 'dark']) {
-        if (theme === 'dark') {await toggleTheme(page);await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();}
+        if (theme === 'dark') {await toggleTheme(page);await openMenu(page);await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();}
         assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
         if (width === 390 && process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
@@ -53,7 +55,7 @@ export async function checkShareHistory(url: string, password: string) {
       await history.getByRole('button').click();
       const venue = page.getByRole('region', { name: 'Lagon Bleu Rooftop Lounge', exact: true });
       await venue.getByRole('button', { name: 'Partager cet établissement', exact: true }).click();
-      const share = venue.getByRole('region', { name: 'Partager le lieu', exact: true });
+      const share=page.getByRole('dialog',{name:'Partager la fiche',exact:true});
       const link = await share.getByRole('textbox', { name: 'Lien de la fiche', exact: true }).inputValue();
       assert.equal(link, url + '/#lieu=plc_cocody_lounge');
       assert.ok(!link.includes(persona.token));
@@ -65,15 +67,18 @@ export async function checkShareHistory(url: string, password: string) {
       if (width === 390 && process.env.CHKPT_CAPTURE_DIR) await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'partage-lieu-390.png') });
       await page.evaluate(() => Object.defineProperty(navigator, 'clipboard', { configurable: true, value: undefined }));
       await share.getByRole('button', { name: 'Copier le lien', exact: true }).click();
-      await share.getByText(/Sélectionnez puis copiez/).waitFor();
-      await share.getByRole('button', { name: 'Fermer le partage', exact: true }).click();
+      await share.getByText(/Copiez le lien sélectionné/).waitFor();
+      await share.getByRole('button', { name: 'Fermer partager la fiche', exact: true }).click();
       await page.evaluate("Object.defineProperty(navigator, 'share', { configurable: true, value: async data => { window.__shared = data; } })");
       await venue.getByRole('button', { name: 'Partager cet établissement', exact: true }).click();
-      assert.equal(await page.evaluate(() => (window as any).__shared.url), link);
-      assert.equal(await share.count(), 0);
+      await share.getByRole('button',{name:'Plus',exact:true}).click();
+      assert.equal(await page.evaluate(() => (window as any).__shared.url),link);
+      await share.getByRole('button',{name:'Fermer partager la fiche'}).click();
       await page.evaluate("Object.defineProperty(navigator, 'share', { configurable: true, value: async () => { throw new DOMException('cancel', 'AbortError'); } })");
       await venue.getByRole('button', { name: 'Partager cet établissement', exact: true }).click();
-      assert.equal(await share.count(), 0, 'Annuler le menu natif ne montre pas une erreur');
+      await share.getByRole('button',{name:'Plus',exact:true}).click();
+      assert.equal(await share.getByRole('alert').count(),0,'Annuler le menu natif ne montre pas une erreur');
+      await share.getByRole('button',{name:'Fermer partager la fiche'}).click();
       await page.goto(link);
       await page.reload();
       await venue.waitFor();
@@ -83,8 +88,8 @@ export async function checkShareHistory(url: string, password: string) {
       await page.goto(url + '/#lieu=unknown');
       await page.reload();
       assert.equal(await page.getByRole('dialog').count(), 0);
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
-      await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
+      await goProfile(page);
+      await openMenu(page);await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Historique privé'}).click();
       await history.getByText(/2 visites/).waitFor();
       assert.deepEqual(errors, []);
       await context.close();

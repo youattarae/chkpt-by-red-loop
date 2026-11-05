@@ -1,3 +1,4 @@
+import {openCheck} from './browser_ui';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
@@ -65,7 +66,7 @@ export async function checkDevStability() {
     await page.goto(url);
     await page.evaluate(() => document.fonts.ready);
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+    await openCheck(page);
     const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
     await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
     const beforeNavigations = navigations;
@@ -79,8 +80,8 @@ export async function checkDevStability() {
     assert.ok(!hotMessages.slice(beforeHot).some(message => /"type":"(?:full-reload|update)"/.test(message)), 'Aucune mise à jour de code pour une écriture de données');
     assert.equal(await dialog.getByRole('button', { name: 'Créer une publication', exact: true }).isVisible(), true);
     await dialog.getByRole('button', { name: 'Créer une publication', exact: true }).click();
-    await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill('Confirmation stable en mode développement');
-    await page.getByRole('button', { name: 'Publier le checkpoint', exact: true }).click();
+    await page.getByPlaceholder("Partage tes bonnes adresses, tes coups de cœur…").fill('Confirmation stable en mode développement');
+    await page.getByRole('button', { name: 'Publier', exact: true }).click();
     await page.getByText('Confirmation stable en mode développement', { exact: true }).waitFor();
     const beforeEdit = hotMessages.length;
     const symbol = path.join(runtime, 'src/components/common/BrandSymbol.tsx');

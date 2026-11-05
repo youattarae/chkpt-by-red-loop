@@ -1,3 +1,4 @@
+import {goProfile,openCheck,openGps} from './browser_ui';
 import { toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -22,19 +23,20 @@ export async function checkVisualDirection(url: string) {
       assert.equal(await header.locator('select').count(), 0);
       assert.equal(await page.getByRole('button', { name: 'Mode sombre', exact: true }).count(), 0, 'Le thème est uniquement dans les réglages');
       assert.equal(await header.getByRole('button', { name: 'GPS', exact: true }).count(), 1);
-      assert.equal(await header.getByRole('button').count(), 4, 'Symbole, GPS, notifications et menu personnel');
+      assert.equal(await header.getByRole('button').count(), 4, 'Menu, avatar, recherche et localisation');
       const gps = header.getByRole('button', { name: 'GPS', exact: true });
-      await gps.click();
+      await openGps(page);
       const spots = header.getByRole('region', { name: 'Positions de démonstration', exact: true });
       assert.equal(await spots.getByRole('button').count(), 6);
       await spots.getByRole('button', { name: /Marcory Zone 4/ }).click();
-      assert.equal(await gps.getAttribute('aria-expanded'), 'false');
-      assert.match(await gps.innerText(), /Marcory/);
-      await gps.click();
+      assert.equal(await header.getByRole('combobox',{name:'Commune explorée'}).inputValue(),'Marcory');
+      await page.getByRole('button',{name:'Fermer la localisation'}).click();
+      await openGps(page);
       assert.equal(await spots.getByRole('button', { name: /Marcory Zone 4/ }).getAttribute('aria-pressed'), 'true');
       await spots.getByRole('button', { name: /Cocody Saint-Jean/ }).click();
-      assert.match(await gps.innerText(), /Cocody/);
-      const checkin = page.getByRole('button', { name: 'Valider ma présence physique', exact: true });
+      assert.equal(await header.getByRole('combobox',{name:'Commune explorée'}).inputValue(),'Cocody');
+      await page.getByRole('button',{name:'Fermer la localisation'}).click();
+      const checkin = page.getByRole('button', { name: 'Check et publication', exact: true });
       assert.equal(await checkin.locator('img[src="/brand/chkpt-symbol.svg"]').count(), 1);
       assert.equal(await checkin.locator('svg').count(), 0, 'Le symbole remplace la cible dans le bouton central');
       for (const theme of ['light', 'dark']) {
@@ -63,10 +65,10 @@ export async function checkVisualDirection(url: string) {
           assert.ok(box && box.x >= 0 && box.x + box.width <= width + 1, `En-tête accessible : ${await button.getAttribute('title')} ${width}px / ${theme}`);
         }
         for (const tab of ['Carte', 'Sortir', 'Profil', 'Accueil']) {
-          await page.getByRole('button', { name: tab, exact: true }).click();
+          if(tab==='Profil')await goProfile(page);else await page.getByRole('button',{name:tab,exact:true}).click();
           assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${tab} sans débordement ${width}px / ${theme}`);
         }
-        await checkin.click();
+        await openCheck(page);
         await page.getByRole('dialog', { name: 'Check-in', exact: true }).waitFor();
         assert.equal(await page.locator('html').getAttribute('data-theme'), theme);
         await page.getByRole('button', { name: 'Fermer' }).click();

@@ -1,3 +1,4 @@
+import {goProfile} from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import https from 'node:https';
@@ -29,7 +30,7 @@ export async function checkRemoteBrowser(upstream: string, password: string) {
     await venue.waitFor();
     await venue.getByRole('button',{name:'Retour',exact:true}).click();
     assert.equal((await context.request.get(url+'/api/places')).status(),200);
-    await page.getByRole('button',{name:'Profil',exact:true}).click();
+    await goProfile(page);
     await page.getByRole('button',{name:'Réglages',exact:true}).click();
     await page.getByRole('button',{name:'Fermer l’accès privé à distance',exact:true}).click();
     await page.getByRole('heading',{name:'Bienvenue sur CHKPT',exact:true}).waitFor();

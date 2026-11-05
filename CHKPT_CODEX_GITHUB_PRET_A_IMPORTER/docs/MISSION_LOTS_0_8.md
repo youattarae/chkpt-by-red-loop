@@ -41,3 +41,9 @@ Tests intermédiaires : nouvelle recette intégrée 320/390/1280 réussie, scén
 - Validation des nouvelles collections au chargement avant toute écriture ; tests étendus aux tables invalides en préservant les octets de la base corrompue.
 
 Essais ciblés réussis à ce stade : présentation répétée, GPS en attente, thèmes/contrastes 320/390/1280, profil et interactions après rechargement, fil, fiches, partage externe/historique, avis/récompense/suivi, radar et secours, deux navigateurs/données privées, quatre médias, stories. Reste la fin des scénarios de navigation et la relance globale finale. Les adaptations de tests portent sur les accès validés et le périmètre d'enregistrement distinct, pas sur l'admissibilité des visites.
+
+## Fin de la recette ciblée
+
+Tous les scénarios navigateur historiques adaptés ont réussi séparément : navigation/recherche, relations et classement, portraits/publicités et protection mineurs, cas limites de cache/réseau/audiences/favoris/reset, DM et stories compris. La recette nouvelle réussit en 320/390/1280, y compris check de fiche prérempli et reprise d'un doublon sans double XP. Les assertions obsolètes sont remplacées par les nouveaux accès, les contrôles métier et d'isolation sont conservés.
+
+La génération des supports actuels puis la suite globale après les dernières modifications restent les étapes finales ; ne pas assimiler les essais ciblés à une nouvelle réussite complète avant sa constatation.

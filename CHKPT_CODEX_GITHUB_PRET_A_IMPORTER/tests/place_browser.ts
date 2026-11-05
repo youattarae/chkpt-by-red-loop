@@ -1,3 +1,4 @@
+import {openGps} from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
 import { mkdir } from 'node:fs/promises';
@@ -15,7 +16,7 @@ export async function checkLargePlace(url: string) {
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
       const gps = page.getByRole('button', { name: 'GPS', exact: true });
-      await gps.click();
+      await openGps(page);
       const menu = page.getByRole('region', { name: 'Réglages GPS', exact: true });
       await menu.getByRole('button', { name: 'Simulateur', exact: true }).waitFor();
       await menu.getByRole('button', { name: 'GPS Réel', exact: true }).waitFor();
@@ -25,7 +26,8 @@ export async function checkLargePlace(url: string) {
         await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, 'gps-positions-390.png') });
       }
       await menu.getByRole('button', { name: /Cocody Saint-Jean/ }).click();
-      assert.match(await gps.innerText(), /Cocody/);
+      assert.equal(await menu.getByRole('combobox',{name:'Commune explorée'}).inputValue(),'Cocody');
+      await page.getByRole('button',{name:'Fermer la localisation'}).click();
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await toggleTheme(page);
         await page.getByRole('article').filter({ hasText: 'Une belle découverte à Cocody' }).getByRole('button', { name: /Maquis L.Étoile/ }).click();
@@ -40,7 +42,7 @@ export async function checkLargePlace(url: string) {
           assert.ok(box.width >= 640 && box.height >= 800, 'La fiche est agrandie sur ordinateur');
         }
         assert.ok(await dialog.evaluate(element => element.scrollWidth <= element.clientWidth), 'La fiche ne déborde pas horizontalement');
-        assert.equal(await dialog.getByRole('button', { name: /check/i }).count(), 0, 'Le bouton central reste l’unique accès au check-in');
+        assert.equal(await dialog.getByRole('button',{name:'Faire un check',exact:true}).count(),1,'Le lieu autorise un check prérempli');
         await dialog.getByText('Lieu fictif de démonstration', { exact: true }).waitFor();
         if (process.env.CHKPT_CAPTURE_DIR) await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `fiche-large-${theme}-${viewport.width}.png`) });
         if (theme === 'light') {

@@ -1,3 +1,4 @@
+import {goProfile,openCheck} from './browser_ui';
 import { openAccount, toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -49,10 +50,10 @@ export async function checkPresentation(url: string, password: string) {
         await page.getByRole('button', { name: 'Carte', exact: true }).click();
         await page.getByRole('button', { name: "Choisir Maquis L'Étoile d'Abidjan", exact: true }).click();
         await capture('carte');
-        await page.getByRole('button', { name: 'Détails', exact: true }).click();
+        await page.getByRole('button', { name: 'Voir le lieu', exact: true }).click();
         await capture('fiche');
         await page.getByRole('button', { name: 'Retour', exact: true }).click();
-        await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+        await openCheck(page);
         await page.getByRole('dialog', { name: 'Check-in', exact: true }).getByRole('button', { name: /Maquis L'Étoile/ }).click();
         await capture('check-confirm');
         await page.getByRole('button', { name: 'Confirmer le check' }).click();
@@ -64,14 +65,14 @@ export async function checkPresentation(url: string, password: string) {
       await capture('checkin');
       await page.getByRole('button', { name: 'Créer une publication' }).click();
       const message = `Une soirée à Cocody — recette ${width}`;
-      await page.getByPlaceholder("Racontez votre expérience, l'ambiance, les plats...").fill(message);
+      await page.getByPlaceholder("Partage tes bonnes adresses, tes coups de cœur…").fill(message);
       await capture('publication');
       await page.getByRole('combobox',{name:'Visibilité de la publication',exact:true}).selectOption('public');
-      await page.getByRole('button', { name: 'Publier le checkpoint' }).click();
+      await page.getByRole('button', { name: 'Publier' }).click();
       await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
+      await goProfile(page);
       await page.getByRole('region', { name: 'Mes publications' }).getByText(message, { exact: true }).waitFor();
-      await page.getByText(/1315 XP au total/).waitFor();
+      await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1315 XP au total/).waitFor();
       await capture('profil');
       await page.getByRole('button', { name: 'Sortir', exact: true }).click();
       const going = page.getByRole('button', { name: "J'y serai", exact: true }).first();
@@ -83,9 +84,9 @@ export async function checkPresentation(url: string, password: string) {
       await page.reload();
       await page.getByRole('button', { name: 'Sortir', exact: true }).click();
       assert.equal(await page.getByRole('button', { name: "J'y serai", exact: true }).first().getAttribute('aria-pressed'), 'true');
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
+      await goProfile(page);
       await page.getByRole('region', { name: 'Mes publications' }).getByText(message, { exact: true }).waitFor();
-      await page.getByText(/1315 XP au total/).waitFor();
+      await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1315 XP au total/).waitFor();
       // Start again through the operator, proving reset and the daily XP key are reusable.
       await start();
       await visit();

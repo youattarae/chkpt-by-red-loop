@@ -1,3 +1,4 @@
+import {goProfile} from './browser_ui';
 import assert from 'node:assert/strict';
 import {chromium,BrowserContext} from 'playwright';
 import {mkdir} from 'node:fs/promises';
@@ -7,7 +8,7 @@ export async function checkStoryBrowsers(url:string,password:string){
   try{
     const actor=await (await fetch(url+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'story_browser_'+Date.now(),displayName:'Alex · profil fictif',password,age:25})})).json();
     async function device(token:string){const context=await browser.newContext({viewport:{width:390,height:900},reducedMotion:'reduce'});contexts.push(context);await context.addInitScript(token=>localStorage.setItem('chkpt_session_token',token),token);const page=await context.newPage();await page.goto(url);return page;}
-    const page=await device(actor.token);await page.getByRole('button',{name:'Profil',exact:true}).click();
+    const page=await device(actor.token);await goProfile(page);
     await page.getByRole('button',{name:'Ajouter une story',exact:true}).click();
     const composer=page.getByRole('dialog',{name:'Ajouter une story',exact:true});
     await composer.getByLabel('Images ou vidéos de la publication').setInputFiles(new URL('../public/illustrations/maquis-braise-demo.png',import.meta.url).pathname);

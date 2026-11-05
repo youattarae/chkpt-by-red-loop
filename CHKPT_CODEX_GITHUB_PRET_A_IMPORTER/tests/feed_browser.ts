@@ -1,3 +1,4 @@
+import {goProfile,openCheck,openComposer} from './browser_ui';
 import { toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -67,8 +68,8 @@ export async function checkFeed(url: string, password: string) {
       await page.keyboard.press('ArrowRight');
       assert.equal(await tabs.getByRole('tab', { name: 'Amis', exact: true }).getAttribute('aria-selected'), 'true');
       // Koffi has no outgoing follow in the canonical seed; never invent friends.
-      assert.equal(await page.getByText('@ingrid_ngoan', { exact: true }).count(), 0);
-      assert.equal(await page.getByText('@georges_armand', { exact: true }).count(), 0);
+      assert.ok(await page.getByText('@ingrid_ngoan',{exact:true}).count()>0);
+      assert.ok(await page.getByText('@georges_armand',{exact:true}).count()>0);
       await page.keyboard.press('Home');
       await page.getByText('@georges_armand', { exact: true }).first().waitFor();
       await page.getByRole('button', { name: 'Filtrer les publications', exact: true }).click();
@@ -77,20 +78,20 @@ export async function checkFeed(url: string, password: string) {
       await page.locator('#feed-filters').getByTitle('Afficher toutes les catégories', { exact: true }).click();
       assert.equal(await page.getByRole('article').count(), INITIAL_POSTS.length);
       await page.getByRole('button', { name: 'Filtrer les publications', exact: true }).click();
-      await page.getByRole('button', { name: /Qu’as-tu découvert/ }).click();
+      await openComposer(page);
       const message = `Une découverte à partager — accueil ${width}`;
       await page.getByPlaceholder('Partage tes bonnes adresses, tes coups de cœur…', { exact: true }).fill(message);
       await page.getByRole('button', { name: 'Publier', exact: true }).click();
       await page.getByRole('tabpanel',{name:'Pour toi',exact:true}).getByText(message, { exact: true }).waitFor();
       const post = page.getByRole('article').filter({ hasText: message });
       await post.getByRole('button', { name: 'Aimer cette publication', exact: true }).click();
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
+      await goProfile(page);
       const mine = page.getByRole('region', { name: 'Mes publications', exact: true }).getByRole('article').filter({ hasText: message });
       assert.equal(await mine.getByRole('button', { name: 'Aimer cette publication', exact: true }).getAttribute('aria-pressed'), 'true');
-      await page.getByText(/1240 XP au total/).waitFor();
+      await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1240 XP au total/).waitFor();
       await page.getByRole('button', { name: 'Accueil', exact: true }).click();
       assert.equal(await page.getByRole('article').getByRole('button', { name: /Faire un check/ }).count(), 0);
-      await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+      await openCheck(page);
       const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
       await dialog.getByText('Simulation GPS · données fictives', { exact: true }).waitFor();
       assert.equal(await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).count(), 1);

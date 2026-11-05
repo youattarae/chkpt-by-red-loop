@@ -1,3 +1,4 @@
+import {goProfile} from './browser_ui';
 import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 import {mkdir} from 'node:fs/promises';
@@ -22,6 +23,6 @@ export async function checkDemoProfileBrowsers(url:string,password:string){
   }
   await context.close();
   const minor=await (await fetch(url+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'minor_ads_'+Date.now(),password,age:16})})).json();
-  const minorContext=await browser.newContext({viewport:{width:390,height:950}});await minorContext.addInitScript(token=>localStorage.setItem('chkpt_session_token',token),minor.token);const minorPage=await minorContext.newPage();await minorPage.goto(url);await minorPage.getByRole('button',{name:'Profil',exact:true}).click();await minorPage.getByRole('heading',{name:minor.user.displayName,exact:true,level:1}).waitFor();await minorPage.getByRole('button',{name:'Accueil',exact:true}).click();assert.equal(await minorPage.locator('[data-demo-ad]').filter({hasText:'Brise Lagune'}).count(),0);assert.equal(await minorPage.locator('img[src="/api/ads/adult-image"]').count(),0);await minorContext.close();
+  const minorContext=await browser.newContext({viewport:{width:390,height:950}});await minorContext.addInitScript(token=>localStorage.setItem('chkpt_session_token',token),minor.token);const minorPage=await minorContext.newPage();await minorPage.goto(url);await goProfile(minorPage);await minorPage.getByRole('heading',{name:minor.user.displayName,exact:true,level:1}).waitFor();await minorPage.getByRole('button',{name:'Accueil',exact:true}).click();assert.equal(await minorPage.locator('[data-demo-ad]').filter({hasText:'Brise Lagune'}).count(),0);assert.equal(await minorPage.locator('img[src="/api/ads/adult-image"]').count(),0);await minorContext.close();
  }finally{await browser.close();}
 }

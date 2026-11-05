@@ -1,28 +1,15 @@
-import { Page } from 'playwright';
+import {Page,Locator} from 'playwright';
+export async function goProfile(page:Page){if(await page.getByRole('button',{name:'Fermer la recherche',exact:true}).isVisible().catch(()=>false))await page.getByRole('button',{name:'Fermer la recherche',exact:true}).click();if(await page.getByRole('heading',{name:'Mon profil',exact:true}).isVisible().catch(()=>false))return;if(!await page.getByRole('button',{name:'Mon profil',exact:true}).isVisible().catch(()=>false))await page.locator('nav').getByRole('button',{name:'Accueil',exact:true}).click();await page.getByRole('button',{name:'Mon profil',exact:true}).click();}
+export async function openAccount(page:Page){await goProfile(page);await page.getByRole('button',{name:'Gérer mon compte',exact:true}).click();}
+export async function openSettings(page:Page){const own=await page.getByRole('heading',{name:'Mon profil',exact:true}).isVisible().catch(()=>false);const current=own?'Profil':(await page.locator('nav button[aria-current="page"]').textContent().catch(()=>''))?.trim()||'Profil';await goProfile(page);await page.getByRole('button',{name:'Réglages',exact:true}).click();await page.getByRole('dialog',{name:'Réglages',exact:true}).waitFor();return current;}
+export async function closeSettings(page:Page,returnTo='Profil'){await page.getByRole('button',{name:'Fermer les réglages',exact:true}).click();if(returnTo==='Profil')await goProfile(page);else await page.locator('nav').getByRole('button',{name:returnTo.replace(/\d+/g,'').trim(),exact:true}).click();}
+export async function toggleTheme(page:Page){const back=await openSettings(page);const button=page.getByRole('button',{name:'Mode sombre',exact:true});await button.click();const state=await button.getAttribute('aria-pressed');await closeSettings(page,back);return state;}
+export async function openCheck(page:Page){await page.getByRole('button',{name:'Check et publication',exact:true}).click();await page.getByRole('dialog',{name:'Que souhaitez-vous faire ?'}).getByRole('button',{name:'Faire un check',exact:true}).click();}
+export async function openComposer(page:Page){await page.getByRole('button',{name:'Check et publication',exact:true}).click();await page.getByRole('dialog',{name:'Que souhaitez-vous faire ?'}).getByRole('button',{name:'Créer une publication',exact:true}).click();}
+export async function searchField(page:Page|Locator,name:string){const locator=page.getByRole('combobox',{name,exact:true});if(!await locator.isVisible().catch(()=>false))await page.getByRole('button',{name:'Ouvrir la recherche',exact:true}).click();return locator;}
+export async function openGps(page:Page){const tools=page.locator('details[data-map-tools]');if(await tools.isVisible().catch(()=>false)){if(!await tools.evaluate((el:HTMLDetailsElement)=>el.open))await tools.locator(':scope > summary').click();return;}const gps=page.getByRole('button',{name:'GPS',exact:true});if(!await gps.isVisible().catch(()=>false))await page.locator('nav').getByRole('button',{name:'Accueil',exact:true}).click();await gps.click();await page.getByText('Position du check · simulateur / GPS',{exact:true}).click();}
+export async function openNotifications(page:Page){if(!await page.getByRole('button',{name:'Ouvrir mon menu'}).isVisible().catch(()=>false))await page.locator('nav').getByRole('button',{name:'Accueil',exact:true}).click();await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:/^Notifications/}).click();}
 
-export async function openAccount(page: Page) {
-  await page.getByRole('button', { name: 'Profil', exact: true }).click();
-  await page.getByRole('button', { name: 'Gérer mon compte', exact: true }).click();
-}
+export async function openFilters(page:Page|Locator){const button=page.getByRole('button',{name:'Filtres',exact:true});if(!await button.isVisible().catch(()=>false))await page.getByRole('button',{name:'Ouvrir la recherche',exact:true}).click();await button.click();}
 
-export async function openSettings(page: Page) {
-  const current = (await page.locator('nav button[aria-current="page"]').textContent())?.trim() || 'Accueil';
-  await page.getByRole('button', { name: 'Profil', exact: true }).click();
-  await page.getByRole('button', { name: 'Réglages', exact: true }).click();
-  await page.getByRole('dialog', { name: 'Réglages', exact: true }).waitFor();
-  return current;
-}
-
-export async function closeSettings(page: Page, returnTo = 'Profil') {
-  await page.getByRole('button', { name: 'Fermer les réglages', exact: true }).click();
-  await page.getByRole('button', { name: returnTo, exact: true }).click();
-}
-
-export async function toggleTheme(page: Page) {
-  const returnTo = await openSettings(page);
-  const button = page.getByRole('button', { name: 'Mode sombre', exact: true });
-  await button.click();
-  const state = await button.getAttribute('aria-pressed');
-  await closeSettings(page, returnTo);
-  return state;
-}
+export async function openMenu(page:Page){const button=page.getByRole('button',{name:'Ouvrir mon menu',exact:true});if(await button.isVisible().catch(()=>false))await button.click();else await page.evaluate(()=>{const target=document.body;const a=new Touch({identifier:1,target,clientX:2,clientY:180});window.dispatchEvent(new TouchEvent('touchstart',{touches:[a],bubbles:true}));const b=new Touch({identifier:1,target,clientX:100,clientY:180});window.dispatchEvent(new TouchEvent('touchend',{changedTouches:[b],bubbles:true}));});await page.getByRole('dialog',{name:'Mon menu'}).waitFor();}

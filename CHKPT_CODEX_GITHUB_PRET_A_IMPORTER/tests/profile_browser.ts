@@ -1,3 +1,5 @@
+import {openMenu} from './browser_ui';
+import {goProfile,openCheck} from './browser_ui';
 import { toggleTheme } from './browser_ui';
 import assert from 'node:assert/strict';
 import { chromium } from 'playwright';
@@ -24,19 +26,19 @@ export async function checkProfile(url: string, password: string) {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
       await page.goto(url);
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
-      const menuPage=async(label:string)=>{await page.getByRole('button',{name:'Ouvrir mon menu'}).click();await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:label,exact:true}).click();};
+      await goProfile(page);
+      const menuPage=async(label:string)=>{await openMenu(page);await page.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:label,exact:true}).click();};
       const publications = page.getByRole('region', { name: 'Mes publications', exact: true });
       const firstPost = publications.getByRole('article').first();
       await firstPost.waitFor();
       const text = await firstPost.locator('p').filter({ hasText: 'Une belle découverte' }).innerText();
-      await page.getByText(/1240 XP au total/).waitFor();
+      await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1240 XP au total/).waitFor();
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await toggleTheme(page);
         await page.evaluate(() => document.fonts.ready);
         await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
         assert.equal(await page.getByRole('tablist',{name:'Sections du profil'}).count(),0,'Les blocs secondaires quittent le profil compact');
-        for(const label of ['Lieux enregistrés','Badges et progression']){await menuPage(label);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.getByRole('button',{name:'Retour',exact:true}).click();}
+        for(const label of ['Enregistrés','Badges et progression']){await menuPage(label);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.getByRole('button',{name:'Retour',exact:true}).click();}
         if (process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
           await page.screenshot({ path: path.join(process.env.CHKPT_CAPTURE_DIR, `profil-social-${theme}-${width}.png`) });
@@ -50,11 +52,11 @@ export async function checkProfile(url: string, password: string) {
       await firstPost.getByRole('textbox', { name: 'Ton commentaire', exact: true }).fill('Une adresse à garder pour la prochaine sortie.');
       await firstPost.getByRole('button', { name: 'Envoyer', exact: true }).click();
       await firstPost.getByText('Une adresse à garder pour la prochaine sortie.', { exact: true }).waitFor();
-      const save = firstPost.getByRole('button', { name: 'Enregistrer le lieu de cette publication', exact: true });
+      const save = firstPost.getByRole('button', { name: 'Enregistrer cette publication', exact: true });
       assert.equal(await save.getAttribute('aria-pressed'), 'false');
       await save.click();
-      await menuPage('Lieux enregistrés');
-      await page.getByRole('region',{name:'Mes lieux enregistrés',exact:true}).getByRole('button',{name:/Maquis L.Étoile/}).waitFor();
+      await menuPage('Enregistrés');
+      await page.getByRole('tab',{name:'Publications',exact:true}).click();await page.getByRole('article').filter({hasText:text}).waitFor();
       await page.getByRole('button',{name:'Retour',exact:true}).click();
       await menuPage('Historique privé');
       await page.getByRole('region',{name:'Historique des lieux visités',exact:true}).getByRole('button',{name:/Lagon Bleu Rooftop Lounge/}).waitFor();
@@ -67,22 +69,22 @@ export async function checkProfile(url: string, password: string) {
       await page.getByRole('heading', { name: 'Compte & Environnement', exact: true }).waitFor();
       await page.getByRole('button', { name: 'Fermer le compte', exact: true }).click();
       await page.reload();
-      await page.getByRole('button', { name: 'Profil', exact: true }).click();
+      await goProfile(page);
       await publications.getByText(text, { exact: true }).waitFor();
       assert.equal(await firstPost.getByRole('button', { name: 'Aimer cette publication', exact: true }).getAttribute('aria-pressed'), 'true');
-      assert.equal(await firstPost.getByRole('button', { name: 'Enregistrer le lieu de cette publication', exact: true }).getAttribute('aria-pressed'), 'true');
+      assert.equal(await firstPost.getByRole('button', { name: 'Enregistrer cette publication', exact: true }).getAttribute('aria-pressed'), 'true');
       await firstPost.getByRole('button', { name: 'Commentaires de cette publication', exact: true }).click();
       await firstPost.getByText('Une adresse à garder pour la prochaine sortie.', { exact: true }).waitFor();
-      await page.getByText(/1240 XP au total/).waitFor();
+      await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1240 XP au total/).waitFor();
       if (width === 320) {
-        await page.getByRole('button', { name: 'Valider ma présence physique', exact: true }).click();
+        await openCheck(page);
         const dialog = page.getByRole('dialog', { name: 'Check-in', exact: true });
         await dialog.getByRole('button', { name: /Maquis L'Étoile/ }).click();
         await dialog.getByRole('button', { name: 'Confirmer le check', exact: true }).click();
         await dialog.getByRole('heading', { name: 'Visite simulée enregistrée !', exact: true }).waitFor();
         await dialog.getByRole('button', { name: 'Plus tard (Terminer)', exact: true }).click();
-        await page.getByRole('button', { name: 'Profil', exact: true }).click();
-        await page.getByText(/1315 XP au total/).waitFor();
+        await goProfile(page);
+        await page.getByRole('region',{name:'Mon profil',exact:true}).getByText(/1315 XP au total/).waitFor();
         await menuPage('Historique privé');
         await page.getByRole('region',{name:'Historique des lieux visités',exact:true}).getByRole('button',{name:/Maquis L'Étoile/}).waitFor();
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));

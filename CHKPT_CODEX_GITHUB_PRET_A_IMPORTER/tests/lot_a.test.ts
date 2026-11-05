@@ -312,7 +312,8 @@ try {
     processes.delete(child);
   });
   await check('Base endommagée : refus de démarrer sans modifier les données existantes', async () => {
-    for (const [index, contents] of ['{broken', JSON.stringify({users: []})].entries()) {
+    const snapshot=JSON.parse(await readFile(path.join(demo.cwd,'.data/chkpt_db.json'),'utf8'));
+    for (const [index, contents] of ['{broken',JSON.stringify({users:[]}),JSON.stringify({...snapshot,saved_content:[null]}),JSON.stringify({...snapshot,messages:[{id:'bad'}]})].entries()) {
       const cwd = path.join(runtime, `corrupt-${index}`);
       await mkdir(path.join(cwd, '.data'), {recursive: true});
       const file = path.join(cwd, '.data/chkpt_db.json');
@@ -387,6 +388,8 @@ try {
     await check('Cas limites : confidentialité par compte, reprise réseau, cache et actions cohérentes',()=>checkEdgeCases(demo.url,password));
     const {checkMessages}=await import('./messages_browser');
     await check('Messagerie : accès privés, refus mineurs, anti-doublon, menu à gauche et échange persistant',()=>checkMessages(demo.url,password));
+    const {checkUxLots}=await import('./ux_lots_browser');
+    await check('UX 5 novembre : navigation flottante, entités partagées, brouillons et conservation',()=>checkUxLots(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }
