@@ -104,7 +104,7 @@ export async function checkNextFeatures(url: string, password: string) {
       await openFilters(page);const filters=page.getByRole('region',{name:'Filtres de la carte',exact:true});await filters.getByRole('combobox',{name:'Catégorie de lieu'}).selectOption('maquis');await filters.getByText(/GPS réel en attente/).waitFor();await filters.getByRole('button',{name:'Appliquer les filtres'}).click();await page.getByRole('heading',{name:'Aucun lieu ne correspond à votre recherche',exact:true}).waitFor();
       await openGps(page);await page.getByRole('button',{name:'Simulateur',exact:true}).click();await page.getByRole('region',{name:'Positions de démonstration',exact:true}).getByRole('button',{name:/Cocody Saint-Jean/}).click();await apply('all','all');await page.getByRole('status').filter({hasText:'6 lieux trouvés'}).waitFor();
       await page.getByRole('button',{name:'Accueil',exact:true}).click();
-      await page.getByRole('button',{name:'Voir le profil de Ingrid N’Goan',exact:true}).first().click();
+      await page.getByRole('article').getByRole('button',{name:'Ingrid N’Goan',exact:true}).first().click();
       const profile=page.getByRole('region',{name:'Profil de la communauté',exact:true});
       await profile.getByRole('heading',{name:'Ingrid N’Goan',exact:true,level:1}).waitFor();
       assert.equal(await profile.getByText(/Historique des lieux visités/).count(),0);
@@ -116,7 +116,7 @@ export async function checkNextFeatures(url: string, password: string) {
       await page.getByRole('tab',{name:'Amis',exact:true}).click();
       await page.getByRole('article').filter({hasText:'@ingrid_ngoan'}).first().waitFor();
       await page.reload();
-      await page.getByRole('button',{name:'Voir le profil de Ingrid N’Goan',exact:true}).first().click();
+      await page.getByRole('article').getByRole('button',{name:'Ingrid N’Goan',exact:true}).first().click();
       await profile.getByRole('button',{name:'Ne plus suivre',exact:true}).click();
       await profile.getByRole('button',{name:'Suivre',exact:true}).waitFor();
       await profile.getByRole('button',{name:'Retour',exact:true}).click();
@@ -125,7 +125,7 @@ export async function checkNextFeatures(url: string, password: string) {
       await page.getByRole('tab',{name:'Pour toi',exact:true}).click();
       await toggleTheme(page);
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-      await page.getByRole('button',{name:'Voir le profil de Georges Armand',exact:true}).first().click();
+      await page.getByRole('article').getByRole('button',{name:'Georges Armand',exact:true}).first().click();
       if(await profile.getByRole('button',{name:'Ne plus suivre',exact:true}).isVisible())await profile.getByRole('button',{name:'Ne plus suivre',exact:true}).click();
       await profile.getByRole('button',{name:'Suivre',exact:true}).click();
       await profile.getByRole('button',{name:'Ne plus suivre',exact:true}).waitFor();
