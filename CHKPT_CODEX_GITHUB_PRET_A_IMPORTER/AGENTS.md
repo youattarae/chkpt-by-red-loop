@@ -1,5 +1,19 @@
 # Instructions permanentes de Codex — CHKPT by RED LOOP
 
+## Décisions prioritaires du 5 novembre 2026 — mission lots 0 à 8
+
+La mission utilisateur valide tous les lots de `docs/AUDIT_REPRISE_ET_PLAN_2026_11_05.md`, sans confirmation intermédiaire. Référence UX récente : `docs/references/2026-11-05/CHKPT_RECAP_UX_DEMONSTRATION_CONVERSATION_CENTRALE_2026-11-05.md`.
+- Navigation : Accueil, Carte, ＋/Check (deux actions), Sortir, Messages. Profil par avatar/identité, Retour sur son profil. Préserver les anciens liens.
+- Symbole seulement dans l'en-tête Accueil, menu à gauche et avatar, recherche remplaçant la ligne. Notifications exclusivement dans menu, compteur distinct des Messages ; pas de cloche en en-tête.
+- Accueil : Pour toi/Amis, icône de localisation sans commune permanente, deux lignes masquées ensemble au scroll et réaffichées en sens inverse ; stories conservées, rédaction depuis ＋.
+- Carte immersive et commandes flottantes, repères vert/gris, aperçu puis fiche ; conserver caméra/sélection et secours.
+- Check aussi depuis fiche avec lieu présélectionné (remplace la règle historique « central uniquement »). Aucun check par partage ou publication libre. Éditeur commun, quatre médias, brouillons par compte.
+- Partage lieu/événement en deux rangées : publication et amis en haut ; copie/applications disponibles/Plus en bas. Cartes dans Messages avec retour conservé.
+- Conserver règles serveur, données, badges provisoires et cadence Accueil de cinq à titre provisoire ; aucune nouvelle cadence Sortir. Messagerie publique non arbitrée, conserver protections du prototype.
+- Branche dédiée, commits locaux autorisés. Aucun push, merge ou déploiement sans nouvelle autorisation. Bases de tests isolées uniquement.
+
+Les indications historiques incompatibles ci-dessous sont remplacées uniquement sur ces points. Les autres règles et protections restent applicables.
+
 ## Lecture et contexte
 - Lis `README.md`, `docs/PRODUIT_ET_DECISIONS.md`, `docs/ETAT_CODE_ET_RISQUES.md`, `docs/FEUILLE_DE_ROUTE_CODEX.md` et `docs/PASSATION_V3_SOURCE.md` avant les modifications importantes.
 - **Le code de ce dépôt est la base actuelle** : ne pas recréer l'application, déplacer le projet vers une nouvelle stack ni supprimer les parcours validés.
