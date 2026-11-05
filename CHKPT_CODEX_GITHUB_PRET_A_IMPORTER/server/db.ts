@@ -137,7 +137,7 @@ export interface ReviewEntity {
   id: string; placeId: string; userId: string; rating: number; comment: string; updatedAt: string;
 }
 export interface StoredPost extends Post { likedBy: string[]; baseLikesCount: number; baseCommentsCount: number }
-export interface StoryEntity { id:string;authorId:string;mediaUrl:string;mediaType:'image'|'video';text:string;audience:'public'|'followers'|'private';createdAt:string;expiresAt:string }
+export interface StoryEntity { id:string;authorId:string;mediaUrl:string;mediaType:'image'|'video';text:string;audience:'public'|'followers'|'private';createdAt:string;expiresAt:string;isDemo?:boolean }
 export interface StoredMedia { storyId?:string; assetId:string; ownerId:string; ownerUsername:string; audience:'private'|'followers'|'public'; mimeType:string; sizeBytes:number; dataBase64:string; createdAt:string; token:string }
 export interface SavedPlace { userId:string; placeId:string }
 function seedPosts():StoredPost[]{return INITIAL_POSTS.map(post=>({...post,likedBy:post.isLikedByCurrentUser?['usr_01']:[],baseLikesCount:Math.max(0,post.likesCount-(post.isLikedByCurrentUser?1:0)),baseCommentsCount:Math.max(0,post.commentsCount-post.comments.length)}));}
@@ -162,6 +162,7 @@ export interface DatabaseSchema {
   reports: ReportEntity[];
   version: number;
   demoUxVersion?:number;
+  demoStorySeedVersion?:number;
 }
 
 function validateUxTables(value:Partial<DatabaseSchema>){
@@ -509,6 +510,7 @@ class Database {
         }
         parsed.sessions = parsed.sessions.filter((session: SessionEntity) => !seedUserIds.has(session.userId));
         this.addUxDemoFixtures(parsed);
+        this.addDemoStoryFixtures(parsed);
         this.save(parsed);
         return parsed;
       } catch (e) {
@@ -518,6 +520,7 @@ class Database {
 
     const initialDb = this.getFreshSeedState();
     this.addUxDemoFixtures(initialDb);
+    this.addDemoStoryFixtures(initialDb);
     this.save(initialDb);
     return initialDb;
   }
@@ -525,9 +528,27 @@ class Database {
   public resetPitchDemoState(): DatabaseSchema {
     this.data = this.getFreshSeedState();
     this.addUxDemoFixtures(this.data);
+    this.addDemoStoryFixtures(this.data);
     this.save();
     return this.data;
   }
+
+  private addDemoStoryFixtures(data:DatabaseSchema,explicit=false){
+    if(!privateDemoEnabled||!explicit&&data.demoStorySeedVersion===1)return;
+    data.demoStorySeedVersion=1;const now=Date.now();
+    const examples=[['usr_sarah','profil-sarah.webp','Une pause entre amis · story fictive de présentation'],['usr_02','profil-amara.webp','Un moment culturel à Abidjan · story fictive de présentation'],['usr_nadia','profil-nadia.webp','Prête pour une nouvelle découverte · story fictive de présentation']];
+    for(const [authorId,file,text]of examples){
+      const author=data.users.find(u=>u.id===authorId);if(!author||author.age<18||author.visibility!=='public')continue;
+      if(data.stories.filter(s=>s.authorId===authorId&&Date.parse(s.expiresAt)>now).length>=20)continue;
+      const id='demo_story_'+authorId;const previous=data.stories.find(s=>s.id===id);
+      if(previous&&(!previous.isDemo||Date.parse(previous.expiresAt)>now))continue;
+      data.stories=data.stories.filter(s=>s.id!==id);data.media=data.media.filter(m=>m.storyId!==id);
+      const bytes=fs.readFileSync(new URL('../public/illustrations/'+file,import.meta.url));if(data.media.reduce((n,m)=>n+m.sizeBytes,0)+bytes.length>50*1024*1024)continue;const assetId=crypto.randomBytes(20).toString('hex');
+      data.stories.push({id,authorId,mediaUrl:'/api/media/'+assetId,mediaType:'image',text,audience:'public',createdAt:new Date(now).toISOString(),expiresAt:new Date(now+86400000).toISOString(),isDemo:true});
+      data.media.push({assetId,ownerId:authorId,ownerUsername:author.username,audience:'public',mimeType:'image/webp',sizeBytes:bytes.length,dataBase64:bytes.toString('base64'),createdAt:new Date(now).toISOString(),token:crypto.randomBytes(24).toString('hex'),storyId:id});
+    }
+  }
+  public prepareDemoStories(){this.addDemoStoryFixtures(this.data,true);this.save();return this.data.stories.filter(s=>s.isDemo&&Date.parse(s.expiresAt)>Date.now()).length;}
 
   private addUxDemoFixtures(data:DatabaseSchema){
     if(!privateDemoEnabled||data.demoUxVersion===1)return;

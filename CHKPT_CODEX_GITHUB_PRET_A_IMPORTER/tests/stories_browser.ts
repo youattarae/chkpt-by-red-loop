@@ -30,7 +30,7 @@ export async function checkStoryBrowsers(url:string,password:string){
     await post.getByRole('button',{name:actor.user.displayName,exact:true}).click();const profile=other.getByRole('region',{name:'Profil de la communauté',exact:true});await profile.getByRole('button',{name:`Voir les stories de ${actor.user.displayName}`,exact:true}).first().click();await other.getByRole('dialog',{name:`Stories de ${actor.user.displayName}`,exact:true}).waitFor();await other.keyboard.press('Escape');await profile.waitFor();
     // Owner deletes; the direct URL and subsequent clients can no longer retrieve the media.
     await page.getByRole('region',{name:'Stories',exact:true}).getByRole('button',{name:`Voir les stories de ${actor.user.displayName}`,exact:true}).click();await viewer.getByRole('button',{name:'Supprimer cette story',exact:true}).click();await viewer.waitFor({state:'detached'});
-    await second.reload();await second.getByRole('region',{name:'Stories',exact:true}).getByRole('button',{name:`Voir le profil de ${actor.user.displayName}`,exact:true}).waitFor();
+    await second.reload();await second.getByRole('region',{name:'Stories',exact:true}).getByRole('button',{name:'Ajouter votre story',exact:true}).waitFor();
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
   }finally{for(const context of contexts)await context.close();await browser.close();}
 }

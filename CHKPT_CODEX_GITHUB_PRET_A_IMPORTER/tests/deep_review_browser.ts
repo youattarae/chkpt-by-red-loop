@@ -43,6 +43,12 @@ export async function checkDeepReview(url: string, password: string) {
     const start = await fetch(url+'/api/demo/start',{method:'POST',headers:{Authorization:`Bearer ${admin.token}`}});
     assert.equal(start.status,200);
     const koffi = await start.json();
+    // Ce scénario vérifie un fil Amis vide, indépendamment des relations de démo
+    // et de l'ordre des réponses /auth/me et /account/state.
+    for (const id of ['usr_sarah','usr_02']) {
+      const unfollow=await fetch(url+'/api/profiles/'+id+'/follow',{method:'POST',headers:{Authorization:`Bearer ${koffi.token}`,'Content-Type':'application/json'},body:JSON.stringify({following:false})});
+      assert.equal(unfollow.status,200);
+    }
     const gpsContext = await browser.newContext({viewport:{width:390,height:844}});
     await gpsContext.addInitScript(({token,user}) => {
       localStorage.setItem('chkpt_session_token',token);
@@ -62,7 +68,7 @@ export async function checkDeepReview(url: string, password: string) {
     await gps.goto(url);
     await ready;
     await gps.getByRole('tab',{name:'Amis',exact:true}).click();
-    await gps.waitForFunction(() => !document.body.innerText.includes('@georges_armand'));
+    await gps.waitForFunction(() => !document.querySelector('#feed-posts')?.textContent?.includes('@georges_armand'));
     assert.equal(await gps.getByText('@ingrid_ngoan',{exact:true}).count(),0);
     await gps.getByRole('tab',{name:'Pour toi',exact:true}).click();
     await gps.getByText('@georges_armand',{exact:true}).first().waitFor();

@@ -230,6 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
           >
             Profils Démo (opérateur)
           </button>
+          {['admin','superadmin'].includes(currentUser.role)&&<button type="button" disabled={isLoading} onClick={async()=>{setIsLoading(true);try{const response=await fetch('/api/demo/stories/prepare',{method:'POST',headers:{Authorization:`Bearer ${authSessionToken}`}});const data=await response.json();if(!response.ok)throw Error('Préparation refusée.');setSuccessMsg(data.message);window.dispatchEvent(new Event('focus'));}catch(e){setErrorMsg(e instanceof Error?e.message:'Préparation impossible.');}finally{setIsLoading(false);}}} className="pb-2.5 px-2 text-xs text-blue-500">Préparer les stories fictives</button>}
           <button
             onClick={() => { setTab('login'); setErrorMsg(null); }}
             className={`pb-2.5 px-2 border-b-2 transition-colors cursor-pointer ${

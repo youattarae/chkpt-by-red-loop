@@ -62,3 +62,7 @@ Les indications historiques incompatibles ci-dessous sont remplacées uniquement
 
 ## Définition du succès immédiat
 Un jury peut voir sans erreur : Accueil → Carte → sélection d'un maquis de Cocody → fiche → bouton central Check-in → sélection du lieu → confirmation **simulé** exactement sur ce lieu → points / badge → publication → Profil → événement « J'y serai ». L'animateur peut réinitialiser la démo de manière **autorisée**. Les éléments simulés sont identifiables et le parcours est fiable sur smartphone et ordinateur.
+
+## Addendum Stories — 5 novembre, mission en cours
+
+`docs/references/2026-11-05/CHKPT_ADDENDUM_STORIES_DEFILEMENT_2026-11-05.md` précise l'ordre : commandes → stories horizontales → Pour toi/Amis + localisation → fil. Aucun répertoire/recherche/encart entre stories et onglets. Les stories restent dans le flux normal : elles sortent de l'écran en descendant et ne reviennent pas avec les seules commandes lors d'un petit mouvement inverse. Réutiliser le module et ses permissions/24 h ; fixtures privées de démo, identifiées, idempotentes et sans remplacement des stories personnelles. Continuer les lots existants, sans reconstruire.

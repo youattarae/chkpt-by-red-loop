@@ -232,6 +232,8 @@ app.post('/api/auth/login', (req: Request, res: Response) => {
 /**
  * Switch persona only on an explicitly enabled private demo, after operator authentication
  */
+app.post('/api/demo/stories/prepare',requirePrivateDemo,requireOperator,(_req,res)=>{const count=db.prepareDemoStories();res.json({success:true,count,message:`${count} stories fictives actives, sans effacer les autres données. Expiration après 24 h ; visibilité et quota restent applicables.`});});
+
 app.post('/api/auth/switch-demo', requirePrivateDemo, requireOperator, (req: Request, res: Response) => {
   const { username } = req.body;
 
@@ -557,7 +559,7 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
   }
 
   if(asset.storyId&&!req.user){res.status(401).json({error:'auth_required'});return;}
-  if(asset.storyId&&!db.getRawData().stories.some(story=>story.id===asset.storyId&&Date.parse(story.expiresAt)>Date.now())){res.status(404).json({error:'story_expired'});return;}
+  if(asset.storyId&&!db.getRawData().stories.some(story=>story.id===asset.storyId&&Date.parse(story.expiresAt)>Date.now()&&(!story.isDemo||privateDemoEnabled))){res.status(404).json({error:'story_expired'});return;}
   const owner=db.findUserById(asset.ownerId);
   if(!owner||((owner.visibility==='private'||owner.age<18)&&requesterId!==owner.id)){res.status(403).json({error:'private_resource'});return;}
   // Scenario A: Audience is "private" (Moi uniquement)

@@ -1,3 +1,4 @@
+import {privateDemoEnabled} from './demoConfig';
 import crypto from 'node:crypto';
 import type {Express} from 'express';
 import {db,StoryEntity,UserEntity} from './db';
@@ -8,6 +9,7 @@ export function pruneStories(){
   if(stories.length!==data.stories.length||media.length!==data.media.length)db.updateSharedData({stories,media});
 }
 function canRead(story:StoryEntity,user:UserEntity){
+  if(story.isDemo&&!privateDemoEnabled)return false;
   if(Date.parse(story.expiresAt)<=Date.now())return false;
   if(story.authorId===user.id)return true;
   const author=db.findUserById(story.authorId);

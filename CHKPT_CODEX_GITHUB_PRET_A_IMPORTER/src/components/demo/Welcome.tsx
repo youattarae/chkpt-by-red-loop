@@ -1,3 +1,4 @@
+import {createPortal} from 'react-dom';
 import { useEffect, useState } from 'react';
 import { MapPin, CheckCircle2, Camera, X } from 'lucide-react';
 import { BrandSymbol } from '../common/BrandSymbol';
@@ -7,7 +8,7 @@ const steps = [
   { title: 'Confirme ton passage', text: 'Touche le symbole central, choisis le lieu puis Confirmer le check. Pour la présentation, le GPS peut être simulé.', Icon: CheckCircle2 },
   { title: 'Partage tes découvertes', text: 'Après ton check, tu peux publier si tu le souhaites. Retrouve tes visites et ta récompense fictive dans ton profil.', Icon: Camera },
 ];
-export function Welcome({ visible }: { visible: boolean }) {
+export function Welcome({ visible,bannerTarget }: { visible: boolean;bannerTarget?:HTMLElement|null }) {
   const [done, setDone] = useState(() => localStorage.getItem(key) === 'true');
   const [step, setStep] = useState<number | null>(null);
   const finish = () => { localStorage.setItem(key, 'true'); setDone(true); setStep(null); };
@@ -24,9 +25,9 @@ export function Welcome({ visible }: { visible: boolean }) {
   }, [step]);
   const content = step !== null ? steps[step] : null;
   return <>
-    {visible && !done && <section aria-label="Bienvenue sur CHKPT" className="mx-auto max-w-2xl p-3">
+    {visible && !done && bannerTarget && createPortal(<section aria-label="Bienvenue sur CHKPT" className="mx-auto max-w-2xl p-3">
       <div className="rounded-2xl bg-soft border border-line p-4 flex items-center gap-3"><BrandSymbol className="w-10 h-10 shrink-0" /><div className="flex-1"><h2 className="text-sm font-bold">Sors. Check. Partage.</h2><button type="button" onClick={() => setStep(0)} className="text-xs font-bold text-blue-400 py-2 cursor-pointer">Découvrir CHKPT en 3 étapes</button></div><button type="button" aria-label="Masquer la bienvenue" onClick={finish} className="p-2 cursor-pointer"><X className="w-4 h-4" /></button></div>
-    </section>}
+    </section>,bannerTarget)}
     {content && <div role="dialog" aria-modal="true" aria-label="Découvrir CHKPT" className="fixed inset-0 z-[70] bg-black/60 p-4 flex items-center justify-center">
       <section className="w-full max-w-md rounded-3xl bg-canvas text-ink p-6 space-y-5 max-h-[90dvh] overflow-y-auto">
         <div className="flex justify-between text-xs text-muted"><span>Étape {step! + 1} sur 3</span><button type="button" autoFocus onClick={finish} className="cursor-pointer">Passer</button></div>

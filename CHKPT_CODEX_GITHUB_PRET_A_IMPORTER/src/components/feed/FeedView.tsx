@@ -1,3 +1,4 @@
+import {FeedTabs} from '../common/FeedTabs';
 import {AudienceSelect} from '../common/AudienceSelect';
 import {DemoProfileDirectory} from './DemoProfileDirectory';
 import {DemoAdvertisement} from './DemoAdvertisement';
@@ -25,9 +26,12 @@ import { PublicationCard } from '../common/PublicationCard';
 interface FeedViewProps {
   onSelectPlace: (placeId: string) => void;
   feedFilter:'for_you'|'friends';
+  onFeedFilter:(value:'for_you'|'friends')=>void;
+  headerHidden:boolean;
+  onWelcomeTarget:(node:HTMLDivElement|null)=>void;
 }
 
-export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace,feedFilter }) => {
+export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace,feedFilter,onFeedFilter,headerHidden,onWelcomeTarget }) => {
   const { 
     currentUser, authSessionToken,
     followingIds,
@@ -120,6 +124,8 @@ export const FeedView: React.FC<FeedViewProps> = ({ onSelectPlace,feedFilter }) 
       <h1 className="sr-only">Accueil</h1>
 
       <StoryStrip/>
+      <FeedTabs feedFilter={feedFilter} onFeedFilter={onFeedFilter} hidden={headerHidden}/>
+      <div ref={onWelcomeTarget}/>
       <DemoProfileDirectory/>
       <div className="flex justify-end text-xs text-muted">
         <button type="button" onClick={() => setFiltersOpen(!filtersOpen)} aria-expanded={filtersOpen} aria-controls="feed-filters"

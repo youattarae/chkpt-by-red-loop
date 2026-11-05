@@ -392,6 +392,8 @@ try {
     await check('Messagerie : accès privés, refus mineurs, anti-doublon, menu à gauche et échange persistant',()=>checkMessages(demo.url,password));
     const {checkUxLots}=await import('./ux_lots_browser');
     await check('UX 5 novembre : navigation flottante, entités partagées, brouillons et conservation',()=>checkUxLots(demo.url,password));
+    const {checkStoriesScroll}=await import('./stories_scroll_browser');
+    await check('Addendum stories : ordre, défilement naturel et commandes sans stories épinglées',()=>checkStoriesScroll(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

@@ -35,12 +35,16 @@ export async function checkStories(start:any,stop:any,password:string){
   const visible=(await (await call('/api/stories',undefined,other.token)).json()).stories;
   assert.ok(visible.some((item:any)=>item.id===story.id));assert.ok(visible.some((item:any)=>item.id===followers.id));assert.ok(!visible.some((item:any)=>item.id===privateStory.id||item.id===minorStory.id));
   await stop(server.child);
-  const dbPath=server.cwd+'/.data/chkpt_db.json';const snapshot=JSON.parse(await readFile(dbPath,'utf8'));snapshot.stories.find((item:any)=>item.id===story.id).expiresAt=new Date(Date.now()-1000).toISOString();await writeFile(dbPath,JSON.stringify(snapshot));
+  const dbPath=server.cwd+'/.data/chkpt_db.json';const snapshot=JSON.parse(await readFile(dbPath,'utf8'));const fake=snapshot.stories.find((item:any)=>item.isDemo);assert.ok(fake);fake.expiresAt=new Date(Date.now()-1000).toISOString();snapshot.stories.find((item:any)=>item.id===story.id).expiresAt=new Date(Date.now()-1000).toISOString();await writeFile(dbPath,JSON.stringify(snapshot));
   server=await start('stories',true);
   assert.equal((await call(url,undefined,owner.token)).status,404,'Même le lien direct expire');
-  const after=(await (await call('/api/stories',undefined,owner.token)).json()).stories;assert.ok(!after.some((item:any)=>item.id===story.id));assert.ok(after.some((item:any)=>item.id===privateStory.id),'Les autres stories survivent au redémarrage');
+  const after=(await (await call('/api/stories',undefined,owner.token)).json()).stories;assert.ok(!after.some((item:any)=>item.id===story.id));assert.ok(!after.some((item:any)=>item.id===fake.id),'Une fixture expirée ne se renouvelle pas au redémarrage');assert.equal((await call(fake.mediaUrl,undefined,owner.token)).status,404);assert.ok(after.some((item:any)=>item.id===privateStory.id),'Les autres stories survivent au redémarrage');
   const stored=JSON.parse(await readFile(dbPath,'utf8'));assert.ok(!stored.media.some((asset:any)=>asset.storyId===story.id),'Nettoyage du stockage');
   assert.equal((await call('/api/stories/'+privateStory.id,undefined,owner.token,'DELETE')).status,200);assert.equal((await call(privateUrl,undefined,owner.token)).status,404);
   const account=await (await call('/api/account/state',undefined,owner.token)).json();assert.equal(account.user.xpPoints,0);assert.equal(account.checkins.length,0);
-  await stop(server.child);
+  assert.equal((await call('/api/demo/stories/prepare',{},owner.token)).status,403);
+  const admin=(await(await call('/api/auth/login',{username:'redloop_admin',password})).json()).token;const preparation=await call('/api/demo/stories/prepare',{},admin);assert.equal(preparation.status,200);assert.equal((await preparation.json()).count,3);
+  const seeded=(await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo);assert.equal(seeded.length,3);for(const s of seeded)assert.equal(Date.parse(s.expiresAt)-Date.parse(s.createdAt),86400000);
+  assert.equal((await call('/api/demo/stories/prepare',{},admin)).status,200);assert.equal((await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo).length,3,'Préparation idempotente');
+  await stop(server.child);server=await start('stories',false);assert.equal((await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo).length,0);assert.equal((await call(seeded[0].mediaUrl,undefined,owner.token)).status,404,'Fixtures limitées au contexte privé');await stop(server.child);
 }
