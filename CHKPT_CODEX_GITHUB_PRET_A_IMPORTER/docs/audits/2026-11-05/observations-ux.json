@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-05",
+  "commit": "6c4652a",
+  "environment": "Chromium, base isolée, fond illustré forcé par blocage des tuiles",
+  "results": [
+    {
+      "width": 390,
+      "headerBell": 1,
+      "bottomProfile": 1,
+      "bottomMessages": 0,
+      "permanentCommune": true,
+      "inlineComposer": 1,
+      "searchAlreadyVisible": 1,
+      "menuLeft": 0,
+      "menuIdentityClickable": 0,
+      "menuNotifications": 0,
+      "centralOpensCheckDirectly": true,
+      "centralPublicationChoice": 0,
+      "mapHeaderStillPresent": true,
+      "mapHeaderSymbol": 1,
+      "mapMainWidth": 390,
+      "venuePreviewBeforeMarker": 1,
+      "venueCheckButton": 0
+    },
+    {
+      "width": 1280,
+      "headerBell": 1,
+      "bottomProfile": 1,
+      "bottomMessages": 0,
+      "permanentCommune": true,
+      "inlineComposer": 1,
+      "searchAlreadyVisible": 1,
+      "menuLeft": 0,
+      "menuIdentityClickable": 0,
+      "menuNotifications": 0,
+      "centralOpensCheckDirectly": true,
+      "centralPublicationChoice": 0,
+      "mapHeaderStillPresent": true,
+      "mapHeaderSymbol": 1,
+      "mapMainWidth": 896,
+      "venuePreviewBeforeMarker": 1,
+      "venueCheckButton": 0
+    }
+  ]
+}

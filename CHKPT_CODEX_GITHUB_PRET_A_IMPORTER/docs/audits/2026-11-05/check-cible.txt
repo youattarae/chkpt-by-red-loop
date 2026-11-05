@@ -1,0 +1,3 @@
+  Navigateur 390px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+  Navigateur 1280px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+Parcours check ciblé OK

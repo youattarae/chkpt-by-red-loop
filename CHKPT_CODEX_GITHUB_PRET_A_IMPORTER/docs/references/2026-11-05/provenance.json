@@ -1,0 +1,16 @@
+{
+  "date_reception": "2026-11-05",
+  "statut": "Copies intactes des pièces fournies, références produit comparées, pas preuve de code exécuté",
+  "sources": [
+    {
+      "fichier": "CHKPT_RECAP_COMPLET_CONVERSATION_CENTRALE_2026-11-05.md",
+      "octets": 31704,
+      "sha256": "51693ee90d3cd757a7486bdfcda6cc27fc4a2139538009d7073b4ccffcd74a7a"
+    },
+    {
+      "fichier": "CHKPT_RECAP_UX_DEMONSTRATION_CONVERSATION_CENTRALE_2026-11-05.md",
+      "octets": 40019,
+      "sha256": "f2e12d18fa269332dc824a75cf855f100c4e9b352cc3a893f92ed1982507f4e4"
+    }
+  ]
+}
