@@ -3,11 +3,11 @@ import {PostMedia} from '../../types';
 import {useStore} from '../../services/store';
 import {SafeImage} from './SafeImage';
 import {SafeVideo} from './SafeVideo';
-export function PostMediaUploader({value,onChange,onBusy,maxCount=4,privateUpload=false,disabled=false}:{disabled?:boolean;maxCount?:number;privateUpload?:boolean;value:PostMedia[];onChange:(items:PostMedia[])=>void;onBusy:(busy:boolean)=>void}){
+export function PostMediaUploader({value,onChange,onBusy,maxCount=4,privateUpload=false,disabled=false,retainOnUnmount=false}:{retainOnUnmount?:boolean;disabled?:boolean;maxCount?:number;privateUpload?:boolean;value:PostMedia[];onChange:(items:PostMedia[])=>void;onBusy:(busy:boolean)=>void}){
   const {authSessionToken,currentUser}=useStore();
   const alive=useRef(true);const uploaded=useRef(new Set<string>());
   const discard=(url:string)=>fetch(url,{method:'DELETE',headers:{Authorization:`Bearer ${authSessionToken}`}}).catch(()=>{});
-  useEffect(()=>{alive.current=true;const owned=uploaded.current;return()=>{alive.current=false;for(const url of owned)void discard(url);owned.clear();};},[authSessionToken]);
+  useEffect(()=>{alive.current=true;const owned=uploaded.current;return()=>{alive.current=false;if(!retainOnUnmount)for(const url of owned)void discard(url);owned.clear();};},[authSessionToken]);
   const [busy,setBusy]=useState(false),[error,setError]=useState('');
   async function upload(files:File[]){
     if(disabled||busy)return;

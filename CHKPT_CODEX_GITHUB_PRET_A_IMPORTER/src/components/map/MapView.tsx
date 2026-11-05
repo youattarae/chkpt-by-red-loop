@@ -1,3 +1,4 @@
+import {LocationControls} from '../common/LocationControls';
 import {SearchBar} from '../search/SearchExperience';
 import {defaultFilters} from '../../navigation/Navigation';
 import {SmartPlaceSearch} from './SmartPlaceSearch';
@@ -30,6 +31,7 @@ interface MapViewProps {
 
 export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const { places, userCurrentCoordinates, locationReady, activeLocationMode } = useStore();
+  const camera=React.useRef<{lat:number;lng:number;zoom:number}>({lat:5.348,lng:-4.015,zoom:12});
   const [mapUnavailable, setMapUnavailable] = useState(false);
   const [interactive, setInteractive] = useState(true);
 
@@ -38,7 +40,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const [category,setCategory]=useState('all');
   const [sort,setSort]=useState('relevance');
   const [selectedCategories, setSelectedCategories] = useState<PlaceCategory[]>([]);
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(places[0]?.id || null);
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
 
   // Toggle category visibility
   const handleToggleCategory = (catId: PlaceCategory) => {
@@ -58,6 +60,8 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
     setRadius('all');setCategory('all');setSort('relevance');
   };
 
+  React.useEffect(()=>{const apply=(e:Event)=>{const f=(e as CustomEvent).detail;setCategory(f.category);setRadius(f.radius);setSort(f.sort);setSelectedCategories(f.categories||[]);};window.addEventListener('chkpt:mapfilters',apply);return()=>window.removeEventListener('chkpt:mapfilters',apply);},[]);
+  React.useEffect(()=>{window.dispatchEvent(new CustomEvent('chkpt:mapfilters-state',{detail:{...defaultFilters,category,radius,sort,categories:selectedCategories}}));},[category,radius,sort,selectedCategories]);
   // Filtered places according to active category chips
   const filteredPlaces = useMemo(() => {
     return places.filter(place => (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && (category==='all'||(category==='clubs'?/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):category==='bars'?place.category==='bars_lounges'&&!/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):place.category===category)) && (radius==='all'||locationReady&&calculateDistanceMeters(userCurrentCoordinates,place.coordinates)<=Number(radius))).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'fr'):0);
@@ -67,7 +71,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const activePlace = useMemo(() => {
     if (filteredPlaces.length === 0) return null;
     const found = filteredPlaces.find((p) => p.id === selectedPlaceId);
-    return found || filteredPlaces[0];
+    return found || null;
   }, [filteredPlaces, selectedPlaceId]);
 
   // Place counts per category for the chips
@@ -80,18 +84,14 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   }, [places]);
 
   return (
-    <div className="relative w-full min-h-[720px] pb-24 bg-canvas flex flex-col">
+    <div className="map-screen relative w-full h-[calc(100dvh-28px)] min-h-[480px] bg-canvas overflow-hidden">
       
       <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">{interactive ? 'Repères de lieux fictifs' : 'Carte illustrée · positions de démonstration'}</span>
-      <div className="p-3 bg-canvas relative z-20">
-        <SearchBar scope="places" filters={{...defaultFilters,category,radius,sort,categories:selectedCategories}} onApply={filters=>{setCategory(filters.category);setRadius(filters.radius);setSort(filters.sort);setSelectedCategories((filters.categories||[]) as PlaceCategory[]);}}/>
-        <p role="status" className="text-[10px] text-muted mt-1">{filteredPlaces.length} lieu{filteredPlaces.length > 1 ? 'x' : ''} trouvé{filteredPlaces.length > 1 ? 's' : ''} · données fictives</p>
-      </div>
-      <SmartPlaceSearch/>
-      <div className="px-3 pb-2 flex gap-2"><button type="button" aria-pressed={interactive} onClick={()=>setInteractive(true)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={()=>setInteractive(false)} className="text-[10px] rounded-lg px-2 py-1 bg-soft cursor-pointer">Carte illustrée</button></div>
-      {mapUnavailable && !interactive && <p role="status" className="px-3 text-[10px] text-muted">Fond de carte indisponible : carte illustrée de secours active.</p>}
+      <details className="absolute top-40 right-3 z-30 text-xs"><summary className="p-2 rounded-full bg-canvas shadow cursor-pointer">Outils carte</summary><div className="mt-2 p-3 w-64 max-h-[55dvh] overflow-auto bg-canvas border border-line rounded-2xl space-y-3"><LocationControls/><SmartPlaceSearch/><button type="button" aria-pressed={interactive} onClick={()=>setInteractive(true)} className="p-2 bg-soft rounded-xl">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={()=>setInteractive(false)} className="p-2 bg-soft rounded-xl">Carte illustrée</button></div></details>
+      {mapUnavailable&&!interactive&&<p role="status" className="absolute bottom-24 left-3 right-3 text-[10px] z-10">Fond de carte indisponible : carte illustrée de secours active.</p>}
+      <p role="status" className="sr-only">{filteredPlaces.length} lieux trouvés · données fictives</p>
       {/* Floating Chip-Based Category Filter Bar */}
-      <div className="relative px-3 z-20">
+      <div className="absolute top-24 left-0 right-0 px-3 z-20">
         <CategoryFilterBar
           selectedCategories={selectedCategories}
           onToggleCategory={handleToggleCategory}
@@ -102,12 +102,12 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
           allLabel="Tous les spots"
           countUnit="lieux"
           variant="floating"
-          showStatusBanner={true}
+          showStatusBanner={false}
         />
       </div>
 
       {filteredPlaces.length === 0 && (
-        <section aria-label="Aucun résultat sur la carte" className="mx-3 my-2 p-4 rounded-2xl border border-line bg-surface text-center relative z-20 shrink-0">
+        <section aria-label="Aucun résultat sur la carte" className="absolute top-60 left-3 right-3 p-4 rounded-2xl border border-line bg-surface text-center relative z-20 shrink-0">
           <Filter className="w-5 h-5 mx-auto mb-2 text-muted" aria-hidden="true" />
           <h3 className="text-sm font-bold text-ink">Aucun lieu ne correspond à votre recherche</h3>
           <p className="text-xs text-muted mt-1">Modifiez le nom ou les catégories pour retrouver les lieux fictifs.</p>
@@ -115,9 +115,9 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
         </section>
       )}
 
-      {interactive ? <React.Suspense fallback={<p className="p-4 text-xs text-muted">Chargement de la carte interactive…</p>}><DynamicMap places={filteredPlaces} position={userCurrentCoordinates} ready={locationReady} simulated={activeLocationMode==='simulation'} selectedId={activePlace?.id || null} onSelect={setSelectedPlaceId} onFallback={()=>{setInteractive(false);setMapUnavailable(true);}} /></React.Suspense> : <>
+      {interactive ? <React.Suspense fallback={<p className="p-4 text-xs text-muted">Chargement de la carte interactive…</p>}><DynamicMap camera={camera} places={filteredPlaces} position={userCurrentCoordinates} ready={locationReady} simulated={activeLocationMode==='simulation'} selectedId={activePlace?.id || null} onSelect={setSelectedPlaceId} onFallback={()=>{setInteractive(false);setMapUnavailable(true);}} /></React.Suspense> : <>
       {/* Stylized Vector Map of Abidjan Canvas */}
-      <div className="relative flex-1 w-full bg-canvas flex items-center justify-center p-4 pt-16">
+      <div className="absolute inset-0 w-full bg-canvas flex items-center justify-center p-4 pt-16">
         
         {/* SVG Drawing of the Ébrié Lagoon and Communes */}
         <svg
@@ -189,9 +189,11 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
 
         {/* Place Markers Overlay for filtered places */}
         <div className="absolute inset-0 max-w-3xl mx-auto pointer-events-none pt-16">
-          {filteredPlaces.map((place) => {
-            const topPct = Math.min(85, Math.max(15, ((5.375 - place.coordinates.lat) / (5.375 - 5.285)) * 100));
-            const leftPct = Math.min(88, Math.max(12, ((place.coordinates.lng - -4.03) / (-3.95 - -4.03)) * 100));
+          {filteredPlaces.map((place,index) => {
+            // Schematic fallback: a spaced layout keeps every touch target reachable.
+            // Real coordinates and radar remain canonical; only the illustration is schematic.
+            const topPct=32+(index%3)*18;
+            const leftPct=25+Math.floor(index/3)*48;
 
             const isSelected = activePlace?.id === place.id;
             const isVerified = place.verificationStatus === 'verified';
@@ -212,7 +214,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
                   <div
                     className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shadow-lg transition-colors ${
                       isSelected
-                        ? 'bg-rose-600 border-white text-white ring-4 ring-rose-500/40'
+                        ? `${isVerified?'bg-emerald-700':'bg-gray-600'} border-white text-white ring-4 ring-blue-500/40`
                         : isVerified
                         ? 'bg-emerald-950 border-emerald-500 text-emerald-300'
                         : 'bg-surface border-line-strong text-muted'
@@ -221,7 +223,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
                     <MapPin className="w-4 h-4 fill-current" />
                   </div>
 
-                  <span className={`mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap shadow-md backdrop-blur-md border ${
+                  <span className={`mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap max-w-28 truncate shadow-md backdrop-blur-md border ${
                     isSelected
                       ? 'bg-rose-950 text-ink border-rose-500'
                       : 'bg-surface/90 text-body border-line'
@@ -256,7 +258,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
               </div>
 
               <span className="text-[11px] text-muted block mt-0.5 truncate">
-                {activePlace.categoryLabel} · {activePlace.neighborhood} ({activePlace.commune})
+                {activePlace.verificationStatus==='verified'?'Lieu validé':'Lieu non validé'} · {activePlace.categoryLabel} · {activePlace.neighborhood} ({activePlace.commune})
               </span>
 
               <span className="text-[10px] text-rose-400 font-mono font-bold mt-1 block">
@@ -269,7 +271,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
                 onClick={() => onSelectPlace(activePlace.id)}
                 className="px-3 py-1.5 bg-soft hover:bg-raised text-ink font-semibold text-xs rounded-xl transition-colors cursor-pointer text-center"
               >
-                Détails
+                Voir le lieu
               </button>
 
             </div>

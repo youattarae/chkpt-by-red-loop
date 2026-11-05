@@ -1,3 +1,4 @@
+import {openCheck} from '../experience/actions';
 import { ReviewSection } from './ReviewSection';
 import { PlaceShare } from './PlaceShare';
 import { useId, useState } from 'react';
@@ -23,7 +24,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
   const saved = savedPlaceIds.includes(place.id);
   return <div className="pb-28">
     <section role="region" aria-labelledby={titleId} className="place-detail bg-canvas text-ink w-full max-w-2xl mx-auto">
-      <div className="sticky top-[65px] z-20 h-0">
+      <div className="sticky top-0 z-20 h-0">
         <div className="absolute top-4 left-4 right-4 flex justify-between pointer-events-none">
           <button type="button" onClick={onClose} aria-label="Retour" className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><ArrowLeft className="w-5 h-5" /></button>
           <div className="flex gap-2"><PlaceShare place={place} /><button type="button" disabled={pendingSavedPlaceIds.includes(place.id)} aria-busy={pendingSavedPlaceIds.includes(place.id)} onClick={() => toggleSavePlace(place.id)} aria-pressed={saved} aria-label={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} title={saved ? 'Retirer des favoris' : 'Enregistrer le lieu'} className="pointer-events-auto p-2.5 bg-black/65 text-white rounded-full cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'fill-current' : ''}`} /></button></div>
@@ -56,6 +57,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
           <h3 className="text-sm font-bold">Illustrations du lieu</h3>
           <div className="flex gap-2 overflow-x-auto pb-2">{images.map((source, index) => <button key={source} type="button" aria-label={`Voir l’illustration ${index + 1}`} aria-pressed={activeImage === index} onClick={() => { setActiveImage(index); setFallback(false); }} className={`shrink-0 w-24 h-20 overflow-hidden rounded-xl border-2 cursor-pointer ${activeImage === index ? 'border-blue-400' : 'border-transparent'}`}><SafeImage src={source} alt="" className="w-full h-full object-cover" /></button>)}</div>
         </section>}
+        <button type="button" onClick={()=>openCheck(place.id)} className="w-full bg-blue-600 text-white font-bold rounded-2xl p-4">Faire un check</button>
         <ReviewSection key={`${place.id}:${currentUser.id}`} placeId={place.id} />
         <div className="border-t border-line pt-4 flex flex-wrap justify-between gap-2 text-xs text-muted"><span>{place.totalCheckins} visites · données fictives</span><span>{!fallback && isGeneratedPublicationImage(image) ? 'Illustration générée par IA' : 'Illustration de présentation'}</span></div>
       </div>

@@ -1,3 +1,4 @@
+import {openComposer} from '../experience/actions';
 import {AudienceSelect} from '../common/AudienceSelect';
 import { BrandSymbol } from '../common/BrandSymbol';
 import { SafeImage } from '../common/SafeImage';
@@ -33,6 +34,7 @@ import {
 } from 'lucide-react';
 
 interface CheckinModalProps {
+  preselectedPlaceId?:string;
   isOpen: boolean;
   onClose: () => void;
   onPostPublishedSuccess?: () => void;
@@ -40,6 +42,7 @@ interface CheckinModalProps {
 
 export const CheckinModal: React.FC<CheckinModalProps> = ({
   isOpen,
+  preselectedPlaceId,
   onClose,
   onPostPublishedSuccess
 }) => {
@@ -59,7 +62,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     'select_place'
   );
   
-  const [selectedPlaceId, setSelectedPlaceId] = useState<string>('');
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string>(preselectedPlaceId||'');
   const [eventId,setEventId]=useState('');
   const [audience, setAudience] = useState<CheckInAudience>('private');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -102,7 +105,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
 
   const requestClose=()=>{if(publishing||mediaBusy)return;if(step==='optional_post'&&(postText.trim()||postMedia.length)){setDiscard(true);return;}onClose();};
   closeRef.current=requestClose;
-  useEffect(()=>{if(!isOpen)return;const previous=document.activeElement as HTMLElement|null;const overflow=document.body.style.overflow;dialog.current?.showModal();document.body.style.overflow='hidden';return()=>{dialog.current?.close();document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus();};},[isOpen]);
+  useEffect(()=>{if(!isOpen)return;const previous=document.activeElement as HTMLElement|null;const overflow=document.body.style.overflow;dialog.current?.showModal();document.body.style.overflow='hidden';return()=>{dialog.current?.close();document.body.style.overflow=overflow;if(previous?.isConnected)previous.focus({preventScroll:true});};},[isOpen]);
   if (!isOpen) return null;
 
   const currentPlace = places.find(p => p.id === selectedPlaceId);
@@ -413,7 +416,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                     Plus tard (Terminer)
                   </button>
                   <button
-                    onClick={() => {setPostAudience(verificationResult.checkIn?.audience||audience);setStep('optional_post');}}
+                    onClick={() => {onClose();openComposer({linkedPlaceId:currentPlace?.id,linkedCheckinId:verificationResult.checkIn?.id,audience:verificationResult.checkIn?.audience||audience,text:currentPlace?`Découverte de ${currentPlace.name} · visite ${verificationResult.checkIn?.isSimulated?'simulée de démonstration':'enregistrée'}`:'',media:currentPlace?[{url:currentPlace.coverImage,type:'image'}]:[]});}}
                     className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl transition-colors flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
                   >
                     <Camera className="w-4 h-4" />
@@ -452,56 +455,6 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               </div>
             )}
           </div>
-        )}
-
-        {/* STEP 4: Optional Follow-up Post Creation */}
-        {step === 'optional_post' && currentPlace && (
-          <form onSubmit={handlePublishFollowupPost} className="pt-4 space-y-4">
-            <div className="p-3 rounded-xl bg-canvas/80 border border-line flex items-center gap-3">
-              <SafeImage
-                src={currentPlace.coverImage}
-                alt={currentPlace.name}
-                className="w-12 h-12 rounded-xl object-cover shrink-0"
-              />
-              <div>
-                <span className="text-xs font-bold text-ink block">{currentPlace.name}</span>
-                <span className="text-[11px] text-emerald-400 font-medium">{verificationResult?.checkIn?.isSimulated ? 'Visite simulée attachée · démo' : '✓ Visite vérifiée attachée'}</span>
-              </div>
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-body block mb-1">
-                Votre commentaire ou avis :
-              </label>
-              <textarea
-                value={postText}
-                onChange={(e) => setPostText(e.target.value)}
-                placeholder="Racontez votre expérience, l'ambiance, les plats..."
-                rows={3}
-                className="w-full bg-canvas border border-line rounded-xl p-3 text-xs text-ink placeholder-muted focus:outline-none focus:border-rose-500"
-              />
-            </div>
-
-            <AudienceSelect value={postAudience} onChange={setPostAudience} disabled={publishing}/>
-            <PostMediaUploader disabled={publishing} value={postMedia} onChange={setPostMedia} onBusy={setMediaBusy} />
-
-            <div className="flex gap-2 pt-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-3 bg-soft hover:bg-raised text-body font-semibold text-xs rounded-xl cursor-pointer"
-              >
-                Passer
-              </button>
-              <button
-                type="submit"
-                disabled={mediaBusy || publishing}
-                className="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs rounded-xl shadow-md cursor-pointer"
-              >
-                Publier le checkpoint
-              </button>
-            </div>
-          </form>
         )}
 
         {/* STEP 5: Missing Place Proposal */}

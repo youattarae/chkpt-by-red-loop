@@ -1,3 +1,5 @@
+import {EntityCard} from '../experience/EntityCard';
+import {useExperience} from '../experience/Experience';
 import {StoryAvatar} from '../stories/Stories';
 import { useState } from 'react';
 import { Heart, MessageCircle, Bookmark, MapPin, Lock, CheckCircle2 } from 'lucide-react';
@@ -14,7 +16,8 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
   const [mediaFallback, setMediaFallback] = useState(false);
   const image = publicationImage(post.mediaUrl);
   const attachments=post.media?.length?post.media:(image?[{url:image,type:'image' as const}]:[]);
-  const saved = !!post.linkedPlaceId && savedPlaceIds.includes(post.linkedPlaceId);
+  const exp=useExperience();const saved=exp.saved.some(item=>item.type==='post'&&item.id===post.id);const [savePending,setSavePending]=useState(false),[saveError,setSaveError]=useState('');
+  async function savePost(){if(savePending)return;setSavePending(true);try{await exp.save('post',post.id,!saved);setSaveError('');}catch(e){setSaveError(e instanceof Error?e.message:'Enregistrement impossible.');}finally{setSavePending(false);}}
   const place = places.find(item => item.id === post.linkedPlaceId);
   return <article className="publication-card bg-surface border border-line/70 rounded-3xl overflow-hidden shadow-sm">
     <header className="p-4 flex items-start gap-3">
@@ -34,6 +37,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
         <span className="min-w-0"><span className="block text-xs font-bold text-ink break-words">{post.linkedPlaceName || place?.name}</span><span className="block text-[10px] text-muted mt-1">{place ? `${place.categoryLabel} · ${place.commune}` : 'Lieu de la publication'}</span></span>
       </button>
     </div>}
+    {post.entity&&!(post.entity.type==='place'&&post.entity.id===post.linkedPlaceId)&&<div className="p-3"><EntityCard entity={post.entity}/></div>}
     {post.isVerifiedVisit && <p className="px-4 pt-3 text-[10px] text-muted flex items-center gap-1"><CheckCircle2 className="w-3 h-3" />{post.isSimulated ? 'Check simulé · démonstration' : 'Check enregistré · démonstration'}</p>}
     <div className="px-4 py-3 flex items-center gap-5 text-xs text-muted">
       <button type="button" onClick={() => likePost(post.id)} aria-label="Aimer cette publication" aria-pressed={post.isLikedByCurrentUser}
@@ -42,8 +46,8 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       </button>
       <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-label="Commentaires de cette publication" aria-expanded={commentsOpen}
         className="inline-flex items-center gap-2 py-1 hover:text-blue-400 cursor-pointer"><MessageCircle className="w-5 h-5" /><span>{post.commentsCount}</span></button>
-      {post.linkedPlaceId && <button type="button" disabled={pendingSavedPlaceIds.includes(post.linkedPlaceId!)} aria-busy={pendingSavedPlaceIds.includes(post.linkedPlaceId!)} onClick={() => toggleSavePlace(post.linkedPlaceId!)} aria-label="Enregistrer le lieu de cette publication" aria-pressed={saved}
-        className="ml-auto py-1 hover:text-blue-400 cursor-pointer"><Bookmark className={`w-5 h-5 ${saved ? 'text-blue-400 fill-current' : ''}`} /></button>}
+      <button type="button" disabled={savePending} aria-busy={savePending} onClick={()=>void savePost()} aria-label="Enregistrer cette publication" aria-pressed={saved} className="ml-auto py-2"><Bookmark className={`w-5 h-5 ${saved?'text-blue-400 fill-current':''}`}/></button>
+      {saveError&&<p role="alert" className="text-xs">{saveError}</p>}
     </div>
     {commentsOpen && <div className="border-t border-line bg-soft/50 p-4 space-y-3">
       {post.comments.map(item => <p key={item.id} className="text-xs text-body break-words"><strong className="text-ink">{item.authorName} : </strong><span>{item.text}</span></p>)}

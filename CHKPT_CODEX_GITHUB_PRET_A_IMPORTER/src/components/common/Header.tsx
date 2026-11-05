@@ -1,38 +1,22 @@
-import {useNavigation} from '../../navigation/Navigation';
-import { useEffect, useRef, useState } from 'react';
-import { Bell, Crosshair, ChevronDown, Menu } from 'lucide-react';
-import { useStore } from '../../services/store';
-import { BrandSymbol } from './BrandSymbol';
-import { LocationControls } from './LocationControls';
-
-interface HeaderProps {
-  onOpenNotifications: () => void;
-  onGoHome: () => void;
-  onOpenMenu: () => void;
-}
-
-export function Header({ onOpenNotifications, onGoHome, onOpenMenu }: HeaderProps) {
-  const { unreadNotificationsCount, activeLocationMode, selectedZone } = useStore();
-  const [gpsOpen, setGpsOpen] = useState(false);
-  const gps=useRef<HTMLDivElement>(null);const nav=useNavigation();
-  useEffect(()=>{setGpsOpen(false);},[nav.current.key]);
-  useEffect(()=>{if(!gpsOpen)return;const outside=(event:PointerEvent)=>{if(!gps.current?.contains(event.target as Node))setGpsOpen(false);};const escape=(event:KeyboardEvent)=>{if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setGpsOpen(false);gps.current?.querySelector<HTMLButtonElement>('button')?.focus();}};document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape,true);return()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape,true);};},[gpsOpen]);
-  return <header aria-label="En-tête CHKPT" className="sticky top-0 z-40 bg-canvas border-b border-line px-4 py-2.5">
-    <div className="max-w-4xl mx-auto flex items-center justify-between">
-      <button type="button" onClick={() => { setGpsOpen(false); onGoHome(); }} aria-label="Retour à l’accueil" className="p-1 rounded-xl cursor-pointer"><BrandSymbol className="w-10 h-10" /></button>
-      <div className="flex items-center gap-2">
-      <div ref={gps} className="relative">
-        <button type="button" aria-label="GPS" title="Simulateur de position GPS pour la démo" aria-expanded={gpsOpen} aria-controls="gps-controls" onClick={() => setGpsOpen(!gpsOpen)} className="flex items-center gap-2 px-3 py-2 bg-soft border border-line rounded-xl text-xs font-semibold text-body cursor-pointer">
-          <Crosshair className={`w-4 h-4 ${activeLocationMode === 'simulation' ? 'text-amber-400' : 'text-emerald-400'}`} /><span>{selectedZone}</span><ChevronDown className="w-3 h-3 text-muted" />
-        </button>
-        {gpsOpen && <section id="gps-controls" aria-label="Réglages GPS" className="absolute right-0 top-full mt-2 w-64 max-h-[75dvh] overflow-y-auto p-3 bg-surface border border-line rounded-2xl shadow-xl"><LocationControls onSelect={() => setGpsOpen(false)} /></section>}
-      </div>
-      <button type="button" onClick={() => { setGpsOpen(false); onOpenNotifications(); }} aria-label="Notifications" className="relative p-2 text-ink rounded-xl hover:bg-soft cursor-pointer">
-        <Bell className="w-6 h-6" />
-        {unreadNotificationsCount > 0 && <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-600 border border-canvas" />}
-      </button>
-      <button type="button" onClick={() => { setGpsOpen(false); onOpenMenu(); }} aria-label="Ouvrir mon menu" className="p-2 rounded-xl hover:bg-soft"><Menu className="w-6 h-6" /></button>
-      </div>
-    </div>
-  </header>;
+import {useEffect,useRef,useState} from 'react';import {Menu,ArrowLeft,Search,Crosshair,X} from 'lucide-react';import {useStore} from '../../services/store';import {defaultFilters,SearchFilters,useNavigation} from '../../navigation/Navigation';import {BrandSymbol} from './BrandSymbol';import {SafeImage} from './SafeImage';import {SearchBar} from '../search/SearchExperience';import {LocationControls} from './LocationControls';import {useExperience} from '../experience/Experience';
+export function Header({onOpenMenu,onProfile,feedFilter,onFeedFilter}:{onOpenMenu:()=>void;onProfile:()=>void;feedFilter:'for_you'|'friends';onFeedFilter:(value:'for_you'|'friends')=>void}){
+ const nav=useNavigation(),route=nav.current.route;const {currentUser,selectedZone,setSelectedZone,unreadNotificationsCount}=useStore(),{activity}=useExperience();const count=unreadNotificationsCount+activity.filter(n=>!n.readAt).length;
+ const [mapFilters,setMapFilters]=useState<SearchFilters>(defaultFilters);useEffect(()=>{const receive=(e:Event)=>setMapFilters((e as CustomEvent).detail);window.addEventListener('chkpt:mapfilters-state',receive);return()=>window.removeEventListener('chkpt:mapfilters-state',receive);},[]);
+ const [search,setSearch]=useState(false),[gps,setGps]=useState(false),[hidden,setHidden]=useState(false),[queries,setQueries]=useState<Record<string,string>>({});const last=useRef(0);const own=route.page==='profile'&&route.id===currentUser.id||route.page==='main'&&route.tab==='profile';const map=route.page==='main'&&route.tab==='map',feed=route.page==='main'&&route.tab==='feed';
+ useEffect(()=>{setSearch(false);setGps(false);setHidden(false);last.current=window.scrollY;},[nav.current.key]);
+ useEffect(()=>{if(!feed||search)return;const listener=()=>{const y=Math.max(0,window.scrollY),delta=y-last.current;if(Math.abs(delta)>=3){setHidden(y>100&&delta>0);last.current=y;}};window.addEventListener('scroll',listener,{passive:true});return()=>window.removeEventListener('scroll',listener);},[feed,search]);
+ if(route.page!=='main'&&!own)return null;
+ const scope=route.tab==='map'?'places':route.tab==='sortir'?'sortir':'all';
+ return <header aria-label="En-tête CHKPT" data-header-hidden={hidden&&!search?'true':'false'} className={`${map?'fixed left-0 right-0 top-7 pointer-events-none':'sticky top-0'} z-40 transition-transform duration-150 ${hidden&&!search?'-translate-y-[110%]':''} ${map?'':'bg-canvas border-b border-line'}`}>
+ <div className={`max-w-4xl mx-auto p-2.5 flex items-center gap-2 ${map?'pointer-events-auto':''}`}>
+ {search?<><button type="button" aria-label="Fermer la recherche" onClick={()=>setSearch(false)} className="p-3 rounded-full bg-canvas"><ArrowLeft className="w-5 h-5"/></button><div className="flex-1 min-w-0"><SearchBar key={route.tab} scope={scope} filters={scope==='places'?mapFilters:undefined} onApply={scope==='places'?(filters=>window.dispatchEvent(new CustomEvent('chkpt:mapfilters',{detail:filters}))):undefined} autoFocus initialQuery={queries[route.tab]||''} onQueryChange={q=>setQueries(v=>({...v,[route.tab]:q}))}/></div></>:own?<><button type="button" aria-label="Retour" onClick={nav.back} className="p-3"><ArrowLeft className="w-5 h-5"/></button><h1 className="font-bold">Mon profil</h1></>:<>
+ <button type="button" aria-label="Ouvrir mon menu" onClick={onOpenMenu} className="relative p-3 rounded-full bg-canvas/95"><Menu strokeWidth={1.3} className="w-5 h-5"/>{count>0&&<span aria-label={`${count} notifications non lues`} className="absolute -top-1 -right-1 bg-rose-900 text-white rounded-full px-1.5 text-[10px]">{count>99?'99+':count}</span>}</button>
+ <button type="button" aria-label="Mon profil" onClick={onProfile} className="rounded-full bg-canvas"><SafeImage src={currentUser.avatarUrl} alt="" className="w-9 h-9 rounded-full object-cover"/></button>
+ <div className="flex-1 flex justify-center">{feed&&<BrandSymbol className="w-10 h-10"/>}</div>
+ <button type="button" aria-label="Ouvrir la recherche" onClick={()=>{setSearch(true);setHidden(false);}} className="p-3 rounded-full bg-canvas/95"><Search className="w-5 h-5"/></button></>}
+ </div>
+ {feed&&!own&&<div className="relative flex items-center max-w-xl mx-auto px-3"><div role="tablist" aria-label="Fil d’actualité" className="grid grid-cols-2 flex-1" onKeyDown={e=>{if(['ArrowLeft','ArrowRight','Home','End'].includes(e.key)){e.preventDefault();const next=e.key==='Home'?'for_you':e.key==='End'?'friends':feedFilter==='for_you'?'friends':'for_you';onFeedFilter(next);e.currentTarget.querySelector<HTMLButtonElement>(`[data-feed="${next}"]`)?.focus();}}}>{(['for_you','friends'] as const).map(value=><button key={value} type="button" role="tab" data-feed={value} id={'feed-'+value} aria-selected={feedFilter===value} aria-controls="feed-posts" tabIndex={feedFilter===value?0:-1} onClick={()=>onFeedFilter(value)} className={`social-tab py-3 text-sm font-bold ${feedFilter===value?'is-active text-ink':'text-muted'}`}>{value==='for_you'?'Pour toi':'Amis'}</button>)}</div><button type="button" aria-label="GPS" title="Choisir la commune explorée" aria-expanded={gps} onClick={()=>setGps(!gps)} className="p-3"><Crosshair className="w-5 h-5"/></button>
+ {gps&&<section aria-label="Réglages GPS" className="absolute top-full right-2 z-50 w-72 max-w-[90vw] max-h-[70dvh] overflow-auto bg-canvas border border-line rounded-2xl shadow-xl p-4 space-y-3"><div className="flex justify-between items-center"><strong className="text-sm">Commune explorée</strong><button type="button" aria-label="Fermer la localisation" onClick={()=>setGps(false)} className="p-2"><X className="w-4 h-4"/></button></div><label className="block text-xs">Explorer<select aria-label="Commune explorée" value={selectedZone} onChange={e=>setSelectedZone(e.target.value)} className="block p-3 bg-soft rounded-xl w-full mt-2">{['Cocody','Marcory','Plateau','Yopougon','Riviera'].map(z=><option key={z}>{z}</option>)}</select></label><p className="text-xs text-muted">Explorer une commune ne change pas la preuve GPS et ne valide aucune visite.</p><details><summary className="text-xs font-bold cursor-pointer p-2">Position du check · simulateur / GPS</summary><LocationControls/></details></section>}
+ </div>}
+ </header>;
 }
