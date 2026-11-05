@@ -24,7 +24,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       <StoryAvatar id={post.authorId} name={post.authorName} src={post.authorAvatar} onProfile={()=>window.dispatchEvent(new CustomEvent('chkpt:profile',{detail:post.authorId}))}/>
       <div className="min-w-0 flex-1">
         <h3 className="text-sm font-bold text-ink break-words"><button type="button" onClick={() => window.dispatchEvent(new CustomEvent('chkpt:profile', { detail: post.authorId }))} className="text-left cursor-pointer">{post.authorName}</button></h3>
-        <p className="text-[11px] text-muted break-words"><span>@{post.authorUsername}</span><span aria-hidden="true"> · </span><span>{Number.isFinite(Date.parse(post.createdAt))?new Date(post.createdAt).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):post.createdAt}</span></p>
+        <p className="text-[11px] text-muted break-words"><span>@{post.authorUsername}</span><span aria-hidden="true"> · </span><span>{/^\d{4}-\d{2}-\d{2}T/.test(post.createdAt)&&Number.isFinite(Date.parse(post.createdAt))?new Date(post.createdAt).toLocaleString('fr-FR',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):post.createdAt}</span></p>
       </div>
       {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}
     </header>

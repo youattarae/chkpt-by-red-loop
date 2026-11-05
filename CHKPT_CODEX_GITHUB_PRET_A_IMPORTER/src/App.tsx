@@ -47,6 +47,7 @@ function AppContent(){
  const [visited,setVisited]=useState<MainTab[]>([activeTab]);const tabs=Array.from(new Set([...visited,activeTab]));
  useEffect(()=>{setVisited(previous=>previous.includes(activeTab)?previous:[...previous,activeTab]);},[activeTab]);
  useEffect(()=>{setCheckin(false);setMenu(false);setFeedFilter('for_you');setNotifications(false);setActions(false);setComposer(null);setShare(null);setIsOperatorView(false);},[authSessionToken]);
+ useEffect(()=>{setIsOperatorView(false);},[nav.current.key]);
  const place=(id:string)=>nav.push({page:'place',id,tab:activeTab});
  const profile=(id:string)=>{if(id===currentUser.id&&isServerAuthenticated)nav.push({page:'profile',id,tab:activeTab});else nav.push({page:'profile',id,tab:activeTab});};
  useEffect(()=>{const openProfile=(event:Event)=>{const id=(event as CustomEvent).detail;if(typeof id==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(id))profile(id);};const openEvent=(event:Event)=>{const id=(event as CustomEvent).detail;if(typeof id==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(id))nav.push({page:'event',id,tab:activeTab});};window.addEventListener('chkpt:profile',openProfile);window.addEventListener('chkpt:event',openEvent);return()=>{window.removeEventListener('chkpt:profile',openProfile);window.removeEventListener('chkpt:event',openEvent);};},[nav.current.key,currentUser.id,isServerAuthenticated]);

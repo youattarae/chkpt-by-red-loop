@@ -334,6 +334,8 @@ try {
   await check('Version compilée : sources et cartes de débogage bloquées, jetons hors URL',()=>checkBuildExposure(start,stop,project,password));
   const {checkDiscovery}=await import('./discovery_test');
   await check('Recherche publique, relations protégées et classement mensuel réciproque',()=>checkDiscovery(start,stop,password));
+  const {checkUxContracts}=await import('./ux_contracts_test');
+  await check('Contrats UX : événements partagés, activités, enregistrés séparés, tiers et mineurs protégés',()=>checkUxContracts(demo.url,password));
   const {checkStories}=await import('./stories_test');
   await check('Stories : expiration serveur, confidentialité, suppression et stockage',()=>checkStories(start,stop,password));
   const {checkSharedState}=await import('./shared_state_test');
