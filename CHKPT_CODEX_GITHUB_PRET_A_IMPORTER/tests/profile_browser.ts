@@ -62,7 +62,7 @@ export async function checkProfile(url: string, password: string) {
       await page.getByRole('region',{name:'Historique des lieux visités',exact:true}).getByRole('button',{name:/Lagon Bleu Rooftop Lounge/}).waitFor();
       await page.getByRole('button',{name:'Retour',exact:true}).click();
       await menuPage('Badges et progression');
-      await page.getByText('Consulter mes XP et mon journal privé',{exact:true}).click();
+      await page.getByRole('region',{name:'Badges et progression',exact:true}).getByText('Consulter mes XP et mon journal privé',{exact:true}).click();
       await page.getByRole('region',{name:'Journal XP',exact:true}).getByText(/Visite validée à Lagon Bleu Rooftop Lounge/).waitFor();
       assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       await page.getByRole('button',{name:'Retour',exact:true}).click();
@@ -90,7 +90,7 @@ export async function checkProfile(url: string, password: string) {
         await page.getByRole('region',{name:'Historique des lieux visités',exact:true}).getByRole('button',{name:/Maquis L'Étoile/}).waitFor();
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
         await page.getByRole('button',{name:'Retour',exact:true}).click();await menuPage('Badges et progression');
-        await page.getByText('Consulter mes XP et mon journal privé',{exact:true}).click();
+        await page.getByRole('region',{name:'Badges et progression',exact:true}).getByText('Consulter mes XP et mon journal privé',{exact:true}).click();
         await page.getByRole('region',{name:'Journal XP',exact:true}).getByText(/\+75 XP/).first().waitFor();
         assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
       }
