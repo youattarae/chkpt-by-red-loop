@@ -24,7 +24,7 @@ export async function checkMessages(url:string,password:string){
  await page.goto(url);await page.getByRole('tab',{name:'Pour toi',exact:true}).waitFor();
  await openMenu(page);
  const menu=page.getByRole('dialog',{name:'Mon menu'});await menu.waitFor();assert.equal(Math.round((await menu.boundingBox())!.x),0);await menu.locator('img').waitFor();await page.screenshot({path:'/tmp/chkpt-dm-menu.png'});
- await menu.getByRole('button',{name:'Messages privés',exact:true}).click();await page.getByRole('button',{name:/Ingrid N’Goan/}).click();
+ assert.equal(await menu.getByRole('button',{name:'Messages privés',exact:true}).count(),0);await menu.getByRole('button',{name:'Fermer mon menu'}).click();await page.locator('nav').getByRole('button',{name:'Messages',exact:true}).click();await page.getByRole('button',{name:/Ingrid N’Goan/}).click();
  await page.locator('[aria-label="Conversation"]').getByText(body.text,{exact:true}).waitFor();await page.getByLabel('Votre message',{exact:true}).fill('Oui, à tout à l’heure !');await page.getByRole('button',{name:'Envoyer',exact:true}).click();await page.locator('[aria-label="Conversation"]').getByText('Oui, à tout à l’heure !',{exact:true}).waitFor();
  await page.screenshot({path:'/tmp/chkpt-dm-conversation.png'});
  await page.reload();await page.locator('[aria-label="Conversation"]').getByText('Oui, à tout à l’heure !',{exact:true}).waitFor();

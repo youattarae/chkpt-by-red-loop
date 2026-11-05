@@ -37,8 +37,8 @@ export async function checkVisualDirection(url: string) {
       assert.equal(await page.getByRole('combobox',{name:'Commune explorée'}).inputValue(),'Cocody');
       await page.getByRole('button',{name:'Fermer la localisation'}).click();
       const checkin = page.getByRole('button', { name: 'Check et publication', exact: true });
-      assert.equal(await checkin.locator('img[src="/brand/chkpt-symbol.svg"]').count(), 1);
-      assert.equal(await checkin.locator('svg').count(), 0, 'Le symbole remplace la cible dans le bouton central');
+      assert.equal(await checkin.locator('img').count(), 0);
+      assert.equal(await checkin.locator('svg.lucide-plus').count(), 1, 'Le grand plus remplace le symbole dans les deux thèmes');
       for (const theme of ['light', 'dark']) {
         if (theme === 'dark') await toggleTheme(page);
         await page.reload();

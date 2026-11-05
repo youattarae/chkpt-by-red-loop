@@ -1,3 +1,4 @@
+import {BadgeFamilyPage} from './components/badges/BadgesView';
 import {useRef} from 'react';
 import {ExperienceProvider,useExperience} from './components/experience/Experience';
 import {Composer} from './components/experience/Composer';
@@ -66,6 +67,7 @@ function AppContent(){
    case 'followers':case 'following':return <ConnectionsDialog isVisible={isVisible} id={page.id} kind={page.page} onClose={nav.back}/>;
    case 'saved':return <SavedPage/>;
    case 'notifications':return <ActivityPage/>;
+   case 'badge-family':return <BadgeFamilyPage id={page.id} onBack={nav.back} onAccount={openAccount}/>;
    case 'article':return <ArticlePage id={page.id}/>;
    case 'post':{const post=posts.find(p=>p.id===page.id);return <PageLayout title="Publication" onBack={nav.back}>{post?<PublicationCard post={post} onSelectPlace={place}/>:<p>Publication indisponible ou privée.</p>}</PageLayout>;}
    case 'messages':return <MessagesPage isVisible={isVisible}/>;

@@ -66,3 +66,7 @@ Un jury peut voir sans erreur : Accueil → Carte → sélection d'un maquis de 
 ## Addendum Stories — 5 novembre, mission en cours
 
 `docs/references/2026-11-05/CHKPT_ADDENDUM_STORIES_DEFILEMENT_2026-11-05.md` précise l'ordre : commandes → stories horizontales → Pour toi/Amis + localisation → fil. Aucun répertoire/recherche/encart entre stories et onglets. Les stories restent dans le flux normal : elles sortent de l'écran en descendant et ne reviennent pas avec les seules commandes lors d'un petit mouvement inverse. Réutiliser le module et ses permissions/24 h ; fixtures privées de démo, identifiées, idempotentes et sans remplacement des stories personnelles. Continuer les lots existants, sans reconstruire.
+
+## Addendum Menu, Badges, bouton ＋ — 5 novembre 2026
+
+Référence : `docs/references/2026-11-05/CHKPT_ADDENDUM_MENU_BADGES_ET_BOUTON_PLUS_2026-11-05.md`. Ordre exact : Notifications, Mon compte, Badges et progression, Enregistrés, Historique privé, Récompenses fictives, Classement, Aide, Réglages. Identité séparée vers Profil ; Messages uniquement dans la barre basse. Grand plus central sans symbole, deux actions inchangées. Collection : huit familles officielles illustrées, dernier acquis ou verrou gris, aucun seuil/jauge. Détail sur vraie page : acquis/total catalogue, noms des seuls acquis, verrouillés anonymes, réussite passée du badge actuel. Moteur, grades, seuils, XP et confidentialité inchangés ; XP/journal préservés séparément.

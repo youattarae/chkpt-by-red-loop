@@ -39,7 +39,7 @@ export async function checkSharedBrowsers(url:string,password:string){
     await privatePost.locator('img[src^="blob:"]').waitFor();
     assert.ok(await privatePost.locator('img[src^="blob:"]').evaluate(image=>(image as HTMLImageElement).naturalWidth>0));
     await openMenu(other);await other.getByRole('dialog',{name:'Mon menu'}).getByRole('button',{name:'Badges et progression'}).click();
-    const badges=other.getByRole('region',{name:'Badges et progression',exact:true});assert.ok(await badges.getByRole('heading',{level:4}).count()<=6);
+    const badges=other.getByRole('region',{name:'Badges et progression',exact:true});assert.equal(await badges.getByLabel('Collection des huit familles').getByRole('button').count(),8);
     if(process.env.CHKPT_CAPTURE_DIR){await mkdir(process.env.CHKPT_CAPTURE_DIR,{recursive:true});await badges.screenshot({path:path.join(process.env.CHKPT_CAPTURE_DIR,'badges-selection-390.png')});}
     await first.bringToFront();await openComposer(first);
     const retry='Ma publication doit résister à une réponse perdue.';
