@@ -1,3 +1,5 @@
+> Livraison précédente conservée comme historique. Le nouvel [addendum Menu, Badges, ＋](ADDENDUM_MENU_BADGES_PLUS_BILAN.md) ajoute la recette de 49 groupes et actualise les supports.
+
 # CHKPT — bilan de la mission intégrée du 5 novembre 2026
 
 Branche : `feat/ux-demo-lots-0-8`. Base préservée : `de87f2f` et `6c4652a`. Dernier commit fonctionnel avant la recette finale : `d07f4b20416481fa68f4476755446f4ac3087619`. Des commits documentaires peuvent suivre ; le dernier hash exact est fourni dans le compte rendu de livraison.

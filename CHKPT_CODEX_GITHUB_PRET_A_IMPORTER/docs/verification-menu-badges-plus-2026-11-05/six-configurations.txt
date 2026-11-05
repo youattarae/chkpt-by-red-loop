@@ -1,0 +1,6 @@
+Menu/badges/plus 320px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 320px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 390px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 390px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 1280px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 1280px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK

@@ -3,7 +3,7 @@ import {fileURLToPath} from 'node:url';
 import {chromium} from 'playwright';
 const docs=new URL('../docs/',import.meta.url);
 const steps=[
- ['accueil','1. Découvrir CHKPT','Accueil : Pour toi et Amis, avec stories et recherche par la loupe.','La capsule du bas donne accès à Accueil, Carte, ＋/Check, Sortir et Messages. Le profil s’ouvre par votre photo.','Les personnes, lieux, contenus et publicités sont fictifs.'],
+ ['accueil','1. Découvrir CHKPT','Accueil : Pour toi et Amis, avec stories et recherche par la loupe.','La capsule du bas donne accès à Accueil, Carte, ＋, Sortir et Messages. Le profil s’ouvre par votre photo.','Les personnes, lieux, contenus et publicités sont fictifs.'],
  ['carte','2. Explorer la Carte','Toucher un repère pour voir son aperçu, puis Voir le lieu.','Déplacement, zoom, radar de 250 m et filtres sont conservés. Le secours illustré est schématique et signalé.','Aucune publicité sur la Carte ; le vert et le gris distinguent les statuts.'],
  ['fiche-lieu','3. Consulter avant de sortir','La fiche présente les illustrations, informations, avis et actions.','Faire un check ouvre ce lieu déjà sélectionné. Enregistrer conserve la fiche ; Partager n’enregistre aucune visite.','Retour retrouve votre contexte de découverte.'],
  ['check-confirme','4. Simuler une visite autorisée','Confirmer le check, avec une visibilité explicite.','Dans le scénario du maquis, une visite admissible ajoute 75 XP ; la simulation et les paliers provisoires sont signalés.','Un doublon n’ajoute pas de points. Plus tard permet de continuer sans publier.'],

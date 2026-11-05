@@ -65,3 +65,7 @@ Le test de présentation vérifiait `complete` puis les dimensions dans une seco
 ## Clôture logicielle — 5 novembre 2026
 
 Après les derniers changements : TypeScript et build réussis, suite complète **48/48 groupes réussis**, aucun échec final. PDF/PPTX 48 pages/diapositives, captures, guide de répétition et secours actualisés. Les journaux précédents sont historiques ; voir `verification-2026-11-05/README.md`. Tests sur bases temporaires, pas de données personnelles réinitialisées. Répétition sur appareils réels, publication GitHub et activation d’un hébergement privé non effectuées. Aucun push/merge/déploiement.
+
+## Addendum menu, badges et grand ＋
+
+Code intégré sans modification du moteur/catalogue serveur, huit familles et pages de collection privées, neuf entrées ordonnées, grand plus sans symbole. TypeScript/build réussis, recette complète 49/49. Supports 49 pages/diapositives et captures actualisés. Premier timeout dev et rejeu conservés dans `verification-menu-badges-plus-2026-11-05`. Aucune base personnelle utilisée ; tests matériels et accès téléphone au Mac restent non vérifiés.

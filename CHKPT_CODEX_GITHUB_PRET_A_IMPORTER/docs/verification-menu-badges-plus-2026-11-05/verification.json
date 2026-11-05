@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-05",
+  "branche": "feat/ux-demo-lots-0-8",
+  "commit_code_et_tests": "97fb1409232361464696528b46ca6a7ba634c06a",
+  "groupes": 49,
+  "echecs_recette_finale": 0,
+  "moteur_et_catalogue_identiques_au_commit": "f747703",
+  "largeurs": [
+    320,
+    390,
+    1280
+  ],
+  "themes": [
+    "clair",
+    "sombre"
+  ],
+  "materiel_reel_teste": false,
+  "supports": [
+    {
+      "fichier": "GUIDE_UTILISATION_COMPLET.pdf",
+      "octets": 3123477,
+      "sha256": "0a84955795b2791e29315996ba3f9dcee90fc322194d82fdc04b10fde709692f"
+    },
+    {
+      "fichier": "GUIDE_UTILISATION_COMPLET.pptx",
+      "octets": 3197358,
+      "sha256": "1ad87a995bbe04798cd2c616680ff99e473b4df2e1cae205207be4aae01c5a7b"
+    },
+    {
+      "fichier": "DEMONSTRATION_PAS_A_PAS.pdf",
+      "octets": 1649651,
+      "sha256": "50e3db9eeb07369ff43e7de985c48b5462ea33aeb979a82bbce14e9a26b6402b"
+    },
+    {
+      "fichier": "DEMO_SECOURS.html",
+      "octets": 719952,
+      "sha256": "3b61dc3defd36a5efab49021f983db9345f23e874d7f2e800212d6fb708ddabb"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+START profile_browser
+  Profil 320px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+  Profil 390px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+  Profil 1280px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+PASS profile_browser
+START shared_state_browser
+PASS shared_state_browser
+START navigation_search_browser
+PASS navigation_search_browser
+START messages_browser
+PASS messages_browser

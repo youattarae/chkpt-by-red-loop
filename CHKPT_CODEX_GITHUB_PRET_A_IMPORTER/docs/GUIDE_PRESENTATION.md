@@ -76,7 +76,7 @@ Démarrer la démo et Réinitialiser ouvrent une confirmation destructive : comp
 
 ## 6. Les gestes à connaître
 
-- En bas : Accueil, Carte, ＋/Check, Sortir, Messages. La couleur et le point bordeaux indiquent l’espace actif.
+- En bas : Accueil, Carte, ＋, Sortir, Messages. La couleur et le point bordeaux indiquent l’espace actif.
 - Votre photo en haut et l’identité du menu ouvrent votre profil. Sur votre profil, Retour remplace le menu visible ; le glissement depuis le bord gauche ouvre toujours le menu.
 - La loupe remplace la première ligne par la recherche. Suggestions pendant la saisie ; Rechercher ouvre les résultats et leurs filtres. La flèche ferme ce mode.
 - L’icône de localisation d’Accueil choisit la commune explorée. Cela ne crée pas de visite et ne modifie pas la preuve de position du check.
@@ -114,3 +114,9 @@ Avant le rendez-vous : tester sur les vrais appareils d’Ingrid, sauvegarder, v
 Sur Accueil : commandes → stories → Pour toi/Amis et GPS → fil. Les portraits défilent horizontalement et quittent l’écran en descendant ; seules les commandes reviennent au petit mouvement inverse. Revenez en haut pour retrouver les stories. Le retour depuis Messages conserve la position du fil.
 
 Les exemples fictifs expirent réellement après 24 heures et ne sont pas renouvelés au redémarrage. Pour préparer une nouvelle répétition, l’opérateur connecté peut toucher « Préparer les stories fictives » dans son compte. Cette préparation ne réinitialise ni les publications ni les visites et ne remplace aucune story personnelle.
+
+## Menu, badges et grand ＋ — complément du 5 novembre
+
+Le menu présente Notifications, Mon compte, Badges et progression, Enregistrés, Historique privé, Récompenses fictives, Classement, Aide, Réglages. Le bloc identité ouvre le profil ; Messages reste uniquement dans la barre basse. Les compteurs d’activité et de messages sont distincts.
+
+Le grand plus ouvre Faire un check puis Créer une publication. Il ne valide rien automatiquement. La collection affiche huit familles : toucher l’une d’elles pour voir les badges obtenus et les emplacements anonymes verrouillés. Le compteur indique acquis/total catalogue, pas des visites. Badge actuel explique un acquis passé ; les règles provisoires restent identiques. Pour vos points et le journal, ouvrir « Consulter mes XP et mon journal privé » après les huit familles.

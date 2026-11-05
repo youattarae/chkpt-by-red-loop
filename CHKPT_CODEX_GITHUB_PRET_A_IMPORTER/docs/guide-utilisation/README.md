@@ -2,8 +2,8 @@
 
 Version intégrée du 5 novembre 2026 : navigation, partage interne, Messages, brouillons et notifications.
 
-- [Lire le PDF — 48 pages](../GUIDE_UTILISATION_COMPLET.pdf)
-- [Ouvrir le PowerPoint modifiable — 48 diapositives](../GUIDE_UTILISATION_COMPLET.pptx)
+- [Lire le PDF — 49 pages](../GUIDE_UTILISATION_COMPLET.pdf)
+- [Ouvrir le PowerPoint modifiable — 49 diapositives](../GUIDE_UTILISATION_COMPLET.pptx)
 - [Guide de répétition et lancement Mac/Windows/téléphone](../GUIDE_PRESENTATION.md)
 
 Les supports utilisent des captures actuelles d’un serveur/base temporaires et des données synthétiques, jamais une base personnelle. Chaque fichier reste inférieur à 40 Mo. Aucun logiciel de programmation n’est nécessaire pour les lire.
@@ -40,7 +40,7 @@ Les supports utilisent des captures actuelles d’un serveur/base temporaires et
 | 26 | Voir et suivre une autre personne |
 | 27 | Le menu reste toujours personnel |
 | 28 | Retrouver vos lieux |
-| 29 | Badges, progression et journal XP |
+| 29 | Collection de badges et journal privé |
 | 30 | Le classement des explorateurs |
 | 31 | Sélections et événements |
 | 32 | Essayer une récompense fictive |
@@ -60,6 +60,7 @@ Les supports utilisent des captures actuelles d’un serveur/base temporaires et
 | 46 | Lire une fiche et revenir au bon endroit |
 | 47 | Deux compteurs, deux usages |
 | 48 | Stories : ordre et défilement |
+| 49 | Collection d’une famille de badges |
 
 ## Régénération développeur
 

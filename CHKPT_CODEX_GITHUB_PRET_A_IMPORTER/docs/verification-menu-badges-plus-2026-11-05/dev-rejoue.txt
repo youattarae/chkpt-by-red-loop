@@ -1,0 +1,3 @@
+START dev_stability_browser
+  Mode dev : check-in et badge lisibles sans rechargement, publication possible ; HMR source conservé
+PASS dev_stability_browser

@@ -1,3 +1,5 @@
+> Livraison précédente conservée comme historique. Le nouvel [addendum Menu, Badges, ＋](../ADDENDUM_MENU_BADGES_PLUS_BILAN.md) ajoute la recette de 49 groupes et actualise les supports.
+
 # Vérification finale — 5 novembre 2026
 
 La suite complète réussit **48/48 groupes**, suite historique de 11 tests comprise, après les derniers changements de code et de tests. TypeScript et build réussis.

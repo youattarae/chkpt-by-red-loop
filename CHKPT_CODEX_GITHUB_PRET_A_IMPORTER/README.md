@@ -1,3 +1,7 @@
+## Addendum menu, badges et grand ＋ — 5 novembre 2026
+
+Recette **49/49 groupes réussis**, TypeScript et build réussis. Menu ordonné, huit familles illustrées, pages de collection sans conditions futures et grand plus central. Moteur/catalogue inchangés ; guides PDF/PPTX 49 pages/diapositives. [Bilan et limites](docs/ADDENDUM_MENU_BADGES_PLUS_BILAN.md). Les résultats ci-dessous restent historiques.
+
 ## Version intégrée du 5 novembre 2026
 
 Recette finale du 5 novembre : **48/48 groupes réussis**, TypeScript et build réussis ; addendum Stories compris. Guides actualisés : 48 pages/diapositives. [Preuves et limites matérielles](docs/verification-2026-11-05/README.md).
@@ -14,7 +18,7 @@ CHKPT est un réseau social de découverte de lieux et sorties, centré sur Coco
 
 [Guide PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx) · [Sommaire](docs/guide-utilisation/README.md).
 
-48 pages et diapositives illustrées, navigation, messages, partage, brouillons et stories inclus ; PDF et PPTX d’environ 3 Mo chacun. Le [bilan de mission](docs/BILAN_MISSION_LOTS_0_8.md) donne la dernière recette et ses limites. Les anciens résultats datés ci-dessous restent historiques.
+49 pages et diapositives illustrées, navigation, messages, partage, brouillons et stories inclus ; PDF et PPTX d’environ 3 Mo chacun. Le [bilan de mission](docs/BILAN_MISSION_LOTS_0_8.md) donne la dernière recette et ses limites. Les anciens résultats datés ci-dessous restent historiques.
 
 ## Direction visuelle actualisée
 

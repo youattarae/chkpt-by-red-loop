@@ -16,7 +16,7 @@
     "steps": [
       "Accueil : fils Pour toi / Amis, stories et loupe de recherche.",
       "Carte : explorer les lieux, leurs catégories et le radar de présence.",
-      "＋ / Check : choisir Faire un check ou Créer une publication.",
+      "＋ : choisir Faire un check ou Créer une publication.",
       "Sortir : sélections, articles fictifs et événements.",
       "Messages : conversations et fiches partagées ; le profil s’ouvre par votre photo en haut."
     ],
@@ -129,7 +129,7 @@
     "chapter": "PUBLIER",
     "title": "Créer une publication",
     "steps": [
-      "Toucher ＋ / Check → Créer une publication.",
+      "Toucher ＋ → Créer une publication.",
       "Écrire un texte, choisir éventuellement un lieu et ajouter jusqu’à quatre médias.",
       "Choisir la visibilité avant Publier.",
       "Le contenu apparaît dans le fil et sur le profil, sans visite ni points de check automatiques.",
@@ -220,7 +220,7 @@
     "chapter": "CARTE ET LIEUX",
     "title": "Proposer un lieu manquant",
     "steps": [
-      "Toucher ＋ / Check → Faire un check, puis Proposer ce spot sous la liste.",
+      "Toucher ＋ → Faire un check, puis Proposer ce spot sous la liste.",
       "Renseigner nom, catégorie, commune et repère utile.",
       "Envoyer la proposition pour illustrer la contribution communautaire.",
       "La proposition et sa gestion opérateur restent des simulations locales, pas une certification réelle."
@@ -232,7 +232,7 @@
     "chapter": "CHECK-IN",
     "title": "Choisir le lieu et confirmer",
     "steps": [
-      "Depuis ＋ / Check → Faire un check, sélectionner explicitement le lieu.",
+      "Depuis ＋ → Faire un check, sélectionner explicitement le lieu.",
       "Depuis Faire un check sur une fiche, ce lieu est déjà sélectionné.",
       "Choisir la visibilité ; Moi seul est proposé par défaut.",
       "Vérifier le mode de position et, si proposé, l’événement actif.",
@@ -336,10 +336,10 @@
     "chapter": "MON ESPACE",
     "title": "Le menu reste toujours personnel",
     "steps": [
-      "Sur les pages principales, toucher le bouton menu fin ou glisser depuis le bord gauche.",
-      "Sur son profil, utiliser le glissement ou Retour vers une page principale.",
-      "L’identité du menu appartient au compte connecté et ouvre son profil.",
-      "Notifications, Enregistrés, historique privé, progression et classement restent des accès distincts.",
+      "Toucher le bouton menu ou glisser depuis le bord gauche. Sur votre profil, utiliser Retour ou le glissement.",
+      "La photo, le nom et l’identifiant en haut ouvrent directement votre profil.",
+      "Ordre : Notifications, Mon compte, Badges et progression, Enregistrés, Historique privé, Récompenses fictives, Classement, Aide, Réglages.",
+      "Messages reste dans la barre du bas ; ouvrir le menu ne marque rien comme lu.",
       "Fermer par la croix, la zone assombrie ou le glissement inverse."
     ],
     "note": "La petite photo de l’en-tête ouvre votre profil. Les portraits de la bande Stories, des publications et des profils ouvrent leurs stories lorsqu’elles existent.",
@@ -360,22 +360,22 @@
   },
   {
     "chapter": "MON ESPACE",
-    "title": "Badges, progression et journal XP",
+    "title": "Collection de badges et journal privé",
     "steps": [
-      "☰ → Badges et progression montre votre niveau et votre total.",
-      "Une petite sélection de badges est affichée dans le prototype.",
-      "Les paliers sont évalués côté serveur à partir des actions validées.",
-      "Le journal XP explique les mouvements enregistrés.",
-      "Les visiteurs voient uniquement vos badges débloqués, sans seuils détaillés, registre ni total XP."
+      "☰ → Badges et progression ouvre huit grandes familles illustrées.",
+      "Un grand badge coloré représente le plus avancé déjà obtenu ; sinon le visuel est gris et verrouillé.",
+      "Toucher une famille ouvre sa page de collection.",
+      "Les noms et conditions des badges futurs ne sont pas présentés.",
+      "Consulter mes XP et mon journal privé ouvre vos points et les mouvements enregistrés, séparément de la collection."
     ],
-    "note": "Le barème reste provisoire. Le catalogue technique ne signifie pas que tous les badges doivent être présentés au jury.",
+    "note": "Les règles, grades et seuils ne changent pas. Le barème et les noms restent provisoires ; les personnages de démo peuvent avoir une progression initiale fictive.",
     "image": "progression"
   },
   {
     "chapter": "MON ESPACE",
     "title": "Le classement des explorateurs",
     "steps": [
-      "Ouvrir ☰ → Classement des explorateurs ; il n’est plus dans Sortir.",
+      "Ouvrir ☰ → Classement ; il n’est plus dans Sortir.",
       "Amis : vous et les suivis réciproques accessibles.",
       "Global : profils publics accessibles et votre propre compte.",
       "Le classement utilise les XP des visites enregistrées durant le mois courant.",
@@ -414,7 +414,7 @@
     "chapter": "RÉGLAGES",
     "title": "Thème, GPS et notifications",
     "steps": [
-      "☰ → Réglages et confidentialité : thème et position du check.",
+      "☰ → Réglages : thème et position du check.",
       "Le mode sombre est mémorisé sur l’appareil ; il n’encombre pas l’en-tête.",
       "☰ → Notifications : activités, préférences locales et exemples fictifs de présentation.",
       "Le compteur d’activité est sur le bouton du menu, jamais sur votre photo.",
@@ -614,5 +614,18 @@
     ],
     "note": "Trois exemples fictifs en démo privée. Durée réelle de 24 h, sans renouvellement automatique au redémarrage. Les stories privées ou de mineurs restent protégées.",
     "image": "accueil"
+  },
+  {
+    "chapter": "MON ESPACE",
+    "title": "Collection d’une famille de badges",
+    "steps": [
+      "Retour retrouve les huit familles et votre position.",
+      "Badges débloqués : 2/5 signifie deux badges obtenus sur cinq badges du catalogue de cette famille, jamais deux visites.",
+      "Les badges obtenus sont en couleur, avec leur vrai nom. Les autres restent gris, sans nom ni condition dévoilés.",
+      "Badge actuel explique uniquement une réussite déjà reconnue. Aucune jauge vers le suivant.",
+      "Une nouvelle collection sans badge propose un accueil simple, sans inventer de récompense."
+    ],
+    "note": "L’illustration montre les acquis du personnage fictif. Seul votre propre compte donne accès à votre collection détaillée et à votre journal privé.",
+    "image": "famille-badges"
   }
 ]

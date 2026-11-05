@@ -1,0 +1,92 @@
+
+> react-example@0.0.0 test:browser
+> tsx tests/lot_a.test.ts --browser
+
+✓ 1. Outils démo fermés par défaut, même avec un mode envoyé par le client
+✓ 2. Démo privée : refus anonyme et refus du compte ordinaire pour bascule et reset
+✓ 3. Anciens mots de passe et jetons de seed inutilisables dans les deux modes
+✓ 4. Simulation refusée par le serveur par défaut malgré environment=demo
+✓ 5. Démo : bon lieu, simulation explicite, XP et refus du doublon
+✓ 6. Historique privé masqué pour un tiers et visible pour son auteur
+✓ 7. Profils publics et suivi authentifié, idempotent ; profils privés et mineurs protégés
+✓ 8. Accès distant : protection de toutes les routes, cookie sécurisé, déconnexion et limitation
+✓ 9. Accès distant incomplet : refus de démarrer
+✓ 10. Avis : note et texte validés, auteur imposé, modification et confidentialité
+✓ 11. Badges serveur : 40 paliers, preuves événement/photo et absence de doublons
+✓ 12. Catalogue complet : les 40 paliers sont atteignables et journalisés une seule fois
+✓ 13. Coordonnées invalides : aucun XP ni validation
+✓ 14. Mineur inscrit : profil et médias privés imposés
+✓ 15. Opérateur autorisé : personas, refus de cible arbitraire et reset
+
+======================================================
+CHKPT by RED LOOP — Suite de Tests de Sécurité & Métier
+Cible : http://127.0.0.1:41561
+======================================================
+
+  ✓ 1. Création de compte avec validation d'âge et mot de passe
+  ✓ 2. Connexion avec vérification de mot de passe (scrypt) & génération de session
+  ✓ 3. Refus d'un check-in trop éloigné (> 250m) : statut 422, rejected et 0 XP
+  ✓ 4. Validation d'un check-in dans le rayon (< 250m) : statut 201, verified et attribution d'XP
+  ✓ 5. Protection anti-duplication : deuxième tentative au même lieu le même jour -> 0 XP
+  ✓ 6. Téléversement média avec déduction stricte du propriétaire depuis la session
+  ✓ 7. Absence d'accès aux médias privés d'autrui : retour HTTP 403 Forbidden
+  ✓ 8. Refus d'accès à la console opérateur RED LOOP pour utilisateur normal : 403 Forbidden
+  ✓ 9. Accès opérateur autorisé pour le superviseur RED LOOP (usr_admin) : 200 OK
+  ✓ 10. Persistance serveur des points XP et des visites vérifiées après reconnexion
+  ✓ 11. Réinitialisation instantanée du scénario pitch via POST /api/demo/reset
+
+======================================================
+RÉSULTAT GLOBAL : 11/11 tests réussis (0 échecs)
+======================================================
+
+✓ 16. Suite historique : 11 tests, reset désormais authentifié
+✓ 17. Migration : anciens accès supprimés, utilisateur et données conservés
+✓ 18. Migration en démo privée : nouveau secret appliqué et anciennes sessions révoquées
+✓ 19. Démo privée sans secret : démarrage refusé
+✓ 20. Base endommagée : refus de démarrer sans modifier les données existantes
+✓ 21. Quatre profils : vingt publications et migration sans perte ni doublon
+✓ 22. Version compilée : sources et cartes de débogage bloquées, jetons hors URL
+✓ 23. Recherche publique, relations protégées et classement mensuel réciproque
+✓ 24. Contrats UX : événements partagés, activités, enregistrés séparés, tiers et mineurs protégés
+✓ 25. Stories : expiration serveur, confidentialité, suppression et stockage
+✓ 26. Données partagées, médias persistants, confidentialité et sauvegarde chiffrée restaurable
+✓ 27. Lancement présentation : assets compilés sans Vite, accès démo toujours fermés par défaut
+  Navigateur 390px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+  Navigateur 1280px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+✓ 28. Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu
+  Présentation 390px : connexion opérateur, badge, publication, XP, événement, rechargement et répétition OK
+  Présentation 1280px : connexion opérateur, badge, publication, XP, événement, rechargement et répétition OK
+✓ 29. Présentation complète et répétition après reset autorisé
+✓ 30. Petit écran, ancienne réponse de connexion, filtre Amis et GPS en attente
+  Direction visuelle 320px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+  Direction visuelle 390px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+  Direction visuelle 1280px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+✓ 31. Direction visuelle claire et sombre, symbole et navigation de 320 à 1280px
+  Mode dev : check-in et badge lisibles sans rechargement, publication possible ; HMR source conservé
+✓ 32. Mode dev : confirmation persistante, aucune recharge pour les données et HMR source conservé
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Error: strict mode violation: getByText('Consulter mes XP et mon journal privé', { exact: true }) resolved to 3 elements:
+    1) <summary class="cursor-pointer min-h-11 font-bold text-sm">Consulter mes XP et mon journal privé</summary> aka getByText('Consulter mes XP et mon').first()
+    2) <summary class="cursor-pointer min-h-11 font-bold text-sm">Consulter mes XP et mon journal privé</summary> aka getByText('Consulter mes XP et mon').nth(1)
+    3) <summary class="cursor-pointer min-h-11 font-bold text-sm">Consulter mes XP et mon journal privé</summary> aka getByRole('region', { name: 'Badges et progression' }).getByText('Consulter mes XP et mon')
+
+Call log:
+[2m  - waiting for getByText('Consulter mes XP et mon journal privé', { exact: true })[22m
+
+    at checkProfile (/workspace/chkpt-by-red-loop/CHKPT_CODEX_GITHUB_PRET_A_IMPORTER/tests/profile_browser.ts:65:82)
+    at async check (/workspace/chkpt-by-red-loop/CHKPT_CODEX_GITHUB_PRET_A_IMPORTER/tests/lot_a.test.ts:16:3)
+    at async <anonymous> (/workspace/chkpt-by-red-loop/CHKPT_CODEX_GITHUB_PRET_A_IMPORTER/tests/lot_a.test.ts:368:5) {
+  log: [
+    "  - waiting for getByText('Consulter mes XP et mon journal privé', { exact: true })"
+  ]
+}
+
+Node.js v24.19.0
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

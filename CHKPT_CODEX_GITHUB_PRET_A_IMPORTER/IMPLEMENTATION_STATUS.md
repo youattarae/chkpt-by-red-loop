@@ -1,3 +1,7 @@
+## Addendum menu, badges et grand ＋ — 5 novembre 2026
+
+Recette **49/49 groupes réussis**, TypeScript et build réussis. Menu ordonné, huit familles illustrées, pages de collection sans conditions futures et grand plus central. Moteur/catalogue inchangés ; guides PDF/PPTX 49 pages/diapositives. [Bilan et limites](docs/ADDENDUM_MENU_BADGES_PLUS_BILAN.md). Les résultats ci-dessous restent historiques.
+
 ## Version intégrée du 5 novembre 2026
 
 Recette finale du 5 novembre : **48/48 groupes réussis**, TypeScript et build réussis ; addendum Stories compris. Guides actualisés : 48 pages/diapositives. [Preuves et limites matérielles](docs/verification-2026-11-05/README.md).
