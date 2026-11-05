@@ -22,9 +22,9 @@ export async function checkPresentation(url: string, password: string) {
       if (theme === 'dark') await toggleTheme(page);
       async function capture(name: string) {
         await page.evaluate(() => document.fonts.ready);
-        await page.waitForFunction(() => [...document.images].every(image => image.complete));
-        const broken = await page.locator('img').evaluateAll(images => images.filter(image => image instanceof HTMLImageElement && (!image.complete || image.naturalWidth === 0)).length);
-        assert.equal(broken, 0, 'Toutes les illustrations doivent charger sans réseau externe');
+        // complete peut aussi être vrai pour une image en erreur avant son secours.
+        // Vérifier dans une seule observation qu’elles sont réellement décodées.
+        await page.waitForFunction(() => [...document.images].every(image => image.complete && image.naturalWidth > 0));
         if (process.env.CHKPT_CAPTURE_DIR) {
           await mkdir(process.env.CHKPT_CAPTURE_DIR, { recursive: true });
           await page.locator('img:visible').evaluateAll(images=>Promise.all(images.map(image=>(image as HTMLImageElement).decode().catch(()=>{}))));
