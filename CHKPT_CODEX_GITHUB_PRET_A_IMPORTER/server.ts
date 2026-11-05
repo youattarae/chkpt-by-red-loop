@@ -85,7 +85,6 @@ export interface ServerMediaRecord {
 const mediaRegistry = {
   get: (id:string) => db.getRawData().media.find(asset=>asset.assetId===id),
   set: (_id:string,record:ServerMediaRecord) => db.updateSharedData({media:[...db.getRawData().media.filter(asset=>asset.assetId!==record.assetId),record]}),
-  clear: () => db.updateSharedData({media:[]}),
 };
 installSocialRoutes(app);
 installMessageRoutes(app);
@@ -426,7 +425,7 @@ app.get('/api/checkins/history', requireAuth, (req: Request, res: Response) => {
 app.post(['/api/demo/reset', '/api/demo/start'], requirePrivateDemo, requireOperator, (req: Request, res: Response) => {
   try {
     const freshDb = db.resetPitchDemoState();
-    mediaRegistry.clear();
+    // resetPitchDemoState remplace aussi les médias ; conserver ceux des nouvelles fixtures.
     if (req.path === '/api/demo/start') {
       const user = db.findUserById('usr_01')!;
       const token = generateSessionToken();

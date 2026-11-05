@@ -47,4 +47,16 @@ export async function checkStories(start:any,stop:any,password:string){
   const seeded=(await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo);assert.equal(seeded.length,3);for(const s of seeded)assert.equal(Date.parse(s.expiresAt)-Date.parse(s.createdAt),86400000);
   assert.equal((await call('/api/demo/stories/prepare',{},admin)).status,200);assert.equal((await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo).length,3,'Préparation idempotente');
   await stop(server.child);server=await start('stories',false);assert.equal((await(await call('/api/stories',undefined,owner.token)).json()).stories.filter((s:any)=>s.isDemo).length,0);assert.equal((await call(seeded[0].mediaUrl,undefined,owner.token)).status,404,'Fixtures limitées au contexte privé');await stop(server.child);
+  // Une remise à zéro recrée les fixtures ; aucun nettoyage ultérieur ne doit en casser les médias.
+  server=await start('stories-reset',true);
+  const resetAdmin=(await(await call('/api/auth/login',{username:'redloop_admin',password})).json()).token;
+  const beforeReset=(await(await call('/api/stories',undefined,resetAdmin)).json()).stories.filter((s:any)=>s.isDemo);assert.equal(beforeReset.length,3);
+  for(const story of beforeReset)assert.equal((await call(story.mediaUrl,undefined,resetAdmin)).status,200);
+  assert.equal((await call('/api/demo/reset',{},resetAdmin)).status,200);
+  const renewedAdmin=(await(await call('/api/auth/login',{username:'redloop_admin',password})).json()).token;
+  const afterReset=(await(await call('/api/stories',undefined,renewedAdmin)).json()).stories.filter((s:any)=>s.isDemo);assert.equal(afterReset.length,3);
+  for(const story of afterReset)assert.equal((await call(story.mediaUrl,undefined,renewedAdmin)).status,200,'Média fictif disponible après reset');
+  assert.equal((await call(beforeReset[0].mediaUrl,undefined,renewedAdmin)).status,404,'Ancien média supprimé par le reset');
+  await stop(server.child);
+
 }
