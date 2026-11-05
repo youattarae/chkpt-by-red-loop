@@ -1,0 +1,31 @@
+
+> react-example@0.0.0 build
+> vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+✓ 1732 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                                                  1.10 kB │ gzip:   0.53 kB
+dist/assets/plus-jakarta-sans-latin-400-normal-Dhut76fR.woff2   11.81 kB
+dist/assets/plus-jakarta-sans-latin-800-normal-CusIZhrK.woff2   11.89 kB
+dist/assets/plus-jakarta-sans-latin-600-normal-DLTa1BUW.woff2   12.18 kB
+dist/assets/plus-jakarta-sans-latin-700-normal-CfpNZvy6.woff2   12.24 kB
+dist/assets/plus-jakarta-sans-latin-500-normal-Bf-nb4oT.woff2   12.31 kB
+dist/assets/plus-jakarta-sans-latin-400-normal-BDKaGhyp.woff    15.72 kB
+dist/assets/plus-jakarta-sans-latin-800-normal-BRNHt2w0.woff    15.78 kB
+dist/assets/plus-jakarta-sans-latin-600-normal-BR_Ojra4.woff    16.08 kB
+dist/assets/plus-jakarta-sans-latin-500-normal-DYtqi0QS.woff    16.12 kB
+dist/assets/plus-jakarta-sans-latin-700-normal-DqEcQeE5.woff    16.13 kB
+dist/assets/DynamicMap-vh-t_kPv.css                             15.09 kB │ gzip:   6.36 kB
+dist/assets/index-BgZyMYmb.css                                  59.04 kB │ gzip:  10.82 kB
+dist/assets/DynamicMap-D4eNRPsI.js                             152.45 kB │ gzip:  45.06 kB
+dist/assets/index-Cqau_652.js                                  491.64 kB │ gzip: 140.80 kB
+
+✓ built in 612ms
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

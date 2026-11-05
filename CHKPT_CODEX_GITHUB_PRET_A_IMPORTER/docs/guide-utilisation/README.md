@@ -1,11 +1,12 @@
 # Guide complet de l’application actuelle
 
-Version du 2 novembre 2026 : messagerie privée texte et menu à gauche ajoutés.
+Version intégrée du 5 novembre 2026 : navigation, partage interne, Messages, brouillons et notifications.
 
-- [Lire le PDF — 43 pages, environ 2,6 Mo](../GUIDE_UTILISATION_COMPLET.pdf)
-- [Ouvrir le PowerPoint modifiable — 43 diapositives, environ 2,7 Mo](../GUIDE_UTILISATION_COMPLET.pptx)
+- [Lire le PDF — 48 pages](../GUIDE_UTILISATION_COMPLET.pdf)
+- [Ouvrir le PowerPoint modifiable — 48 diapositives](../GUIDE_UTILISATION_COMPLET.pptx)
+- [Guide de répétition et lancement Mac/Windows/téléphone](../GUIDE_PRESENTATION.md)
 
-Le PDF s’ouvre dans un navigateur ou un lecteur PDF. Le PowerPoint s’ouvre avec Microsoft PowerPoint, Keynote ou un lecteur compatible. Aucun logiciel de programmation n’est nécessaire pour les lire. Tous les visuels et scénarios sont fictifs.
+Les supports utilisent des captures actuelles d’un serveur/base temporaires et des données synthétiques, jamais une base personnelle. Chaque fichier reste inférieur à 40 Mo. Aucun logiciel de programmation n’est nécessaire pour les lire.
 
 ## Sommaire
 
@@ -54,15 +55,21 @@ Le PDF s’ouvre dans un navigateur ou un lecteur PDF. Le PowerPoint s’ouvre a
 | 41 | Avant de partir présenter |
 | 42 | Le menu personnel à gauche |
 | 43 | Envoyer et retrouver ses messages privés |
+| 44 | Le partage en deux rangées |
+| 45 | Conserver sans publier |
+| 46 | Lire une fiche et revenir au bon endroit |
+| 47 | Deux compteurs, deux usages |
+| 48 | Stories : ordre et défilement |
 
-## Reprendre le guide
+## Régénération développeur
 
-Le texte commun aux deux formats se trouve dans `contenu.json` et les captures dans `docs/captures/guide-utilisation`. Les captures proviennent d’un serveur/base temporaires : aucune remise à zéro de données personnelles.
-
-Génération développeur : `python-pptx` doit être disponible dans Python 3, et Chromium pour Playwright. Exécuter depuis le dossier du prototype :
+Source commune : `contenu.json`. Captures : `docs/captures/guide-utilisation`. Python 3 avec python-pptx et Chromium Playwright sont requis seulement pour régénérer les fichiers.
 
 ```sh
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node scripts/capture-current-guide.mjs
 PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node scripts/create-user-guide.mjs
+node scripts/create-presentation-support.mjs
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium node scripts/create-visual-guide.mjs
 ```
 
-Cette commande génère le PPTX puis le PDF depuis la même source, vérifie les images hors connexion, l’absence de débordement PDF et la limite de 40 Mo. Elle ne lance pas de serveur et ne modifie aucune base. Les prérequis concernent seulement la régénération des supports, pas leur lecture.
+Le premier script démarre puis supprime un serveur/base temporaires, sans remise à zéro d’une démo existante. Le générateur du PDF vérifie les images intégrées, le fonctionnement sans réseau, l’absence de dépassement et la limite de taille. Le rendu natif PowerPoint/Keynote et les gestes sur téléphone réel restent à essayer sur vos appareils.

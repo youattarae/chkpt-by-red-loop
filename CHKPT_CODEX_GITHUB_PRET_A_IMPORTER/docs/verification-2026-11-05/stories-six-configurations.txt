@@ -1,0 +1,6 @@
+Stories 320px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 320px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 390px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 390px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 1280px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 1280px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK

@@ -47,3 +47,21 @@ Essais ciblés réussis à ce stade : présentation répétée, GPS en attente, 
 Tous les scénarios navigateur historiques adaptés ont réussi séparément : navigation/recherche, relations et classement, portraits/publicités et protection mineurs, cas limites de cache/réseau/audiences/favoris/reset, DM et stories compris. La recette nouvelle réussit en 320/390/1280, y compris check de fiche prérempli et reprise d'un doublon sans double XP. Les assertions obsolètes sont remplacées par les nouveaux accès, les contrôles métier et d'isolation sont conservés.
 
 La génération des supports actuels puis la suite globale après les dernières modifications restent les étapes finales ; ne pas assimiler les essais ciblés à une nouvelle réussite complète avant sa constatation.
+
+## Addendum stories intégré — commit f655fea
+
+Ordre commandes → stories → onglets/GPS respecté ; bande horizontale dans le flux, en-tête/onglets directionnels séparés, bienvenue déplacée après les onglets sans perdre son assistant. Trois stories fictives privées de démo, expiration réelle 24 h, préparation opérateur explicite et idempotente, confidentialité et médias contrôlés côté serveur.
+
+Recette dédiée : six configurations (320/390/1280 × clair/sombre), lecture/clavier/tap émulé, sortie des stories au défilement et conservation du fil réussies. Contrôles historiques de revue et visuels rejoués avec succès. L’ancienne supposition « relations non encore chargées = aucune relation » a été retirée du test : son état vide est maintenant préparé explicitement, sans masquer le résultat ni augmenter le timeout. Une première relance complète avant cet addendum avait réussi 47/47 ; après l’addendum, relance complète en cours avec 48 groupes attendus.
+
+## Correctif de reset révélé par la recette globale — d07f4b2
+
+Une seconde relance atteignait 46 groupes avant de révéler des images de stories fictives indisponibles après un reset effectué par un scénario précédent. Cause reproduite dans le code : `resetPitchDemoState` recréait les fixtures et leurs médias, puis l’ancienne étape `mediaRegistry.clear()` effaçait ces nouveaux médias. Suppression de cette purge redondante. Test serveur de non-régression : chaque média de fixture est réellement servi avant/après reset ; les anciennes URL sont supprimées. Nouvelle relance complète en cours après ces dernières modifications. Les guides distinguent désormais aussi clairement photo de l’en-tête (profil) et portraits de stories.
+
+## Stabilisation du contrôle d’images — 60f795c
+
+Le test de présentation vérifiait `complete` puis les dimensions dans une seconde observation, ce qui pouvait confondre une erreur d’image suivie de son secours avec une image déjà lisible. Il attend désormais simultanément chargement terminé et dimensions positives, sans accepter d’image cassée et sans augmenter le délai. Présentation répétée 390/1280 réussie et six configurations stories rejouées avec succès. Relance globale lancée après cette dernière modification de test.
+
+## Clôture logicielle — 5 novembre 2026
+
+Après les derniers changements : TypeScript et build réussis, suite complète **48/48 groupes réussis**, aucun échec final. PDF/PPTX 48 pages/diapositives, captures, guide de répétition et secours actualisés. Les journaux précédents sont historiques ; voir `verification-2026-11-05/README.md`. Tests sur bases temporaires, pas de données personnelles réinitialisées. Répétition sur appareils réels, publication GitHub et activation d’un hébergement privé non effectuées. Aucun push/merge/déploiement.

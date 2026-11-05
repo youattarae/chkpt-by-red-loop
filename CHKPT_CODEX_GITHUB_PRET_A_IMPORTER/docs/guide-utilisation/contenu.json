@@ -4,7 +4,7 @@
     "title": "CHKPT — guide d’utilisation complet",
     "steps": [
       "Sors. Check. Partage.",
-      "Version du prototype actualisée au 2 novembre 2026.",
+      "Version intégrée du prototype · 5 novembre 2026.",
       "Un guide pour utiliser l’application, la présenter et retrouver les gestes utiles."
     ],
     "note": "Captures de la version testée · personnages, lieux et contenus fictifs · prototype, pas application de production.",
@@ -14,11 +14,11 @@
     "chapter": "COMMENCER",
     "title": "Les cinq boutons à connaître",
     "steps": [
-      "Accueil : publications, stories et recherche générale.",
-      "Carte : trouver et consulter des lieux.",
-      "Symbole central Check-in : choisir un lieu et confirmer une visite.",
-      "Sortir : sélections éditoriales et événements.",
-      "Profil : votre présentation et vos publications ; ☰ ouvre votre menu personnel."
+      "Accueil : fils Pour toi / Amis, stories et loupe de recherche.",
+      "Carte : explorer les lieux, leurs catégories et le radar de présence.",
+      "＋ / Check : choisir Faire un check ou Créer une publication.",
+      "Sortir : sélections, articles fictifs et événements.",
+      "Messages : conversations et fiches partagées ; le profil s’ouvre par votre photo en haut."
     ],
     "note": "Le point bordeaux et la couleur indiquent l’onglet actif. Retour retrouve la page précédente.",
     "image": "accueil"
@@ -90,11 +90,11 @@
     "chapter": "ACCUEIL",
     "title": "Chercher : suggestions ou résultats",
     "steps": [
-      "Écrire un nom, un établissement, un événement ou des mots d’une publication.",
-      "Pendant la saisie, les suggestions apparaissent sous la barre.",
-      "Toucher une suggestion ouvre le contenu correspondant.",
-      "Rechercher ou Entrée ouvre une vraie page de résultats.",
-      "Retour retrouve la recherche ou le fil et son défilement."
+      "Toucher la loupe : la première ligne devient une recherche.",
+      "Écrire un profil, lieu, événement, article ou mots d’une publication.",
+      "Les suggestions apparaissent pendant la saisie ; toucher un résultat pour l’ouvrir.",
+      "Rechercher ou Entrée ouvre une page de résultats avec filtres.",
+      "Retour retrouve la recherche ; la flèche de recherche rétablit l’en-tête habituel."
     ],
     "note": "Les suggestions concernent les données accessibles de ce prototype ; ce n’est pas une recherche exhaustive d’Abidjan.",
     "image": "suggestions"
@@ -103,11 +103,11 @@
     "chapter": "ACCUEIL",
     "title": "Affiner les résultats",
     "steps": [
-      "Toucher Filtres à côté de Rechercher, avant la recherche ou sur ses résultats.",
-      "Choisir Tout, Profils, Établissements, Événements ou Publications.",
+      "Toucher Filtres à côté de Rechercher, dans l’en-tête actif ou les résultats.",
+      "Choisir un type de contenu, dont profils, lieux, événements, publications ou articles.",
       "Trier par pertinence ou par nom.",
-      "Pour les établissements, choisir aussi catégorie et distance.",
-      "Appliquer valide les filtres avec la saisie courante ; Réinitialiser prépare les valeurs par défaut."
+      "Pour les établissements, choisir catégorie et distance à vol d’oiseau.",
+      "Appliquer conserve la saisie et valide les filtres."
     ],
     "note": "Les distances concernent les lieux uniquement. Fermer le panneau sans Appliquer n’applique pas ses modifications.",
     "image": "filtres"
@@ -116,11 +116,11 @@
     "chapter": "ACCUEIL",
     "title": "Réagir, commenter et enregistrer",
     "steps": [
-      "Le cœur permet d’aimer une publication ; le toucher à nouveau retire la réaction.",
-      "Commentaires ouvre la zone de discussion : écrire puis Envoyer.",
-      "Le marque-page enregistre le lieu lié à une publication.",
-      "Retrouver les lieux dans ☰ → Lieux enregistrés.",
-      "Une erreur réseau signifie que l’action n’est pas confirmée ; le favori revient à son état précédent si l’écriture échoue."
+      "Le cœur permet d’aimer une publication ou de retirer son J’aime.",
+      "Commentaires ouvre la discussion : écrire puis Envoyer.",
+      "Le marque-page de la publication enregistre cette publication, pas son lieu.",
+      "Retrouver les trois catégories dans ☰ → Enregistrés : Lieux, Publications, Événements.",
+      "Le marque-page d’une fiche lieu conserve toujours ce lieu séparément."
     ],
     "note": "Les actions partagées nécessitent une connexion. Les favoris anonymes sont temporaires sur cet écran.",
     "image": "accueil"
@@ -129,14 +129,14 @@
     "chapter": "PUBLIER",
     "title": "Créer une publication",
     "steps": [
-      "Dans Accueil, toucher « Qu’as-tu découvert… ? ».",
-      "Écrire le texte et ajouter éventuellement des médias.",
-      "Choisir Visibilité de la publication : Moi seul, Abonnés ou Public.",
-      "Appuyer sur Publier et attendre la confirmation dans le fil.",
-      "Annuler ferme le brouillon. Une publication ne valide pas une visite et ne donne pas de points de check."
+      "Toucher ＋ / Check → Créer une publication.",
+      "Écrire un texte, choisir éventuellement un lieu et ajouter jusqu’à quatre médias.",
+      "Choisir la visibilité avant Publier.",
+      "Le contenu apparaît dans le fil et sur le profil, sans visite ni points de check automatiques.",
+      "En quittant un contenu commencé : Conserver le brouillon, Abandonner ou Continuer la rédaction."
     ],
     "note": "Une publication ordinaire nécessite du texte. Le brouillon ne constitue pas une sauvegarde permanente.",
-    "image": "publication"
+    "image": "check-publication"
   },
   {
     "chapter": "PUBLIER",
@@ -168,11 +168,11 @@
     "chapter": "CARTE ET LIEUX",
     "title": "Trouver un lieu sur Carte",
     "steps": [
-      "Déplacer et zoomer sur la carte interactive, ou utiliser la carte illustrée de secours.",
-      "Les puces sélectionnent les catégories ; Filtres précise catégorie, tri et distance.",
-      "La distance est calculée à vol d’oiseau depuis la position choisie, pas selon un itinéraire.",
-      "Toucher un repère, puis Détails pour ouvrir la page du lieu.",
-      "La recherche intelligente externe est facultative et peut être indisponible sans configuration."
+      "La carte remplit l’écran derrière les commandes flottantes.",
+      "Déplacer, zoomer et recentrer ; vert = lieu validé, gris = lieu non validé.",
+      "Toucher un repère pour afficher son aperçu compact, puis Voir le lieu.",
+      "Retour retrouve le cadrage, le zoom et la sélection de la session.",
+      "Outils carte regroupe position de check, recherche intelligente facultative et secours illustré."
     ],
     "note": "Les repères représentent des lieux fictifs. Le radar de 250 m illustre l’éligibilité ; le serveur contrôle la validation finale.",
     "image": "carte"
@@ -181,11 +181,11 @@
     "chapter": "CARTE ET LIEUX",
     "title": "GPS : Simulateur ou GPS Réel",
     "steps": [
-      "Toucher le bouton GPS avec la commune dans l’en-tête.",
-      "Simulateur : choisir une position de démonstration, par exemple Cocody Saint-Jean.",
-      "GPS Réel : autoriser la localisation et attendre une position disponible.",
-      "En attente de GPS, un filtre de distance ne peut pas fournir de résultats fiables.",
-      "Avant de confirmer un check, vérifier la mention Simulation GPS ou Position GPS."
+      "Dans Accueil, l’icône de localisation ouvre le choix de commune explorée.",
+      "Explorer une autre commune ne crée pas de check et ne modifie pas la preuve GPS.",
+      "Position du check, dans ce panneau ou Outils carte, distingue Simulateur et GPS Réel.",
+      "Simulateur : choisir une position fictive proche du lieu pour répéter.",
+      "Avant de confirmer, vérifier la mention de simulation ou attendre une position GPS disponible."
     ],
     "note": "Un échec du GPS peut faire revenir ce prototype au Simulateur. Le GPS navigateur n’est pas une preuve antifraude ; HTTPS est nécessaire à son usage normal à distance.",
     "image": "gps"
@@ -194,11 +194,11 @@
     "chapter": "CARTE ET LIEUX",
     "title": "Lire et partager une fiche",
     "steps": [
-      "La page du lieu présente illustration, description, adresse, horaires s’ils sont connus, catégorie et tags.",
-      "Les miniatures permettent de parcourir les illustrations disponibles.",
-      "Le marque-page ajoute ou retire le lieu des enregistrés.",
-      "Partager propose le menu natif ou un lien à copier, WhatsApp et e-mail.",
-      "Retour retrouve la page précédente. Le check reste au bouton central."
+      "La fiche lieu présente galerie, description, adresse, horaires et avis.",
+      "Enregistrer le lieu ajoute seulement cette fiche aux Lieux enregistrés.",
+      "Faire un check ouvre la vérification avec ce lieu déjà sélectionné.",
+      "Partager ouvre un panneau : actions internes en haut, externes en bas.",
+      "Retour retrouve la page et le contexte précédents."
     ],
     "note": "Un lien ne rend pas le serveur accessible à distance : le destinataire doit pouvoir ouvrir la même démo. Aucune visite personnelle n’est incluse dans le lien.",
     "image": "partage"
@@ -220,10 +220,10 @@
     "chapter": "CARTE ET LIEUX",
     "title": "Proposer un lieu manquant",
     "steps": [
-      "Ouvrir le bouton central Check-in, puis « Le lieu n’est pas dans la liste ? Proposer ce spot ».",
+      "Toucher ＋ / Check → Faire un check, puis Proposer ce spot sous la liste.",
       "Renseigner nom, catégorie, commune et repère utile.",
       "Envoyer la proposition pour illustrer la contribution communautaire.",
-      "Ce parcours et son traitement opérateur restent une démonstration locale sur l’appareil."
+      "La proposition et sa gestion opérateur restent des simulations locales, pas une certification réelle."
     ],
     "note": "Une proposition n’ajoute pas automatiquement un lieu au référentiel du serveur et ne constitue pas une certification réelle.",
     "image": "proposition"
@@ -232,11 +232,11 @@
     "chapter": "CHECK-IN",
     "title": "Choisir le lieu et confirmer",
     "steps": [
-      "Toucher le symbole central Check-in, seul point d’entrée de validation.",
-      "Sélectionner explicitement le lieu dans la liste.",
-      "Choisir la visibilité du check ; Moi seul est proposé par défaut.",
-      "Si proposé, sélectionner un événement actif au même lieu.",
-      "Appuyer sur Confirmer le check. La simulation reste clairement signalée."
+      "Depuis ＋ / Check → Faire un check, sélectionner explicitement le lieu.",
+      "Depuis Faire un check sur une fiche, ce lieu est déjà sélectionné.",
+      "Choisir la visibilité ; Moi seul est proposé par défaut.",
+      "Vérifier le mode de position et, si proposé, l’événement actif.",
+      "Confirmer le check. La simulation est identifiée et le serveur garde les contrôles de distance et de doublon."
     ],
     "note": "Il faut être à moins de 250 m selon les coordonnées reçues. Une seule visite compte par jour et par lieu ; aucune publication n’est automatique.",
     "image": "check-selection"
@@ -271,11 +271,11 @@
     "chapter": "CHECK-IN",
     "title": "Partager après la visite",
     "steps": [
-      "Le lieu et le check sont déjà liés au brouillon.",
-      "Ajouter un commentaire et, si souhaité, jusqu’à quatre médias.",
-      "Vérifier Visibilité de la publication avant Publier le checkpoint.",
-      "Sans média importé, l’illustration de démonstration du lieu peut être utilisée.",
-      "Fermer un brouillon rédigé demande de confirmer son abandon ; Continuer la rédaction le conserve à l’écran."
+      "Le check et le lieu sont déjà associés dans l’éditeur commun.",
+      "Ajouter un texte et, si souhaité, jusqu’à quatre images ou vidéos.",
+      "Vérifier la visibilité puis toucher Publier.",
+      "Plus tard permet de garder la visite sans publication.",
+      "Un contenu commencé peut être conservé comme brouillon sur cet appareil, uniquement pour ce compte."
     ],
     "note": "Publier reste une décision séparée du check. Un changement de compte ferme l’ancien brouillon pour éviter un partage sous la mauvaise identité.",
     "image": "check-publication"
@@ -298,7 +298,7 @@
     "title": "Lire une story depuis un profil",
     "steps": [
       "Un anneau coloré indique qu’une story est disponible.",
-      "Toucher la photo dans l’accueil, une publication ou un profil pour la lire.",
+      "Toucher un portrait dans la bande Stories, une publication ou un profil pour la lire. La petite photo de l’en-tête ouvre votre profil.",
       "Les flèches passent aux stories précédente et suivante de cette personne.",
       "Fermer les stories ou Échap revient à l’écran précédent.",
       "Seul l’auteur voit Supprimer cette story."
@@ -310,11 +310,11 @@
     "chapter": "PROFILS",
     "title": "Votre profil compact",
     "steps": [
-      "Votre nom, bio, commune et compteurs sont regroupés en haut.",
-      "Les publications apparaissent rapidement sous cette présentation.",
-      "Abonnés et Abonnements ouvrent des pages avec leur propre recherche.",
-      "Votre total XP est accompagné de Visible par vous seul.",
-      "Gérer mon compte ouvre connexion, inscription, déconnexion et, si autorisé, les personnages de démo."
+      "Ouvrir votre profil par la photo de l’en-tête ou l’identité du menu.",
+      "Nom, bio et compteurs restent compacts ; les publications suivent rapidement.",
+      "Abonnés et Abonnements ouvrent leurs listes avec recherche.",
+      "Vos XP totaux restent visibles par vous seul.",
+      "Retour retrouve l’écran précédent ; le menu reste accessible par glissement depuis le bord gauche."
     ],
     "note": "Certains compteurs de départ sont fictifs ; les listes contiennent les relations réellement accessibles dans le prototype.",
     "image": "mon-profil"
@@ -329,31 +329,31 @@
       "Toucher Abonnés ou Abonnements puis rechercher dans la liste.",
       "Un profil privé ne dévoile pas ses publications privées dans cette démo."
     ],
-    "note": "Les XP totaux, l’historique et les preuves de visite d’autrui ne sont pas visibles.",
+    "note": "Les profils privés et mineurs restent protégés ; le périmètre de messagerie publique n’est pas arbitré.",
     "image": "profil-autrui"
   },
   {
     "chapter": "MON ESPACE",
     "title": "Le menu reste toujours personnel",
     "steps": [
-      "Toucher ☰ dans l’en-tête, même en consultant quelqu’un d’autre.",
-      "Le nom du menu est celui du compte connecté.",
-      "Accéder aux enregistrés, historique privé, progression, récompenses et classement.",
-      "Ouvrir les réglages/confidentialité ou l’aide.",
-      "Fermer le menu ou choisir une rubrique ; les pages ont leur bouton Retour."
+      "Sur les pages principales, toucher le bouton menu fin ou glisser depuis le bord gauche.",
+      "Sur son profil, utiliser le glissement ou Retour vers une page principale.",
+      "L’identité du menu appartient au compte connecté et ouvre son profil.",
+      "Notifications, Enregistrés, historique privé, progression et classement restent des accès distincts.",
+      "Fermer par la croix, la zone assombrie ou le glissement inverse."
     ],
-    "note": "Le menu est distinct de la photo de profil, qui conserve son rôle pour les stories.",
+    "note": "La petite photo de l’en-tête ouvre votre profil. Les portraits de la bande Stories, des publications et des profils ouvrent leurs stories lorsqu’elles existent.",
     "image": "menu"
   },
   {
     "chapter": "MON ESPACE",
     "title": "Retrouver vos lieux",
     "steps": [
-      "☰ → Lieux enregistrés : fiches ajoutées avec le marque-page.",
-      "☰ → Historique privé : lieux associés à vos visites validées.",
-      "L’historique regroupe les visites d’un même lieu et indique la plus récente.",
-      "Toucher un lieu ouvre sa fiche ; Retour retrouve la liste.",
-      "Les tentatives refusées ne remplissent pas l’historique des lieux visités."
+      "☰ → Enregistrés distingue Lieux, Publications et Événements.",
+      "☰ → Historique privé regroupe les lieux associés aux visites validées.",
+      "Toucher une fiche ou un contenu pour le consulter, puis Retour pour retrouver la liste.",
+      "Un contenu devenu privé ou indisponible n’est pas révélé par les enregistrés.",
+      "Les refus de check ne remplissent pas l’historique des visites."
     ],
     "note": "L’historique est réservé au propriétaire, même si son profil ou certaines publications sont publics.",
     "image": "historique"
@@ -388,11 +388,11 @@
     "chapter": "SORTIR",
     "title": "Sélections et événements",
     "steps": [
-      "Sortir propose un agenda et des adresses choisies éditorialement.",
-      "Sa barre recherche seulement dans ce contenu.",
-      "Ouvrir un événement pour lire date, lieu, description, organisateur et prix fictif.",
-      "Ça m’intéresse et J’y serai expriment une intention ; un second toucher peut la retirer.",
-      "Utiliser Carte pour la recherche de lieux par catégorie ou distance."
+      "Sortir présente une grande mise en avant et des rubriques fictives sur Abidjan.",
+      "Les guides se lisent dans une page ; leurs adresses ouvrent les fiches.",
+      "Ouvrir un événement pour lire ses informations.",
+      "Ça m’intéresse et J’y serai sont des intentions ; Enregistrer et Partager sont séparés.",
+      "La loupe recherche le contenu éditorial ; la recherche de lieux par distance reste sur Carte."
     ],
     "note": "Les intentions restent locales à cet appareil et sont séparées par compte. Il n’y a ni réservation, achat ni billetterie.",
     "image": "evenement"
@@ -414,11 +414,11 @@
     "chapter": "RÉGLAGES",
     "title": "Thème, GPS et notifications",
     "steps": [
-      "☰ → Réglages et confidentialité regroupe thème, position et aides à la présentation.",
-      "Mode sombre change l’apparence ; le choix est mémorisé sur l’appareil.",
-      "Le bouton GPS de l’en-tête garde un accès rapide au mode et à la position simulée.",
-      "La cloche ouvre les notifications et leurs préférences.",
-      "Les notifications et intentions locales sont isolées par compte ; elles ne sont pas un système push complet multiappareil."
+      "☰ → Réglages et confidentialité : thème et position du check.",
+      "Le mode sombre est mémorisé sur l’appareil ; il n’encombre pas l’en-tête.",
+      "☰ → Notifications : activités, préférences locales et exemples fictifs de présentation.",
+      "Le compteur d’activité est sur le bouton du menu, jamais sur votre photo.",
+      "Le compteur Messages est distinct ; pas de promesse de service push de production."
     ],
     "note": "Les notifications de démonstration ne prouvent pas une fréquentation réelle des établissements.",
     "image": "reglages"
@@ -427,11 +427,11 @@
     "chapter": "CONSERVER",
     "title": "Partager les données entre appareils",
     "steps": [
-      "Utiliser le même compte sur le même serveur pour retrouver publications, médias, favoris, avis et visites.",
+      "Le même compte sur le même serveur retrouve posts, médias, avis, visites, enregistrés et messages.",
       "Deux installations indépendantes ne partagent pas automatiquement leurs bases.",
-      "Le menu conserve l’historique privé et les droits de chaque compte.",
-      "Le thème, les intentions d’événement et l’essai de récompense restent locaux.",
-      "Un hébergement gratuit peut perdre son stockage lors d’un redémarrage ou redéploiement."
+      "L’activité sociale serveur et les cartes de Messages respectent les permissions.",
+      "Thème, intentions d’événement, brouillons et récompense restent liés à cet appareil.",
+      "Sans disque persistant, un hébergement gratuit peut perdre sa base : sauvegarder avant présentation."
     ],
     "note": "L’accès distant est préparé mais pas encore activé. La sauvegarde reste nécessaire avant une présentation importante.",
     "image": "enregistres"
@@ -452,10 +452,10 @@
     "chapter": "OPÉRATEUR",
     "title": "Les outils opérateur",
     "steps": [
-      "Un rôle autorisé donne accès à Réglages → Console opérateur.",
-      "Les onglets montrent métriques, propositions, modération et lieux.",
-      "Les propositions et actions de modération de cette interface illustrent le fonctionnement futur ; certaines restent locales.",
-      "Le symbole de l’en-tête permet de revenir à l’accueil."
+      "Un opérateur autorisé ouvre Réglages → Console opérateur.",
+      "Métriques, propositions, modération et lieux restent des outils de démonstration.",
+      "Certaines actions restent locales et les chiffres sont fictifs.",
+      "Le menu, accessible depuis une page principale ou par glissement, permet de quitter la console vers une rubrique personnelle."
     ],
     "note": "Un visiteur ne reçoit pas ce rôle en choisissant un nom. Les actions serveur sensibles restent protégées ; ces écrans ne prouvent pas une exploitation réelle.",
     "image": "console-operateur"
@@ -490,11 +490,11 @@
     "chapter": "PRÉSENTER",
     "title": "La répétition d’Ingrid en trois minutes",
     "steps": [
-      "1. Accueil : montrer découvertes et contenus fictifs.",
-      "2. Carte → fiche du maquis → Retour.",
-      "3. Symbole central → Maquis L’Étoile → Confirmer le check en simulation.",
-      "4. Montrer résultat et badge, puis publier volontairement avec la bonne visibilité.",
-      "5. Profil → souvenir ; Sortir → événement. Garder les questions sur menu et classement pour la fin."
+      "1. Accueil : montrer Pour toi / Amis, stories et recherche.",
+      "2. Carte → repère → Voir le lieu → Faire un check prérempli.",
+      "3. Confirmer la présence simulée, puis montrer résultat et publication facultative.",
+      "4. Photo de profil → retrouver la publication ; Retour conserve le contexte.",
+      "5. Partager une fiche à un ami → Messages → carte reçue → fiche et Retour ; terminer par Notifications et Sortir."
     ],
     "note": "Tester le vrai Windows, le téléphone et le projecteur. Préparer le secours HTML et ce PDF hors connexion.",
     "image": "check-confirme"
@@ -529,10 +529,10 @@
     "chapter": "MESSAGERIE",
     "title": "Le menu personnel à gauche",
     "steps": [
-      "Toucher ☰ pour ouvrir le menu depuis la gauche.",
-      "La photo ronde et le nom en haut identifient le compte connecté.",
-      "Messages privés ouvre vos discussions ; les autres accès personnels restent disponibles.",
-      "Fermer avec la croix ou toucher la zone assombrie pour retrouver sa page."
+      "Le bouton menu fin ou le glissement de bord ouvre le panneau à gauche.",
+      "Photo ronde, nom et identifiant forment un lien vers votre profil.",
+      "Notifications et son compteur sont dans le menu ; Messages reste aussi dans la barre du bas.",
+      "Le menu ne marque aucune activité comme lue à sa simple ouverture."
     ],
     "note": "Le menu reste personnel, même lorsque vous consultez le profil de quelqu’un d’autre.",
     "image": "menu"
@@ -541,12 +541,78 @@
     "chapter": "MESSAGERIE",
     "title": "Envoyer et retrouver ses messages privés",
     "steps": [
-      "Dans Accueil, rechercher un profil, ouvrir sa page puis toucher Message.",
-      "Écrire jusqu’à 2 000 caractères et toucher Envoyer.",
-      "Retrouver les échanges dans ☰ → Messages privés ; les messages reçus sont marqués lus en ouvrant la discussion.",
-      "Les messages se conservent sur le même serveur ; rafraîchissement toutes les cinq secondes, sans appels ni pièces jointes."
+      "Depuis un profil public majeur, toucher Message ; ou ouvrir Messages en bas.",
+      "Écrire jusqu’à 2 000 caractères puis Envoyer.",
+      "Une carte de lieu ou d’événement reçue ouvre sa fiche ; Retour retrouve la conversation.",
+      "Le compteur diminue lorsque les messages sont effectivement lus en bas de la discussion.",
+      "Les textes et cartes sont conservés sur le même serveur ; pas d’appels ni d’envoi de fichiers joints."
     ],
     "note": "Profils majeurs publics uniquement. Seuls les deux participants lisent la conversation dans l’app. Pas de chiffrement de bout en bout ; les sauvegardes serveur incluent ces textes.",
     "image": "messagerie"
+  },
+  {
+    "chapter": "PARTAGER",
+    "title": "Le partage en deux rangées",
+    "steps": [
+      "Partager sur une fiche lieu ou événement ouvre le même panneau.",
+      "En haut : Publier dans mon fil, puis les photos des amis réciproques admissibles.",
+      "Choisir un ami, ajouter un message facultatif et Confirmer l’envoi.",
+      "En bas : Copier le lien, WhatsApp, SMS et Plus pour le partage natif disponible.",
+      "Annuler n’envoie rien. Un lien de réseau local reste accessible seulement avec accès au serveur."
+    ],
+    "note": "Pas de check, de coordonnées de preuve ou de jeton dans le partage. Les applications externes dépendent du téléphone.",
+    "image": "partage"
+  },
+  {
+    "chapter": "BROUILLONS",
+    "title": "Conserver sans publier",
+    "steps": [
+      "Quitter un texte commencé propose de conserver le brouillon.",
+      "La conservation est propre au compte et à cet appareil.",
+      "Revenir à ＋ → Créer une publication pour retrouver son contenu.",
+      "Abandonner retire le brouillon ; publier le retire aussi après confirmation.",
+      "Un brouillon n’est jamais une publication publique ni une visite validée."
+    ],
+    "note": "Les références des médias importés restent protégées côté serveur. Ne pas partager les fichiers internes du navigateur.",
+    "image": "check-publication"
+  },
+  {
+    "chapter": "MESSAGES",
+    "title": "Lire une fiche et revenir au bon endroit",
+    "steps": [
+      "Ouvrir une conversation contenant une carte de fiche.",
+      "Toucher la carte, consulter le lieu ou l’événement puis Retour.",
+      "La discussion et sa position sont conservées pendant la session.",
+      "Un nouveau message ne force pas le défilement si vous relisez plus haut.",
+      "Revenir en bas permet de lire les nouveaux messages et de mettre à jour le compteur."
+    ],
+    "note": "Conversations synthétiques identifiées, accès réservé aux participants. Pas de chiffrement de bout en bout.",
+    "image": "messagerie"
+  },
+  {
+    "chapter": "NOTIFICATIONS",
+    "title": "Deux compteurs, deux usages",
+    "steps": [
+      "La puce du menu annonce une activité : J’aime, commentaire ou progression.",
+      "Messages dans la barre annonce des messages privés non lus.",
+      "Ouvrir le menu seul ne marque aucune activité lue.",
+      "Dans Notifications, toucher une activité ouvre sa cible et met à jour sa lecture.",
+      "Une cible devenue privée ou indisponible ne révèle pas son contenu."
+    ],
+    "note": "Certaines notifications de présentation sont fictives ; les préférences locales ne constituent pas un service push distant.",
+    "image": "notifications"
+  },
+  {
+    "chapter": "STORIES",
+    "title": "Stories : ordre et défilement",
+    "steps": [
+      "En haut de l’Accueil : commandes, puis stories, puis Pour toi / Amis et localisation.",
+      "Balayer les portraits horizontalement pour voir les autres stories disponibles.",
+      "En descendant dans le fil, les stories quittent l’écran. Un petit mouvement vers le haut rappelle les commandes, sans rappeler les stories.",
+      "Revenir réellement en haut pour retrouver les portraits. Un aller-retour depuis Messages conserve votre position dans le fil.",
+      "Pour une répétition après expiration : compte opérateur → Préparer les stories fictives. Cette action conserve les contenus personnels."
+    ],
+    "note": "Trois exemples fictifs en démo privée. Durée réelle de 24 h, sans renouvellement automatique au redémarrage. Les stories privées ou de mineurs restent protégées.",
+    "image": "accueil"
   }
 ]

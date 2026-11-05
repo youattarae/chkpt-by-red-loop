@@ -1,3 +1,5 @@
+> Version intégrée du 5 novembre : voir [le bilan de mission](BILAN_MISSION_LOTS_0_8.md). Le texte ci-dessous est conservé comme historique ; les nouvelles dispositions UX et les cartes dans Messages prévalent sur les anciennes limites.
+
 # Messagerie et menu personnel — 2 novembre 2026
 
 ## Utilisation

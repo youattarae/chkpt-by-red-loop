@@ -20,8 +20,8 @@ Les deux mots de passe doivent être **différents**, comporter au moins 16 cara
 ## Étapes sur Render
 
 1. Créer un compte sur [Render](https://dashboard.render.com/) et connecter GitHub.
-2. Autoriser uniquement le dépôt privé `youattarae/chkpt-by-red-loop`.
-3. Créer un **Blueprint** depuis ce dépôt, branche **`feat/profil-social`**, fichier **`render.yaml`** à la racine.
+2. Autoriser uniquement le dépôt `youattarae/chkpt-by-red-loop`. Vérifier sa visibilité : un accès privé au site ne rend pas automatiquement le code GitHub privé.
+3. Créer un **Blueprint** depuis ce dépôt, branche **`feat/ux-demo-lots-0-8`**, après sa publication expressément autorisée, fichier **`render.yaml`** à la racine.
 4. Vérifier le service `chkpt-demo-privee`, avec le runtime Node.js 22. La configuration propose une offre gratuite ; vérifier les conditions et toute indication de prix dans Render avant validation. Aucun paiement n’est autorisé par ce document.
 5. Renseigner les variables secrètes demandées :
    - `CHKPT_ACCESS_PASSWORD` : nouveau mot de passe pour ouvrir le site.
@@ -29,7 +29,7 @@ Les deux mots de passe doivent être **différents**, comporter au moins 16 cara
 6. Laisser les autres variables préparées : `NODE_ENV=production`, `HOST=0.0.0.0`, `PORT=10000`, `CHKPT_PRIVATE_DEMO=true`, `CHKPT_REMOTE_ACCESS=true`.
 7. Lancer le déploiement. À la fin, copier l’adresse **HTTPS** affichée par Render.
 8. Ouvrir cette adresse dans une fenêtre privée : la page d’accès doit apparaître avant tout contenu CHKPT.
-9. Saisir le mot de passe d’accès. Dans Profil → Gérer mon compte, connecter l’opérateur puis démarrer la démo.
+9. Saisir le mot de passe d’accès. Dans ☰ → Mon compte, connecter l’opérateur puis choisir un personnage dans Profils Démo. Ne pas utiliser Démarrer/Réinitialiser pour reprendre une base existante : ces actions effacent le scénario après confirmation.
 10. Tester sur le téléphone **en données mobiles, Wi-Fi désactivé**, et sur le Windows d’Ingrid. Le Mac peut être éteint pour ce test : c’est Render qui sert l’application.
 
 ### Si le formulaire demande une configuration manuelle
@@ -62,3 +62,11 @@ Les publications, photos, favoris, commentaires, réactions et historique person
 Cette barrière convient à une démo privée sur une instance derrière le proxy HTTPS de Render ; ce n’est pas une infrastructure de production. Elle utilise un mot de passe partagé, sans invitations nominatives ni gestion avancée des accès. Ne pas l’exposer directement sur un port HTTP en contournant le proxy, ni modifier la confiance du proxy sans revoir cette protection.
 
 La recherche externe Gemini reste facultative. Utiliser le Simulateur pour le scénario fictif ; le GPS réel sous HTTPS ne valide pas une présence dans un lieu fictif si la position est ailleurs.
+
+## Version intégrée du 5 novembre — branche locale
+
+La configuration préparée vise maintenant `feat/ux-demo-lots-0-8`. Cette branche doit être publiée **uniquement après autorisation du propriétaire** avant qu'un hébergeur puisse la récupérer. Aucun déploiement n'est effectué par cette mission.
+
+Solution gratuite préparée : un Web Service Render Free, build `npm ci --include=dev && npm run build`, démarrage `node --import tsx scripts/present.mjs`, dossier racine `CHKPT_CODEX_GITHUB_PRET_A_IMPORTER`, Node 22, `NODE_ENV=production`, `HOST=0.0.0.0`. Définir dans le tableau de bord, jamais dans le dépôt : `CHKPT_PRIVATE_DEMO=true`, `CHKPT_REMOTE_ACCESS=true`, `CHKPT_ACCESS_PASSWORD` et `CHKPT_DEMO_ADMIN_PASSWORD` longs et distincts. Ne pas les envoyer dans le chat.
+
+Le service demande d'abord le secret visiteur HTTPS, puis le compte applicatif. Un compte hébergeur doit être créé et contrôlé par le propriétaire. Choisir exclusivement l'offre gratuite ; ne pas souscrire un disque ou service payant pour ce prototype. Le service gratuit peut dormir et perdre son stockage lors d'un redéploiement/redémarrage : exporter une sauvegarde chiffrée après la répétition, conserver aussi la démo locale et le support hors connexion. Aucun abonnement ni compte n'a été créé.

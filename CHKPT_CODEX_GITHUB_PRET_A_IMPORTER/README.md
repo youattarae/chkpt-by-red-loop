@@ -1,3 +1,9 @@
+## Version intégrée du 5 novembre 2026
+
+Recette finale du 5 novembre : **48/48 groupes réussis**, TypeScript et build réussis ; addendum Stories compris. Guides actualisés : 48 pages/diapositives. [Preuves et limites matérielles](docs/verification-2026-11-05/README.md).
+
+Branche locale `feat/ux-demo-lots-0-8` : navigation flottante avec Messages, profil via photo, Carte immersive, éditeur commun/brouillons, partage de fiches interne/externe, articles et enregistrés distincts. [Bilan, essais, limites et décisions restantes](docs/BILAN_MISSION_LOTS_0_8.md). Aucun push, merge ou déploiement automatique. Les sections suivantes conservent l’historique ; leurs anciennes dispositions sont remplacées sur les points UX arbitrés le 5 novembre.
+
 # CHKPT by RED LOOP — Prototype de démonstration
 
 **Statut : prototype web en développement, non prêt pour un déploiement public.**
@@ -8,7 +14,7 @@ CHKPT est un réseau social de découverte de lieux et sorties, centré sur Coco
 
 [Guide PDF](docs/GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](docs/GUIDE_UTILISATION_COMPLET.pptx) · [Sommaire](docs/guide-utilisation/README.md).
 
-43 pages illustrées, messagerie et menu gauche inclus, fichiers inférieurs à 3 Mo. Les dix cas limites de la revue ont été corrigés et la suite complète compte désormais **45/45 groupes réussis**. Voir [les corrections et les limites](docs/CORRECTIONS_CAS_LIMITES_ET_GUIDE.md) et [la messagerie privée](docs/MESSAGERIE_ET_MENU_GAUCHE.md).
+48 pages et diapositives illustrées, navigation, messages, partage, brouillons et stories inclus ; PDF et PPTX d’environ 3 Mo chacun. Le [bilan de mission](docs/BILAN_MISSION_LOTS_0_8.md) donne la dernière recette et ses limites. Les anciens résultats datés ci-dessous restent historiques.
 
 ## Direction visuelle actualisée
 

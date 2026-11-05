@@ -17,7 +17,7 @@ shots=docs/'captures/guide-utilisation'
 navy='111D33'; blue='1759B5'; burgundy='892C4D'; muted='596880'; soft='F4F6FA'
 prs=Presentation();prs.slide_width=Inches(13.333);prs.slide_height=Inches(7.5)
 prs.core_properties.title='CHKPT — Guide d’utilisation complet'
-prs.core_properties.subject='Prototype au 2 novembre 2026 · captures fictives · parcours et confidentialité'
+prs.core_properties.subject='Prototype au 5 novembre 2026 · captures fictives · parcours et confidentialité'
 prs.core_properties.author='CHKPT by RED LOOP'
 
 def text(slide,x,y,w,h,content,size,color=navy,bold=False):
@@ -46,12 +46,12 @@ for i,entry in enumerate(slides):
     with Image.open(image) as pic:ratio=pic.width/pic.height
     height=6.05;width=height*ratio
     slide.shapes.add_picture(str(image),Inches(9.0+(3.55-width)/2),Inches(.67),width=Inches(width),height=Inches(height))
-    text(slide,.65,7.13,10,.18,'30 OCT. 2026 · Données fictives · Guide du prototype · Captures réelles de la version testée',8,muted)
+    text(slide,.65,7.13,10,.18,'5 NOV. 2026 · Données fictives · Guide du prototype · Captures réelles de la version testée',8,muted)
     text(slide,11.65,7.1,1,.23,f'{i+1:02} / {len(slides):02}',10,blue,True)
     slide.notes_slide.notes_text_frame.text=entry['title']+'\n\n'+'\n'.join(entry['steps'])+'\n\n'+entry['note']
     encoded=base64.b64encode(image.read_bytes()).decode()
     steps=''.join('<li>'+html.escape(step)+'</li>' for step in entry['steps'])
-    body.append(f'''<section><header><b>CHKPT</b><span>{html.escape(entry['chapter'])}</span></header><main><div class="copy"><h1>{html.escape(entry['title'])}</h1><ol>{steps}</ol><aside>{html.escape(entry['note'])}</aside></div><figure><img src="data:image/png;base64,{encoded}" alt="Capture du prototype : {html.escape(entry['title'])}"><figcaption>Capture réelle · données fictives</figcaption></figure></main><footer><span>2 novembre 2026 · Guide du prototype · Aucun logiciel de programmation nécessaire pour le lire</span><strong>{i+1:02} / {len(slides):02}</strong></footer></section>''')
+    body.append(f'''<section><header><b>CHKPT</b><span>{html.escape(entry['chapter'])}</span></header><main><div class="copy"><h1>{html.escape(entry['title'])}</h1><ol>{steps}</ol><aside>{html.escape(entry['note'])}</aside></div><figure><img src="data:image/png;base64,{encoded}" alt="Capture du prototype : {html.escape(entry['title'])}"><figcaption>Capture réelle · données fictives</figcaption></figure></main><footer><span>5 novembre 2026 · Guide du prototype · Aucun logiciel de programmation nécessaire pour le lire</span><strong>{i+1:02} / {len(slides):02}</strong></footer></section>''')
 prs.save(docs/'GUIDE_UTILISATION_COMPLET.pptx')
 css='''@page{size:A4 landscape;margin:0}*{box-sizing:border-box}body{margin:0;background:#fff;color:#111d33;font-family:Arial,sans-serif}section{width:297mm;height:210mm;padding:10mm 14mm;border-top:2mm solid #1759b5;position:relative;break-after:page}header{display:flex;justify-content:space-between;color:#1759b5;font-size:10px;letter-spacing:1px}header b{font-size:18px;letter-spacing:2px}main{height:174mm;display:grid;grid-template-columns:1fr 67mm;gap:13mm;align-items:center}.copy{min-width:0}h1{font-size:29px;line-height:1.15;letter-spacing:-.6px;margin:0 0 8mm}ol{margin:0;padding-left:7mm}li{font-size:16px;line-height:1.38;margin:0 0 4mm;color:#34435a}aside{margin-top:7mm;padding:4mm 5mm;background:#f4f6fa;border-left:1mm solid #892c4d;font-size:12px;line-height:1.4;color:#892c4d}figure{margin:0;text-align:center;background:#f4f6fa;border-radius:5mm;padding:3mm}img{width:100%;height:153mm;object-fit:contain}figcaption{font-size:8px;color:#596880;margin-top:2mm}footer{position:absolute;bottom:6mm;left:14mm;right:14mm;display:flex;justify-content:space-between;font-size:9px;color:#596880}footer strong{color:#1759b5}'''
 if len(sys.argv)>1:

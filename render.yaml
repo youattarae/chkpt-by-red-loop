@@ -4,7 +4,7 @@ services:
     name: chkpt-demo-privee
     runtime: node
     plan: free
-    branch: feat/profil-social
+    branch: feat/ux-demo-lots-0-8
     rootDir: CHKPT_CODEX_GITHUB_PRET_A_IMPORTER
     buildCommand: npm ci --include=dev && npm run build
     startCommand: node --import tsx scripts/present.mjs

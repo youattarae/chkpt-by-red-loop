@@ -1,0 +1,43 @@
+{
+  "date": "2026-11-05",
+  "branche": "feat/ux-demo-lots-0-8",
+  "commit_code_et_tests": "60f795cc81f6f9532c983051efb8be906b3f58f8",
+  "groupes_reussis": 48,
+  "groupes_echoues_recette_finale": 0,
+  "node": "v24.19.0",
+  "navigateur": "Chromium 154.0.8037.57 built on Debian GNU/Linux 13 (trixie)",
+  "largeurs": [
+    320,
+    390,
+    1280
+  ],
+  "themes": [
+    "clair",
+    "sombre"
+  ],
+  "tests_materiels_effectues": false,
+  "push_merge_deploiement_effectues": false,
+  "bases": "Temporaires uniquement ; aucune base personnelle utilisée",
+  "supports": [
+    {
+      "fichier": "GUIDE_UTILISATION_COMPLET.pdf",
+      "octets": 2994096,
+      "sha256": "6c481871001d3aedd2b22b78f6ae30d65c905f22777176492237ba8fe5034b7d"
+    },
+    {
+      "fichier": "GUIDE_UTILISATION_COMPLET.pptx",
+      "octets": 3023213,
+      "sha256": "4ef00c508044d612634c8919f2040dfcd251ec352e5129c2206ef6d349142ec7"
+    },
+    {
+      "fichier": "DEMONSTRATION_PAS_A_PAS.pdf",
+      "octets": 1655546,
+      "sha256": "9df2468f7000367e408955b4e12f2230cd9f759b18fbe61348f8d526293e8bf6"
+    },
+    {
+      "fichier": "DEMO_SECOURS.html",
+      "octets": 721024,
+      "sha256": "81f938ea11d018e45232a032e616fadf7aefd0c282f200875354fd603b26153f"
+    }
+  ]
+}

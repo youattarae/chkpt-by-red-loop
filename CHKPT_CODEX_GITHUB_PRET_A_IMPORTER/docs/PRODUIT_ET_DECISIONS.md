@@ -1,3 +1,5 @@
+> Version intégrée du 5 novembre : voir [le bilan de mission](BILAN_MISSION_LOTS_0_8.md). Le texte ci-dessous est conservé comme historique ; les nouvelles dispositions UX et les cartes dans Messages prévalent sur les anciennes limites.
+
 # CHKPT — le projet raconté simplement
 
 > Mise à jour visuelle du 27 octobre 2026 : interface blanche par défaut, mode sombre facultatif, nom CHKPT seul dans l'interface, slogan réservé à la communication et symbole comme bouton central de check-in. Cette décision utilisateur remplace les indications historiques incompatibles. Voir [la direction visuelle](DIRECTION_VISUELLE_2026_10.md).

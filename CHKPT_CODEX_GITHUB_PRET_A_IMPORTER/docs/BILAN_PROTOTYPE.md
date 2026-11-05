@@ -1,3 +1,5 @@
+> Version intégrée du 5 novembre : voir [le bilan de mission](BILAN_MISSION_LOTS_0_8.md). Le texte ci-dessous est conservé comme historique ; les nouvelles dispositions UX et les cartes dans Messages prévalent sur les anciennes limites.
+
 Mise à jour finale de ce lot : **dix défauts corrigés, 44/44 groupes réussis**. [Guide complet PDF](GUIDE_UTILISATION_COMPLET.pdf) et [PowerPoint](GUIDE_UTILISATION_COMPLET.pptx) de 41 pages/diapositives ; [détails et limites](CORRECTIONS_CAS_LIMITES_ET_GUIDE.md). La demande du porteur autorise la synchronisation de cette branche pour fournir le nouveau code, sans fusion de main.
 
 Dernière revue : **dix défauts de cas limites reproduits et encore à corriger**, malgré les validations précédentes. Voir [l’audit détaillé et les priorités](AUDIT_ANGLES_MORTS_ET_FLUIDITE.md). Les observations concernent une base temporaire ; aucune donnée personnelle n’a été effacée.

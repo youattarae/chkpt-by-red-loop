@@ -1,3 +1,9 @@
+## Version intégrée du 5 novembre 2026
+
+Recette finale du 5 novembre : **48/48 groupes réussis**, TypeScript et build réussis ; addendum Stories compris. Guides actualisés : 48 pages/diapositives. [Preuves et limites matérielles](docs/verification-2026-11-05/README.md).
+
+Branche locale `feat/ux-demo-lots-0-8` : navigation flottante avec Messages, profil via photo, Carte immersive, éditeur commun/brouillons, partage de fiches interne/externe, articles et enregistrés distincts. [Bilan, essais, limites et décisions restantes](docs/BILAN_MISSION_LOTS_0_8.md). Aucun push, merge ou déploiement automatique. Les sections suivantes conservent l’historique ; leurs anciennes dispositions sont remplacées sur les points UX arbitrés le 5 novembre.
+
 # Mise à jour — messagerie et menu à gauche (2 novembre 2026)
 
 Conversations privées texte à deux et menu gauche avec avatar rond et nom. [Utilisation et limites](docs/MESSAGERIE_ET_MENU_GAUCHE.md). Vérifications locales réussies : `npm run lint`, `npm run build`, `PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run test:browser` : **45/45 groupes**. PDF et PowerPoint régénérés : **43 pages/diapositives**, moins de 3 Mo chacun, images intégrées et PDF sans débordement. Pas de test sur téléphone physique ni PowerPoint natif. Lot conservé sur la branche de travail, non publié automatiquement ; résultats historiques ci-dessous.

@@ -2,14 +2,14 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 const docs = new URL('../docs/', import.meta.url);
 const steps = [
-  ['accueil', 'DÉCOUVRIR', 'Une ville. Mille découvertes.', 'CHKPT relie les envies de sortie aux expériences partagées. Le pilote présenté se concentre sur Cocody.', 'Sors. Check. Partage.'],
-  ['checkin', 'SORTIR', 'Une visite, un petit pas de plus.', 'Le check-in de présentation est explicitement simulé. Ici, 75 XP et le badge Initié du Braisé illustrent la progression Maquis Master.', 'La publication reste facultative.'],
-  ['profil', 'PARTAGER', 'Les bons moments restent.', 'Le profil compact montre rapidement les publications. Le menu personnel rassemble les visites privées, les badges et le classement mensuel. Les visiteurs ne voient pas les XP totaux.', 'Publications partagées sur le même serveur, selon les permissions.'],
-  ['sortir', 'SE RETROUVER', 'Et la prochaine sortie ?', 'L’intention « J’y serai » permet de préparer une prochaine sortie. Événements et participations restent des données fictives de démonstration.', 'Objectif : tester le parcours, puis valider un pilote.'],
+ ['accueil','DÉCOUVRIR','Une ville. Mille découvertes.','CHKPT relie les envies de sortie aux expériences partagées. La Carte et le social sont les deux piliers.','Sors. Check. Partage.'],
+ ['check-confirme','VIVRE','Une visite, un petit pas de plus.','Le check est explicitement simulé, contrôlé côté serveur et sans double XP. Publier ensuite reste facultatif.','Des données et une progression fictives pour présenter le concept.'],
+ ['messagerie','PARTAGER','Les découvertes circulent.','Une fiche peut être envoyée à un ami réciproque et rouverte depuis Messages. Retour conserve la discussion.','Le partage ne crée pas de visite ; accès réservé au même serveur privé.'],
+ ['sortir','SE RETROUVER','Et la prochaine sortie ?','Guides fictifs, événements et intentions permettent de préparer une sortie. Le profil et son menu gardent l’activité personnelle.','Prototype privé, sans achat, billetterie ni partenariat réel.'],
 ];
 let body = '';
 for (const [i, [capture, label, title, copy, note]] of steps.entries()) {
-  const image = (await readFile(new URL(`captures/presentation-actualisee/${capture}-390.png`, docs))).toString('base64');
+  const image = (await readFile(new URL(`captures/guide-utilisation/${capture}.png`, docs))).toString('base64');
   body += `<section id="etape-${i + 1}" tabindex="-1"><div class="copy"><p class="eyebrow">0${i + 1} / ${label}</p><h1>${title}</h1><p>${copy}</p><p class="note">${note}</p><a href="#etape-${i < 3 ? i + 2 : 1}">${i < 3 ? 'Étape suivante →' : 'Revenir au début ↺'}</a></div><figure><img src="data:image/png;base64,${image}" alt="Capture réelle du prototype CHKPT : ${capture}"/><figcaption>Capture du parcours testé · données fictives</figcaption></figure></section>`;
 }
 const html = `<!doctype html><html lang="fr"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CHKPT — support de secours</title><style>

@@ -1,148 +1,116 @@
-> Guide complet de la version actuelle : [PDF de 41 pages](GUIDE_UTILISATION_COMPLET.pdf) et [PowerPoint modifiable](GUIDE_UTILISATION_COMPLET.pptx). Le présent document reste la fiche de répétition courte d’Ingrid.
+# CHKPT — guide de répétition pour Ingrid
 
-# CHKPT — guide pour Ingrid
+Version intégrée du 5 novembre 2026, branche locale `feat/ux-demo-lots-0-8`. Prototype privé et données fictives, pas une application de production. Aucun déploiement ou push n’est réalisé par cette mission.
 
-Objectif : une présentation privée de trois minutes à FrancoTech Cocody ou à des financeurs.
-Les lieux, personnes, statistiques, événements et points montrés sont fictifs. Les visuels sont illustrés.
+[Guide complet PDF](GUIDE_UTILISATION_COMPLET.pdf) · [PowerPoint modifiable](GUIDE_UTILISATION_COMPLET.pptx) · [PDF rapide en dix étapes](DEMONSTRATION_PAS_A_PAS.pdf) · [Support HTML sans connexion](DEMO_SECOURS.html).
 
-## Préparer l'ordinateur
+## 1. Préserver l’ancienne version
 
-1. Utiliser la version effectivement transmise pour la répétition. Les derniers lots locaux ne sont pas encore synchronisés sur GitHub ; ne pas supposer qu’un ZIP de `main` les contient. Le passage du dépôt en privé est reporté à la fin du travail, selon la décision du porteur.
-2. Installer Node.js 22.12 ou plus récent. Ouvrir le terminal dans `CHKPT_CODEX_GITHUB_PRET_A_IMPORTER`.
-3. Exécuter `npm ci`.
-4. Copier `.env.example` vers `.env`. Dans ce fichier local, mettre `CHKPT_PRIVATE_DEMO=true`
-   et définir `CHKPT_DEMO_ADMIN_PASSWORD` avec un mot de passe personnel d'au moins 16 caractères.
-   Garder `HOST=127.0.0.1`. `.env` est ignoré par Git. Ne pas recopier ce mot de passe dans le code.
-5. Exécuter `npm run demo` et ouvrir l'application locale sur le port indiqué dans le terminal.
-6. Ouvrir **Profil → Gérer mon compte**, puis l’onglet Connexion.
-   Se connecter avec `redloop_admin` et le mot de passe défini à l'étape 4.
-7. Rouvrir ce panneau, aller dans « Profils Démo (opérateur) », cliquer **Démarrer la démo**, lire les suppressions annoncées puis confirmer seulement si cette base peut être remise à zéro.
-   Cette action protégée réinitialise le jeu fictif et connecte Yacoub Ouattara, le personnage de la présentation.
+Conserver l’ancien dossier complet. Ne pas écraser `.env` (réglages et secrets) ni `.data` (comptes, publications, médias, messages, visites et progression). Copier ces deux éléments dans la nouvelle version uniquement lors d’une mise à jour choisie. Les migrations sont additives ; ne pas utiliser Réinitialiser pour résoudre un problème de lancement.
 
-Ce démarrage efface les comptes et contenus ajoutés dans la base de démonstration. Utiliser une base réservée
-à la présentation, jamais des données réelles. Le serveur utilise `.data/` dans son dossier de lancement.
+Le code de cette mission est sur une branche locale dédiée ; le ZIP de `main` ne contient pas ces changements. Une publication GitHub nécessitera l’autorisation du propriétaire. Aucun nouveau lien distant de démonstration n’est activé.
 
-## Le parcours de trois minutes
+## 2. Lancer sur Mac
 
-| Temps | Geste | Phrase proposée |
-|---|---|---|
-| 0:00–0:25 | Montrer l’accueil, les onglets Pour toi / Amis et les publications illustrées. | « CHKPT aide à découvrir les sorties autour de soi. Notre pilote se concentre sur Cocody. Tout ce que vous voyez ici est une démonstration fictive. » |
-| 0:25–0:55 | Carte → repère Maquis → Détails. | « On passe d'une découverte à un lieu. Voici notre maquis de démonstration, L'Étoile d'Abidjan. » |
-| 0:55–1:25 | Retour → bouton central Check-in → choisir Maquis L’Étoile → Confirmer le check. Le simulateur est déjà à Saint-Jean après démarrage. | « Pour cette présentation, la position est simulée. Le check-in et la publication sont deux actions distinctes. » |
-| 1:25–1:45 | Montrer +75 XP et le badge Initié du Braisé. | « Les points illustrent la progression. Le badge de la famille Maquis Master passe de quatre à cinq visites fictives. » |
-| 1:45–2:10 | Créer une publication → écrire « Une belle découverte à Cocody » → vérifier la visibilité de la publication → Publier le checkpoint. | « Je choisis de partager ; rien n'est publié automatiquement. » |
-| 2:10–2:35 | Profil → publication et 1315 XP. | « Je retrouve mon souvenir et ma progression, même après navigation. » |
-| 2:35–2:55 | Sortir → premier événement → J'y serai. | « Je prépare aussi ma prochaine sortie. Cette intention est simulée et enregistrée dans ce navigateur. » |
-| 2:55–3:00 | Revenir à l'accueil ou au profil. | « CHKPT : Sors. Check. Partage. » |
+Installer Node.js 24, ou une version 22 à partir de 22.12. Dans Terminal, taper `cd ` avec un espace, glisser le dossier **CHKPT_CODEX_GITHUB_PRET_A_IMPORTER** contenant `package.json`, puis Entrée.
 
-Le maquis doit être sélectionné explicitement dans la fenêtre ouverte par le bouton central Check-in. Le badge attendu s'appelle **Initié du Braisé**,
-dans la famille **Maquis Master** ; le moteur comporte davantage de paliers provisoires, mais seule une petite sélection est présentée dans le prototype. Ne pas annoncer un catalogue définitif validé.
-Publier n'ajoute pas de XP de visite. Les 1240 XP de départ et les quatre visites du badge sont des données fictives préchargées.
-
-## Recommencer
-
-Se reconnecter comme `redloop_admin`, rouvrir Profils Démo (opérateur), puis Démarrer la démo et confirmer la remise à zéro après sauvegarde si nécessaire.
-Le scénario revient au maquis Saint-Jean, badge à 4/5, aucune publication ajoutée et aucune intention d'événement.
-Une deuxième visite au même lieu sans redémarrage ne donne pas de XP supplémentaires dans la même journée : c'est normal.
-Un rechargement conserve publications, badge et intentions dans le même navigateur.
-
-## Checklist avant de présenter
-
-- [ ] Ne pas utiliser une base contenant de vraies personnes ou des photos privées.
-- [ ] Lancer le serveur, vérifier l'accueil, la carte et les illustrations.
-- [ ] Vérifier la connexion opérateur puis Démarrer la démo.
-- [ ] Confirmer le maquis exact et le simulateur Saint-Jean ; garder la mention de simulation visible.
-- [ ] Répéter une fois tout le parcours avec publication, profil et événement.
-- [ ] Redémarrer la démo avant de passer devant le jury.
-- [ ] Fermer les autres onglets et notifications de l'ordinateur, tester l'affichage sur le projecteur.
-- [ ] Ouvrir `docs/DEMO_SECOURS.html` dans un deuxième onglet et le tester hors connexion.
-- [ ] Garder l'ordinateur chargé. Le prototype local ne dépend pas de Gemini ni d'un service d'images.
-
-## Si quelque chose bloque
-
-- **Connexion refusée** : vérifier l'activation privée et le mot de passe local ; les anciens identifiants de seed sont désactivés.
-- **Lieu trop éloigné** : fermer la modale, choisir Saint-Jean dans ☰ → Réglages et confidentialité → Position, rouvrir la fiche du maquis.
-- **Visite déjà validée** : retrouver la confirmation existante et reprendre la publication si souhaité, sans nouveau XP. Ne pas effacer toute la base pour ce motif.
-- **Serveur indisponible** : passer au fichier de secours. Dire : « Voici des captures du parcours testé ; ce n'est pas une session en direct. »
-
-Le fichier de secours est autonome : quatre étapes avec captures réelles actualisées, navigables sans serveur ni réseau.
-Il ne s'agit pas d'une vidéo ni d'un prototype interactif hors ligne. Aucune vidéo n'a été produite dans ce lot.
-
-## Pour les financeurs
-
-« Notre hypothèse est qu'un réseau social ancré dans les sorties locales facilite la découverte et le passage à l'action.
-Ce prototype permet de tester cette boucle à Cocody. Nous voulons maintenant recueillir des retours, mesurer l'intérêt
-et valider les modalités d'un pilote. Les statistiques présentées ne sont pas de la traction réelle. Les publicités montrent
-un emplacement possible, sans annonceur ni partenariat acquis. Les abonnements établissements et partenariats sont des pistes
-à valider ; aucun paiement ni billetterie ne sont intégrés. »
-
-## Ce qui est vérifié et ce qui reste une démonstration
-
-Vérifiés : protections opérateur, distance et XP côté serveur, refus de doublon, sélection du lieu,
-publication facultative dans le fil/profil, conservation après rechargement, événement et répétition après reset.
-Recette navigateur à 390 et 1280 pixels, accès externes bloqués, image indisponible remplacée.
-
-Restent simulés ou limités : GPS de présentation, jeu de départ, compteurs, petite sélection de badges, intentions locales au navigateur et carte illustrée de secours. Les publications, médias, favoris et visites sont désormais partagés via le serveur selon les permissions ; certaines intentions et notifications restent locales.
-Les médias importés sont conservés dans la base serveur tant que son stockage est conservé. Une position annoncée comme réelle vient encore du client.
-Le symbole est une adaptation vectorielle simplifiée de la planche fournie ; le fichier maître reste attendu. Les illustrations locales, dont une image générée par IA explicitement signalée, représentent des lieux fictifs.
-Le projet reste un prototype privé, pas une application de production ni une validation d'intérêt par le marché.
-
-## Habillage CHKPT actualisé
-
-L’interface s’ouvre sur fond blanc. ☰ → Réglages et confidentialité permet de choisir le mode sombre ; le choix reste après rechargement et après le redémarrage du scénario. Le bouton central de check-in porte le symbole CHKPT et conserve le texte « Check-in ». Le slogan reste réservé aux supports de communication.
-
-Voir les [captures réelles et les choix visuels](DIRECTION_VISUELLE_2026_10.md). Les affichages sont contrôlés à 320, 390 et 1280 pixels, dans les deux thèmes. Une répétition reste nécessaire sur le Windows d’Ingrid ; aucun essai sur une machine Windows physique n’est revendiqué.
-
-## Lancement stable pour présenter
-
-Dans le dossier du prototype, après l'installation et la configuration privée, utiliser **`npm run demo`**, sur Mac comme sur Windows. Cette commande compile les écrans puis démarre le serveur avec les fichiers préparés, sans rechargement à chaud. Garder le Terminal ouvert et accéder à `http://localhost:3000`. Ce mode ne change ni le mot de passe, ni les autorisations, ni le caractère privé du prototype.
-
-Sur une version déjà téléchargée qui ne possède pas encore la commande `demo`, arrêter le serveur avec Ctrl+C puis, sur Mac, lancer :
-
-```bash
-npm run build
-NODE_ENV=production npm run dev
+```sh
+node -v
+npm ci
 ```
 
-Il s'agit seulement du mode de service des fichiers compilés : le prototype ne devient pas une application de production. Après redémarrage, les comptes de seed doivent se reconnecter. Une visite déjà comptée reste comptée ; seul l'opérateur peut relancer le scénario fictif avec Démarrer la démo.
+Au premier lancement seulement, si `.env` n’existe pas :
 
-Un rechargement de développement a été reproduit pendant l'écriture du check-in dans un dossier isolé sans `.gitignore`. Le résultat disparaissait alors que la visite était enregistrée. Le correctif limite l'analyse des styles aux fichiers de l'interface et exclut `.data/` du watcher. La nouvelle recette vérifie la confirmation, le badge, la publication sans navigation inattendue et le maintien du rechargement à chaud pour une vraie modification de code. Cette reproduction sous Chromium Linux ne prouve pas que tout clignotement propre à Safari soit éliminé : le réessai sur le Mac reste nécessaire.
+```sh
+test -f .env || cp .env.example .env
+```
 
-Les réglages de thème, commune et position sont regroupés dans **☰ → Réglages et confidentialité**. L’en-tête conserve le symbole, le bouton GPS, la cloche de notifications et le bouton ☰. Le bouton central est l’unique accès au check-in : choisir le lieu, appuyer sur **Confirmer le check**, puis **Créer une publication** si souhaité. Les cartes et les fiches restent consultables sans bouton de check.
+Puis :
 
-## Deux appareils et sauvegarde gratuite
-
-Voir [SYNCHRONISATION_ET_SAUVEGARDE.md](SYNCHRONISATION_ET_SAUVEGARDE.md) pour retrouver les mêmes données sur téléphone et ordinateur, télécharger une sauvegarde chiffrée et la restaurer. Le budget reste gratuit : la configuration Render ne garantit pas la conservation du disque. Aucun hébergement n’est créé automatiquement. Pour conserver une démo existante, se connecter sans lancer Démarrer la démo, qui remet les données fictives à zéro.
-
-## Visite complémentaire si le jury pose des questions
-
-- **Accueil** : écrire Ingrid → Rechercher → Filtres → Profils → Appliquer → ouvrir Ingrid. Les suggestions restent temporaires ; les résultats et le profil sont des pages.
-- Montrer ses publications et badges publics, puis Abonnés ou Abonnements : liste réelle avec recherche. Ses visites et XP totaux ne sont pas consultables.
-- Ouvrir **☰** : le menu porte toujours le nom du compte connecté, même sur le profil d’Ingrid.
-- **☰ → Classement des explorateurs** : Amis (suivis réciproques + soi) ou Global, XP du mois. Le total fictif préchargé de 1240 XP n’est pas un score du mois.
-- Montrer **Historique privé**, **Enregistrés** et **Badges et progression** depuis le menu. Retour retrouve le contexte.
-- Les quatre personnages ont cinq publications initiales chacun. Publicité fictive avant le fil et après chaque cinq publications visibles ; aucune bannière ne donne accès à une offre réelle. L’alcool est réservé aux comptes majeurs déclarés avec contrôle serveur.
-- Les stories se lisent depuis l’accueil ou la photo de profil ; elles expirent après 24 h. Le + sert à en ajouter une.
-
-## Mac, Windows et téléphone
-
-Sur Mac, ouvrir Terminal ; sur Windows, ouvrir PowerShell dans le dossier contenant `package.json`. Dans les deux cas :
-
-```text
-npm ci
+```sh
 npm run demo
 ```
 
-Pour créer le fichier de configuration au premier lancement seulement : `cp .env.example .env` sur Mac ; `Copy-Item .env.example .env` dans PowerShell. Ne pas écraser un `.env` ou un dossier `.data` existants : conserver la sauvegarde complète, ou utiliser les fonctions de sauvegarde chiffrée autorisées.
+Ouvrir `http://localhost:3000`, ou le port affiché. Garder Terminal ouvert. Pour arrêter : Ctrl+C dans ce terminal.
 
-Si le téléphone doit accéder au serveur de l’ordinateur, définir `HOST=0.0.0.0` dans le `.env` local, relancer le serveur et utiliser `http://ADRESSE_IP_DE_L_ORDINATEUR:3000` sur le même Wi-Fi ou hotspot. L’ordinateur doit rester allumé et le terminal ouvert ; l’adresse IP peut changer. Sur ce lien HTTP local, employer le Simulateur pour la présentation. Ne pas exposer directement le port de l’ordinateur sur Internet.
+## 3. Lancer sur Windows
 
-Pour montrer le prototype à distance sans le même réseau, voir [la préparation de l’accès privé](ACCES_PRIVE_DISTANCE.md). Aucun lien hébergé n’a encore été créé. L’offre gratuite peut perdre son stockage : exporter une sauvegarde privée avant toute manipulation du scénario.
+Installer Node.js compatible. Ouvrir PowerShell dans le dossier contenant `package.json`, puis :
 
-## Supports à garder sous la main
+```powershell
+node -v
+npm ci
+if (!(Test-Path .env)) { Copy-Item .env.example .env }
+npm run demo
+```
 
-- `DEMO_SECOURS.html` : quatre écrans intégrés, utilisables sans serveur ni Internet. Ouvrir le fichier dans Edge, Chrome ou Safari. C’est un support de captures, pas une application hors connexion.
-- `DEMONSTRATION_PAS_A_PAS.pdf` : dix étapes illustrées actualisées, avec profils et menu. Ouvrir le PDF dans le navigateur ; aucun logiciel de programmation n’est nécessaire.
-- [Pages, recherche et menu](NAVIGATION_PAGES_ET_MENU.md) : recette détaillée avec dix captures supplémentaires.
+Ouvrir l’adresse affichée dans le navigateur. Aucun éditeur de code n’est nécessaire pour utiliser l’application ou lire les guides.
 
-Avant de partir, Ingrid doit ouvrir ces deux fichiers sur son propre ordinateur. Les essais automatisés sous Chromium Linux ne remplacent pas ce contrôle sur Windows et Safari.
+Si `npm ci` affiche EUSAGE ou si `demo` est absent, vérifier le dossier et la version du code. Si ECONNRESET apparaît, rétablir Internet et relancer `npm ci --fetch-retries=5`. Les messages de financement npm n’empêchent pas l’utilisation.
+
+## 4. Ouvrir sur le téléphone d’Ingrid
+
+Le téléphone et l’ordinateur doivent partager le même Wi-Fi ou hotspot. Dans `.env`, définir `HOST=0.0.0.0`, puis relancer `npm run demo`. Autres possibilités :
+
+Mac :
+```sh
+HOST=0.0.0.0 npm run demo
+```
+Windows PowerShell :
+```powershell
+$env:HOST='0.0.0.0'
+npm run demo
+```
+
+Relever l’IPv4 de l’ordinateur dans les réglages réseau (ou `ipconfig` sous Windows). Dans Safari/Chrome du téléphone, ouvrir `http://IP_DE_L_ORDINATEUR:3000`. `localhost` sur le téléphone désigne le téléphone, pas le Mac. L’adresse peut changer après reconnexion. Laisser l’ordinateur éveillé et connecté ; accepter le réseau local/pare-feu privé si le système le demande.
+
+Sans ce réseau commun, l’accès local s’arrête. Un hébergement privé HTTPS distinct est nécessaire pour un accès à distance. Il est préparé gratuitement, pas déployé : [instructions](ACCES_PRIVE_DISTANCE.md). Le GPS navigateur fonctionne normalement sous HTTPS ; pour répéter localement, utiliser explicitement le Simulateur.
+
+## 5. Choisir un personnage sans effacer les données
+
+Dans une démo privée autorisée, `.env` active `CHKPT_PRIVATE_DEMO=true` et définit un secret opérateur local d’au moins 16 caractères. Ne pas le publier ni l’envoyer dans le chat. Les outils sont fermés par défaut.
+
+☰ → Mon compte → Connexion. L’opérateur utilise l’identifiant `redloop_admin` et son secret local. Profils Démo permet ensuite de choisir Ingrid, Grâce, Yacoub ou Georges. Cette bascule ne réinitialise pas la base.
+
+Démarrer la démo et Réinitialiser ouvrent une confirmation destructive : comptes et contenus ajoutés sont effacés après validation. Sauvegarder avant une remise à zéro réellement souhaitée. Annuler conserve les données. Pour une répétition sans effacement, utiliser un compte dédié, un autre lieu, ou montrer la reprise d’une visite déjà enregistrée.
+
+## 6. Les gestes à connaître
+
+- En bas : Accueil, Carte, ＋/Check, Sortir, Messages. La couleur et le point bordeaux indiquent l’espace actif.
+- Votre photo en haut et l’identité du menu ouvrent votre profil. Sur votre profil, Retour remplace le menu visible ; le glissement depuis le bord gauche ouvre toujours le menu.
+- La loupe remplace la première ligne par la recherche. Suggestions pendant la saisie ; Rechercher ouvre les résultats et leurs filtres. La flèche ferme ce mode.
+- L’icône de localisation d’Accueil choisit la commune explorée. Cela ne crée pas de visite et ne modifie pas la preuve de position du check.
+- La Carte occupe l’écran ; repères verts/gris, aperçu puis Voir le lieu. Outils carte contient position du check et recherche externe facultative. Les tuiles peuvent manquer : le secours illustré est signalé.
+- ＋ propose Faire un check ou Créer une publication. Faire un check sur une fiche présélectionne son lieu. Toujours vérifier la visibilité et la simulation avant confirmation.
+- Quitter un texte commencé propose Conserver, Abandonner ou Continuer. Un brouillon est lié au compte et à cet appareil.
+- ☰ → Enregistrés distingue lieux, publications et événements. Le signet d’une publication conserve la publication ; celui de la fiche conserve le lieu.
+- Partager ouvre deux rangées : publier/amis en haut ; copier/applications/Plus en bas. Choisir un ami prépare l’envoi ; rien ne part avant confirmation.
+- Messages contient les cartes de fiches, réouvrables avec Retour à la conversation. Notifications est dans le menu, avec un compteur distinct.
+
+## 7. Déroulé à répéter
+
+1. Accueil : montrer Pour toi/Amis, stories, publicité fictive et recherche.
+2. Carte : déplacer/zoomer, sélectionner Maquis L’Étoile, Voir le lieu.
+3. Faire un check depuis sa fiche : le lieu est déjà sélectionné. Position du check en Simulateur Cocody Saint-Jean, visibilité explicite, Confirmer le check.
+4. Montrer la confirmation, les XP/badges provisoires. Une nouvelle visite admissible du scénario ajoute 75 XP ; une visite déjà enregistrée n’en ajoute pas.
+5. Publier volontairement avec la bonne visibilité, ou Plus tard. Retrouver la publication sur son profil via la photo, puis Retour.
+6. Partager une fiche à un ami réciproque, ajouter un message, confirmer. Ouvrir Messages, toucher la carte, consulter la fiche puis revenir à la discussion.
+7. Menu → Notifications : ouvrir une activité et vérifier le compteur. Sortir : lire un guide, ouvrir un lieu cité et un événement ; choisir J’y serai ou Enregistrer.
+
+Éviter de multiplier les explications techniques : « On découvre, on confirme sa présence, puis on choisit ce que l’on partage. » Prévoir plus de trois minutes si l’on montre aussi Messages, notifications et articles.
+
+## 8. Ce qui est réel, simulé ou non terminé
+
+Réel dans ce prototype : comptes, stockage sur le même serveur, contrôles d’accès, publications/médias, stories 24 h, visites et XP sans doublon, avis, suivis, messages, références de fiches, enregistrements et sauvegardes chiffrées.
+
+Fictif : personnages/portraits, lieux et événements, publicités, score de départ, certains indicateurs, récompense et propositions/modération locales. La présence est explicitement simulée pendant la présentation. Le navigateur GPS ne constitue pas une garantie antifraude de production.
+
+Limites : pas de paiement, appel ni fichier joint dans les DM ; pas de chiffrement de bout en bout ni de blocage/signalement complet des messages. Le périmètre de lancement public n’est pas arbitré. Les intentions d’événement et certaines notifications/préférences restent locales. Les liens externes exigent un accès au serveur ; un SMS ou une application externe dépend du téléphone. Le disque d’un hébergement gratuit peut être éphémère.
+
+Avant le rendez-vous : tester sur les vrais appareils d’Ingrid, sauvegarder, vérifier l’adresse réseau et ouvrir les PDF/HTML de secours sans Internet. Les émulations 320/390/1280 ne remplacent pas cet essai réel.
+
+## Stories et défilement — complément du 5 novembre
+
+Sur Accueil : commandes → stories → Pour toi/Amis et GPS → fil. Les portraits défilent horizontalement et quittent l’écran en descendant ; seules les commandes reviennent au petit mouvement inverse. Revenez en haut pour retrouver les stories. Le retour depuis Messages conserve la position du fil.
+
+Les exemples fictifs expirent réellement après 24 heures et ne sont pas renouvelés au redémarrage. Pour préparer une nouvelle répétition, l’opérateur connecté peut toucher « Préparer les stories fictives » dans son compte. Cette préparation ne réinitialise ni les publications ni les visites et ne remplace aucune story personnelle.
