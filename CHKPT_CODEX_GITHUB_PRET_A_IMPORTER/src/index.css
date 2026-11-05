@@ -204,3 +204,6 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+/* Keep Leaflet zoom targets clear of the floating navigation capsule. */
+.map-screen .leaflet-bottom.leaflet-right { bottom: 104px; right: 4px; }

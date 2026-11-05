@@ -89,6 +89,7 @@ interface StoreContextType {
   }>;
   recoverCheckIn: (placeId:string) => Promise<{success:boolean;checkIn?:CheckIn;message:string;distanceMeters:number;earnedXp?:number;recovered?:boolean;uncertain?:boolean}>;
   isServerAuthenticated: boolean;
+  sharedStateReady:boolean;
   syncError: string;
   refreshSharedData: () => Promise<void>;
   createPost: (data: {
@@ -145,6 +146,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   function requestId(){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from(bytes,value=>value.toString(16).padStart(2,'0')).join('');}
   const sharedRevision = useRef(0);
   const writesInFlight = useRef(0);
+  const [sharedHydratedToken,setSharedHydratedToken]=useState<string|null>(null);
   const [syncError,setSyncError] = useState('');
   const statsRevision = useRef(0);
   const followingRevision = useRef(0);
@@ -362,7 +364,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSavedPlaceIds(data.savedPlaceIds);setCheckins(data.checkins);setPointsLedger(data.pointsLedger);setBadges(data.badges);setFollowingIdsState(data.followingIds);
         setCurrentUser(user=>({...user,...data.user}));
       }
-      setPosts(data.posts);
+      setPosts(data.posts);setSharedHydratedToken(token);
     }catch(error){if(revision===sharedRevision.current&&(readStorage('chkpt_session_token')||'')===token)setSyncError(error instanceof Error?error.message:'Synchronisation indisponible.');}
   }
   function beginWrite(){writesInFlight.current++;sharedRevision.current++;setSyncError('');}
@@ -848,6 +850,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <StoreContext.Provider value={{
       isServerAuthenticated,
+      sharedStateReady:!authSessionToken||sharedHydratedToken===authSessionToken,
       syncError,
       refreshSharedData: ()=>{setSyncError('');return refreshSharedState();},
       currentUser,

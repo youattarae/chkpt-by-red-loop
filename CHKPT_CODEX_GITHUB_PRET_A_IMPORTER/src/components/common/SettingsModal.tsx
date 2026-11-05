@@ -29,7 +29,7 @@ export function SettingsModal({ isOpen, onClose, onOpenBusiness }: { isOpen: boo
         <h3 className="text-xs font-bold text-muted uppercase tracking-wider">Découverte</h3>
         <label className="flex items-center justify-between gap-3 text-sm">Commune
           <select value={selectedZone} onChange={event => setSelectedZone(event.target.value)} className="bg-soft border border-line rounded-xl px-3 py-2 text-sm">
-            {['Cocody', 'Plateau', 'Marcory'].map(zone => <option key={zone}>{zone}</option>)}
+            {['Cocody', 'Plateau', 'Marcory', 'Yopougon'].map(zone => <option key={zone}>{zone}</option>)}
           </select>
         </label>
       </section>

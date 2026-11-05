@@ -30,3 +30,14 @@ Navigation flottante et en-têtes contextuels, profil par identité et retour, m
 Garde de navigation ajoutée : aucune restauration différée de scroll/focus en arrière-plan pendant un dialogue ouvert. Cela évite une interférence possible ; la cause du timeout historique n'est pas affirmée démontrée. Le parcours de check ciblé réussit en 390 et 1280 px avec les nouveaux accès, sans hausse du délai.
 
 Tests intermédiaires : nouvelle recette intégrée 320/390/1280 réussie, scénario de présentation complet et répété 390/1280 réussi, GPS en attente/fil Amis/changement de connexion réussis. Adaptation et exécution du reste de la suite en cours. Aucun des succès intermédiaires ne vaut résultat global final.
+
+## Correctifs de continuité issus de la recette
+
+- Attendre la première synchronisation du compte avant d'afficher son fil/profil : évite le retour visuel aux réactions initiales au rechargement.
+- Après connexion/bascule depuis son propre profil, ouvrir celui du nouveau compte, sans conserver l'ancien comme écran personnel.
+- Recherche et filtres gardés par espace lors des allers-retours ; autofocus réservé à une ouverture explicite de la loupe. Recherche et fil réinitialisés au changement de compte.
+- Retour/focus différé suspendu pendant un dialogue ; cibles de la carte de secours espacées, outils refermés au clic externe, zoom dégagé de la capsule.
+- Préférences et marquage de toutes les notifications conservés dans le nouvel accès menu.
+- Validation des nouvelles collections au chargement avant toute écriture ; tests étendus aux tables invalides en préservant les octets de la base corrompue.
+
+Essais ciblés réussis à ce stade : présentation répétée, GPS en attente, thèmes/contrastes 320/390/1280, profil et interactions après rechargement, fil, fiches, partage externe/historique, avis/récompense/suivi, radar et secours, deux navigateurs/données privées, quatre médias, stories. Reste la fin des scénarios de navigation et la relance globale finale. Les adaptations de tests portent sur les accès validés et le périmètre d'enregistrement distinct, pas sur l'admissibilité des visites.

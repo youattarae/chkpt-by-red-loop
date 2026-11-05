@@ -39,14 +39,14 @@ import {SideMenu} from './components/navigation/SideMenu';
 import {PersonalPage} from './components/navigation/PersonalPage';
 import {PageLayout} from './components/navigation/PageLayout';
 function AppContent(){
- const {isOperatorView,setIsOperatorView,places,posts,currentUser,authSessionToken,isServerAuthenticated,syncError,refreshSharedData,dismissToastNotification}=useStore();const nav=useNavigation();const route=nav.current.route;const activeTab=route.tab;
+ const {isOperatorView,setIsOperatorView,places,posts,currentUser,authSessionToken,isServerAuthenticated,sharedStateReady,syncError,refreshSharedData,dismissToastNotification}=useStore();const nav=useNavigation();const route=nav.current.route;const activeTab=route.tab;
  const operatorVisible=isOperatorView&&isServerAuthenticated&&['admin','superadmin','moderator'].includes(currentUser.role);
  const [restoreNotice]=useState(()=>{const notice=sessionStorage.getItem('chkpt_restore_notice')||'';sessionStorage.removeItem('chkpt_restore_notice');return notice;});
  const [checkin,setCheckin]=useState(false),[auth,setAuth]=useState(false),[notifications,setNotifications]=useState(false),[settings,setSettings]=useState(false),[menu,setMenu]=useState(false);
  const exp=useExperience();const [feedFilter,setFeedFilter]=useState<'for_you'|'friends'>('for_you');const [actions,setActions]=useState(false),[composer,setComposer]=useState<ComposerContext|null>(null),[share,setShare]=useState<EntityRef|null>(null),[checkPlace,setCheckPlace]=useState<string|undefined>();
  const [visited,setVisited]=useState<MainTab[]>([activeTab]);const tabs=Array.from(new Set([...visited,activeTab]));
  useEffect(()=>{setVisited(previous=>previous.includes(activeTab)?previous:[...previous,activeTab]);},[activeTab]);
- useEffect(()=>{setCheckin(false);setMenu(false);setNotifications(false);setActions(false);setComposer(null);setShare(null);setIsOperatorView(false);},[authSessionToken]);
+ useEffect(()=>{setCheckin(false);setMenu(false);setFeedFilter('for_you');setNotifications(false);setActions(false);setComposer(null);setShare(null);setIsOperatorView(false);},[authSessionToken]);
  const place=(id:string)=>nav.push({page:'place',id,tab:activeTab});
  const profile=(id:string)=>{if(id===currentUser.id&&isServerAuthenticated)nav.push({page:'profile',id,tab:activeTab});else nav.push({page:'profile',id,tab:activeTab});};
  useEffect(()=>{const openProfile=(event:Event)=>{const id=(event as CustomEvent).detail;if(typeof id==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(id))profile(id);};const openEvent=(event:Event)=>{const id=(event as CustomEvent).detail;if(typeof id==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(id))nav.push({page:'event',id,tab:activeTab});};window.addEventListener('chkpt:profile',openProfile);window.addEventListener('chkpt:event',openEvent);return()=>{window.removeEventListener('chkpt:profile',openProfile);window.removeEventListener('chkpt:event',openEvent);};},[nav.current.key,currentUser.id,isServerAuthenticated]);
@@ -60,7 +60,7 @@ function AppContent(){
    case 'main':return null;
    case 'place':{const found=places.find(place=>place.id===page.id);return found?<PlaceDetailModal place={found} onClose={nav.back}/>:<PageLayout title="Lieu indisponible" onBack={nav.back}><p>Ce lieu n’est pas disponible dans la démonstration.</p></PageLayout>;}
    case 'event':return <EventDialog id={page.id} onClose={nav.back}/>;
-   case 'profile':if(page.id===currentUser.id)return <section aria-label="Mon profil depuis la recherche" className="max-w-2xl mx-auto"><ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:activeTab})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/></section>;return <OtherProfile isVisible={isVisible} id={page.id} onClose={nav.back} onSelectPlace={place}/>;
+   case 'profile':if(page.id===currentUser.id)return <section className="max-w-2xl mx-auto"><ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:activeTab})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/></section>;return <OtherProfile isVisible={isVisible} id={page.id} onClose={nav.back} onSelectPlace={place}/>;
    case 'followers':case 'following':return <ConnectionsDialog isVisible={isVisible} id={page.id} kind={page.page} onClose={nav.back}/>;
    case 'saved':return <SavedPage/>;
    case 'notifications':return <ActivityPage/>;
@@ -82,7 +82,7 @@ function AppContent(){
  {syncError&&<div role="alert" className="max-w-2xl mx-auto w-full p-3 text-xs text-rose-400 bg-soft border border-line rounded-xl">{syncError}<button type="button" onClick={()=>void refreshSharedData()} className="ml-2 underline">Réessayer la synchronisation</button></div>}
  <Welcome visible={route.page==='main'&&activeTab==='feed'&&!operatorVisible}/>
  <main key={currentUser.id+':'+isServerAuthenticated} className={`flex-1 w-full ${route.page==='main'&&activeTab==='map'?'':'max-w-4xl mx-auto'}`}>
- {authSessionToken&&!isServerAuthenticated?<div className="p-6 space-y-3"><p role="status">Vérification de votre connexion…</p><button type="button" onClick={openAccount} className="p-3 rounded-xl bg-soft text-sm">Gérer mon compte</button></div>:operatorVisible?<OperatorConsole/>:<>
+ {authSessionToken&&(!isServerAuthenticated||!sharedStateReady)?<div className="p-6 space-y-3"><p role="status">Vérification de votre connexion…</p><button type="button" onClick={openAccount} className="p-3 rounded-xl bg-soft text-sm">Gérer mon compte</button></div>:operatorVisible?<OperatorConsole/>:<>
  {tabs.map(tab=><div key={tab} hidden={route.page!=='main'||activeTab!==tab} tabIndex={-1} data-route-key={route.page==='main'&&activeTab===tab?nav.current.key:undefined} className="outline-none">
  {tab==='feed'?<FeedView feedFilter={feedFilter} onSelectPlace={place}/>:tab==='map'?<MapView onSelectPlace={place}/>:tab==='messages'?<MessagesPage isVisible={route.page==='main'&&activeTab==='messages'}/>:tab==='sortir'?<SortirView onSelectPlace={place}/>:<ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:'profile'})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/>}
  </div>)}

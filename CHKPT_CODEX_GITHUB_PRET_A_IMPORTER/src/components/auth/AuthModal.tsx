@@ -1,3 +1,4 @@
+import {useNavigation} from '../../navigation/Navigation';
 import {SimpleDialog} from '../common/SimpleDialog';
 import {DEMO_PROFILES} from '../../data/demoProfiles';
 import { SafeImage } from '../common/SafeImage';
@@ -55,6 +56,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
 
   if (!isOpen) return null;
 
+  const navigation=useNavigation();
+  const showNewAccount=(id:string)=>{if(navigation.current.route.page==='profile'||navigation.current.route.page==='main'&&navigation.current.route.tab==='profile')navigation.replace({page:'profile',id,tab:navigation.current.route.tab==='profile'?'feed':navigation.current.route.tab});};
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg(null);
@@ -74,7 +77,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
 
       setAuthSessionToken(data.token);
-      setCurrentUser(data.user);
+      setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(`Bienvenue ${data.user.displayName} ! Session active.`);
       setTimeout(() => {
         onClose();
@@ -111,7 +114,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
 
       setAuthSessionToken(data.token);
-      setCurrentUser(data.user);
+      setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(`Compte créé avec succès ! Bienvenue sur CHKPT.`);
       setTimeout(() => {
         onClose();
@@ -143,7 +146,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       }
 
       setAuthSessionToken(data.token);
-      setCurrentUser(data.user);
+      setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(data.message);
       setTimeout(() => {
         onClose();

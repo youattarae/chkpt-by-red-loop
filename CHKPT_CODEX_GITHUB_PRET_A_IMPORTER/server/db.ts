@@ -1,3 +1,4 @@
+import {validRef} from '../shared/entities';
 import type {EntityRef,Activity,SavedContent} from '../shared/entities';
 import {DEMO_PROFILES} from '../src/data/demoProfiles';
 /**
@@ -161,6 +162,12 @@ export interface DatabaseSchema {
   reports: ReportEntity[];
   version: number;
   demoUxVersion?:number;
+}
+
+function validateUxTables(value:Partial<DatabaseSchema>){
+ if(value.messages!==undefined&&(!Array.isArray(value.messages)||value.messages.some(m=>!m||typeof m.id!=='string'||typeof m.senderId!=='string'||typeof m.recipientId!=='string'||typeof m.text!=='string'||m.text.length>2000||!Number.isFinite(Date.parse(m.createdAt))||m.entity!==undefined&&!validRef(m.entity))))throw new Error('Invalid messages');
+ if(value.saved_content!==undefined&&(!Array.isArray(value.saved_content)||value.saved_content.some(item=>!item||typeof item.userId!=='string'||typeof item.id!=='string'||!['post','event'].includes(item.type))))throw new Error('Invalid saved content');
+ if(value.activity!==undefined&&(!Array.isArray(value.activity)||value.activity.some(item=>!item||typeof item.id!=='string'||typeof item.recipientId!=='string'||typeof item.title!=='string'||typeof item.body!=='string'||!Number.isFinite(Date.parse(item.createdAt))||!['post','event','place','user','badge'].includes(item.targetType))))throw new Error('Invalid activity');
 }
 
 const DB_DIR = path.resolve(process.env.CHKPT_DATA_DIR || path.join(process.cwd(), '.data'));
@@ -464,6 +471,7 @@ class Database {
         parsed.saved_content ??= [];
         parsed.activity ??= [];
         parsed.messages ??= [];
+        validateUxTables(parsed);
         parsed.stories ??= [];
         parsed.posts ??= seedPosts();
         // Enrich only untouched demo illustrations, preserving personal posts and reactions.
@@ -525,6 +533,7 @@ class Database {
     if(!privateDemoEnabled||data.demoUxVersion===1)return;
     data.demoUxVersion=1;
     const now=new Date().toISOString();
+    for(const [id,title,body,targetId] of [['demo_activity_like','J’aime · démonstration','Ingrid aime votre découverte fictive.','plc_maquis_etoile'],['demo_activity_comment','Commentaire · démonstration','Georges : une adresse à découvrir !','plc_cocody_lounge']])if(!data.activity.some(a=>a.id===id))data.activity.push({id,title,body,targetId,targetType:'place',recipientId:'usr_01',createdAt:now,isDemo:true});
     for(const [a,b] of [['usr_01','usr_sarah'],['usr_sarah','usr_01'],['usr_01','usr_02'],['usr_02','usr_01']])if(data.users.some(u=>u.id===a)&&data.users.some(u=>u.id===b)&&!data.follows.some(f=>f.followerId===a&&f.followedId===b))data.follows.push({id:'demo_ux_'+a+'_'+b,followerId:a,followedId:b,createdAt:now});
     for(const message of [{id:'demo_dm_georges_01',senderId:'usr_02',recipientId:'usr_01',text:'On découvre ce maquis à Cocody ? · échange fictif',entity:{type:'place' as const,id:'plc_maquis_etoile'},createdAt:now,isDemo:true},{id:'demo_dm_grace_02',senderId:'usr_nadia',recipientId:'usr_02',text:'Une sortie culturelle cette semaine ? · échange fictif',entity:{type:'event' as const,id:'evt_02'},createdAt:now,isDemo:true}])if(!data.messages.some(m=>m.id===message.id))data.messages.push(message);
   }
@@ -687,6 +696,7 @@ class Database {
   public validateSnapshot(data:unknown):void {
     if(!data||typeof data!=='object')throw new Error('Invalid snapshot');
     const value=data as DatabaseSchema;
+    validateUxTables(value);
     if(value.saved_content!==undefined&&(!Array.isArray(value.saved_content)||value.saved_content.some(item=>!item||typeof item.userId!=='string'||typeof item.id!=='string'||!['post','event'].includes(item.type))))throw new Error('Invalid saved content');
     if(value.activity!==undefined&&(!Array.isArray(value.activity)||value.activity.some(item=>!item||typeof item.id!=='string'||typeof item.recipientId!=='string'||typeof item.body!=='string')))throw new Error('Invalid activity');
     if(value.messages!==undefined&&(!Array.isArray(value.messages)||value.messages.some(m=>!m||typeof m.id!=='string'||typeof m.senderId!=='string'||typeof m.recipientId!=='string'||typeof m.text!=='string'||m.text.length>2000||!Number.isFinite(Date.parse(m.createdAt)))))throw new Error('Invalid messages');
