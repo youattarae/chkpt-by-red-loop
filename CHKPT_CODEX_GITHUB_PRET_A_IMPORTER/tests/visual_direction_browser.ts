@@ -27,7 +27,7 @@ export async function checkVisualDirection(url: string) {
       const gps = page.getByRole('button', { name: 'GPS', exact: true });
       await openGps(page);
       const spots = page.getByRole('region', { name: 'Positions de démonstration', exact: true });
-      assert.equal(await spots.getByRole('button').count(), 6);
+      assert.equal(await spots.getByRole('button').count(), 8, 'Six positions historiques et deux exemples fictifs supplémentaires');
       await spots.getByRole('button', { name: /Marcory Zone 4/ }).click();
       assert.equal(await page.getByRole('combobox',{name:'Commune explorée'}).inputValue(),'Marcory');
       await page.getByRole('button',{name:'Fermer la localisation'}).click();

@@ -14,7 +14,7 @@ import { SafeImage } from '../common/SafeImage';
  *  - Instant Pitch Scenario Reset for repeat evaluations
  */
 
-import React, { useState } from 'react';
+import React, { useState,useRef,useEffect } from 'react';
 import { useStore } from '../../services/store';
 import { 
   User, 
@@ -54,9 +54,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   const [isResetting, setIsResetting] = useState(false);
   const [resetIntent,setResetIntent]=useState<'start'|'reset'|null>(null);
 
+  const navigation=useNavigation();
+  const closeTimer=useRef<ReturnType<typeof setTimeout>|null>(null),closeRef=useRef(onClose);closeRef.current=onClose;
+  useEffect(()=>()=>{if(closeTimer.current!==null)clearTimeout(closeTimer.current);closeTimer.current=null;},[isOpen]);
+  const closeLater=(delay:number)=>{if(closeTimer.current!==null)clearTimeout(closeTimer.current);closeTimer.current=setTimeout(()=>{closeTimer.current=null;closeRef.current();},delay);};
   if (!isOpen) return null;
 
-  const navigation=useNavigation();
   const showNewAccount=(id:string)=>{if(navigation.current.route.page==='profile'||navigation.current.route.page==='main'&&navigation.current.route.tab==='profile')navigation.replace({page:'profile',id,tab:navigation.current.route.tab==='profile'?'feed':navigation.current.route.tab});};
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,9 +82,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setAuthSessionToken(data.token);
       setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(`Bienvenue ${data.user.displayName} ! Session active.`);
-      setTimeout(() => {
-        onClose();
-      }, 1000);
+      closeLater(1000);
     } catch (err: any) {
       setErrorMsg(err.message);
     } finally {
@@ -116,9 +117,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setAuthSessionToken(data.token);
       setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(`Compte créé avec succès ! Bienvenue sur CHKPT.`);
-      setTimeout(() => {
-        onClose();
-      }, 1000);
+      closeLater(1000);
     } catch (err: any) {
       setErrorMsg(err.message);
     } finally {
@@ -148,9 +147,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
       setAuthSessionToken(data.token);
       setCurrentUser(data.user);showNewAccount(data.user.id);
       setSuccessMsg(data.message);
-      setTimeout(() => {
-        onClose();
-      }, 800);
+      closeLater(800);
     } catch (err: any) {
       setErrorMsg(err.message);
     } finally {
@@ -173,9 +170,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     try {
       await resetDemoPitchState();
       setSuccessMsg('Scénario réinitialisé. Reconnectez-vous pour commencer la démo.');
-      setTimeout(() => {
-        onClose();
-      }, 900);
+      closeLater(900);
     } catch (err: any) {
       setErrorMsg('Erreur lors de la réinitialisation : ' + err.message);
     } finally {

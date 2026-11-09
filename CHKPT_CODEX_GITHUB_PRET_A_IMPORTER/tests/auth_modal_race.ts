@@ -1,0 +1,9 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {goProfile,openAccount} from './browser_ui';
+export async function checkAuthModalTimer(url:string,password:string){
+ const response=await fetch(url+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:'timer_'+Date.now(),password,age:25})});assert.equal(response.status,201);const actor=await response.json();
+ const browser=await chromium.launch({executablePath:process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH||undefined});
+ try{const context=await browser.newContext({viewport:{width:390,height:900}});await context.addInitScript(t=>localStorage.setItem('chkpt_session_token',t),actor.token);const page=await context.newPage();await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+1000));await page.goto(url);await openAccount(page);await page.getByRole('button',{name:'Connexion',exact:true}).click();await page.getByPlaceholder('ex: yacoub_ouattara').fill(actor.user.username);await page.locator('input[type=password]').fill(password);const login=page.waitForResponse(r=>r.url()===url+'/api/auth/login'&&r.request().method()==='POST');await page.getByRole('button',{name:'Se connecter',exact:true}).click();assert.equal((await login).status(),200);await page.getByText('Bienvenue '+actor.user.displayName+' ! Session active.',{exact:true}).waitFor();await page.getByRole('button',{name:'Fermer le compte',exact:true}).click();await goProfile(page);await page.getByRole('button',{name:'Gérer mon compte',exact:true}).click();await page.clock.runFor(1200);assert.equal(await page.getByRole('button',{name:'Fermer le compte',exact:true}).isVisible(),true,'Une ancienne fermeture différée ne doit pas fermer le compte rouvert');await context.close();}
+ finally{await browser.close();}
+}
