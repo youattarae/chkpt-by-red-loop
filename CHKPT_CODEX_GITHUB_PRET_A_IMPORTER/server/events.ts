@@ -1,3 +1,4 @@
+import {db} from './db';
 import { privateDemoEnabled } from './demoConfig';
 const date=(days:number,hour:number)=>{const d=new Date();d.setUTCDate(d.getUTCDate()+days);d.setUTCHours(hour,0,0,0);return d.toISOString();};
 const UPCOMING_EVENTS=[
@@ -6,5 +7,5 @@ const UPCOMING_EVENTS=[
 ];
 export function getEventCatalog(){return [...UPCOMING_EVENTS,
   ...(privateDemoEnabled?[{id:`evt_demo_${new Date().toISOString().slice(0,10)}`,placeId:'plc_maquis_etoile',title:'Session de présentation CHKPT · fictive',utcDate:date(0,0),endsAt:date(1,0),locationName:'Maquis L’Étoile d’Abidjan',commune:'Cocody',description:'Événement fictif actif pour essayer la présence validée. « J’y serai » seul ne compte pas pour un badge.',coverImage:'/illustrations/maquis-demo.png',timeLabel:'Session de démo du jour',dateLabel:'Aujourd’hui',priceLabel:'Démonstration sans réservation',organizerName:'Équipe de démonstration CHKPT',category:'Présentation',interestedCount:0,goingCount:0}]:[]),
-];}
+].map(event=>{const place=db.findPlaceById(event.placeId);return place?{...event,placeId:place.id,locationName:place.name,commune:place.commune}:event;});}
 export function eligibleEvent(id:string,placeId:string){const event=getEventCatalog().find(event=>event.id===id&&event.placeId===placeId);return event&&Date.parse(event.utcDate)<=Date.now()&&Date.parse(event.endsAt)>=Date.now()?event:null;}

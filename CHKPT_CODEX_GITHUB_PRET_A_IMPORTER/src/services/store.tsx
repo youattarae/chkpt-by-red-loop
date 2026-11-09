@@ -327,7 +327,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if(validEvents(data.events)){eventCatalog.current=data.events;setEvents(previous=>data.events.map((event:EventItem)=>({...event,userIntent:previous.find(item=>item.id===event.id)?.userIntent||null})));}
     }).catch(()=>{});
     return()=>controller.abort();
-  },[]);
+  },[places]);
 
   async function refreshSharedState(token=authSessionToken):Promise<void> {
     if(writesInFlight.current>0)return;

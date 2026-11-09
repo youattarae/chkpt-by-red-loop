@@ -32,7 +32,7 @@ export async function checkRadarMap(url:string){
       assert.equal(await page.getByRole('button',{name:'Voir le lieu',exact:true}).count(),0);
       await page.getByRole('button',{name:'Afficher tous les lieux',exact:true}).click();
       assert.equal(await search.inputValue(),'');
-      await page.getByText('Outils carte',{exact:true}).click();const list=page.locator('details[data-map-tools] details');if(!await list.evaluate((e:HTMLDetailsElement)=>e.open))await list.locator('summary').click();await page.locator('details[data-map-tools]').getByRole('button',{name:"Maquis L'Étoile d'Abidjan",exact:true}).click();await page.getByRole('button',{name:'Voir le lieu',exact:true}).waitFor();
+      await page.getByText('Outils carte',{exact:true}).click();const list=page.locator('details[data-map-tools] details').filter({hasText:'Liste des lieux affichés'});if(!await list.evaluate((e:HTMLDetailsElement)=>e.open))await list.locator('summary').click();await page.locator('details[data-map-tools]').getByRole('button',{name:"Maquis L'Étoile d'Abidjan",exact:true}).click();await page.getByRole('button',{name:'Voir le lieu',exact:true}).waitFor();
     }
     await openGps(page);await page.getByRole('button',{name:'Carte interactive',exact:true}).click();
 

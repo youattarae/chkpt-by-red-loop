@@ -33,7 +33,14 @@ export async function checkNov9Places(start:any,stop:any,password:string){
  const project=fileURLToPath(new URL('..',import.meta.url));
  const cli=(apply=false)=>promisify(execFile)(process.execPath,['--import',path.join(project,'node_modules/tsx/dist/loader.mjs'),path.join(project,'scripts/import-osm.mts'),'--file',fileURLToPath(new URL('./fixtures/cocody-osm-synthetic.json',import.meta.url)),'--data-dir',server.cwd+'/.data','--fixture',...(apply?['--apply']:[])],{cwd:server.cwd,env:{...process.env,CHKPT_PRIVATE_DEMO:'false',CHKPT_REMOTE_ACCESS:'false'}});
  const beforeCli=await readFile(file);assert.equal(JSON.parse((await cli()).stdout).dryRun,true);assert.deepEqual(await readFile(file),beforeCli,'CLI dry-run strictement sans écriture');
- assert.equal(JSON.parse((await cli(true)).stdout).applied,true);
+ assert.equal(JSON.parse((await cli(true)).stdout).applied,true);const afterCli=JSON.parse(await readFile(file,'utf8'));for(const table of ['users','sessions','posts','messages','stories','checkins','checkin_proofs','points_ledger','media'])assert.deepEqual(afterCli[table],JSON.parse(beforeCli.toString())[table],'CLI conserve '+table);
  server=await start('nov9-places',true);admin=(await json(call('/api/auth/login','',{username:'redloop_admin',password}))).token;repository=await json(call('/api/operator/places',admin));assert.equal(repository.sources.length,3);assert.equal(repository.places.find((p:any)=>p.id===cafe.id).name,'Correction locale à garder');
+
+ // Event links and eligibility also resolve aliases after a manual canonical merge.
+ await json(call('/api/operator/places/merge',admin,{fromId:'plc_maquis_etoile',toId:cafe.id,apply:true,confirmation:'MERGE'}));
+ assert.deepEqual(repository.places.find((p:any)=>p.id===cafe.id).coordinates,cafe.coordinates,'Une source fusionnée ne doit pas déplacer la fiche conservée');
+ const active=(await json(call('/api/events'))).events.find((e:any)=>e.id.startsWith('evt_demo_'));assert.equal(active.placeId,cafe.id);assert.equal(active.locationName,'Correction locale à garder');
+ const eventCheck=await json(call('/api/checkins',user.token,{placeId:cafe.id,latitude:cafe.coordinates.lat,longitude:cafe.coordinates.lng,isSimulated:true,audience:'private',eventId:active.id}));assert.equal(eventCheck.status,'pending_validation');
+ await json(call('/api/operator/places/'+cafe.id+'/verification',admin,{status:'verified'}));assert.ok((await json(call('/api/account/state',user.token))).pointsLedger.some((e:any)=>e.sourceAction==='EVENT_ATTENDED'&&e.referenceId===active.id));
  await stop(server.child);
 }

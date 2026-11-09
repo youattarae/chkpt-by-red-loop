@@ -12,6 +12,9 @@ export function mergePlaces(fromId:string,toId:string,apply=false){
  const impact={fromId:from.id,toId:to.id,checks:data.checkins.filter(c=>c.placeId===from.id).length,posts:data.posts.filter(p=>p.linkedPlaceId===from.id||p.entity?.type==='place'&&p.entity.id===from.id).length,favorites:data.saved_places.filter(s=>s.placeId===from.id).length};
  if(!apply)return {...impact,applied:false};
  db.transaction(()=>{const d=db.getRawData();from.mergedInto=to.id;
+  // A manual merge explicitly retains the target identity. Secondary source updates
+  // must not move/rename it back to the discarded object on the next import.
+  to.localOverrides=[...new Set([...(to.localOverrides||[]),'name','category','coordinates','address','markerKind'])];
   for(const c of d.checkins)if(c.placeId===from.id){c.placeId=to.id;c.placeName=to.name;if(c.status==='pending_validation'){(c as any).manualReviewReason='Lieu fusionné : contrôle manuel requis.';}}
   for(const p of d.checkin_proofs)if(p.placeId===from.id)p.placeId=to.id;
   for(const p of d.posts){if(p.linkedPlaceId===from.id){p.linkedPlaceId=to.id;p.linkedPlaceName=to.name;}if(p.entity?.type==='place'&&p.entity.id===from.id)p.entity.id=to.id;}
