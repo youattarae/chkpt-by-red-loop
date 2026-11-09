@@ -28,7 +28,7 @@ export async function checkDeepReview(url: string, password: string) {
     await page.goto(url);
     await openAccount(page);
     await page.getByRole('button',{name:'Profils Démo (opérateur)',exact:true}).click();
-    const sarah = page.getByRole('button').filter({hasText:'Ingrid N’Goan'}).last();
+    const sarah = page.getByRole('button').filter({hasText:'Bintou Essehi'}).last();
     await page.evaluate(() => document.fonts.ready);
     await sarah.scrollIntoViewIfNeeded();
     const box = await sarah.boundingBox();

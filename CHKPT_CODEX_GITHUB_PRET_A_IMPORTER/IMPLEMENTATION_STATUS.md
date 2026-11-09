@@ -1,3 +1,7 @@
+## Stories permanentes et noms — 9 novembre 2026
+
+**55/55 groupes réussis**, TypeScript et build réussis. Les exemples de stories restent automatiquement disponibles en démo privée ; les stories personnelles gardent leurs 24 h. Superviseur : Ingrid N’Goan ; ancien profil fictif Ingrid : Bintou Essehi. Identifiants et données conservés. [Décision, fonctionnement et preuves](docs/STORIES_PERMANENTES_ET_NOMS_2026_11_09.md). Cette décision remplace la préparation manuelle obligatoire des exemples décrite plus bas.
+
 ## Correctif Stories et DM — 9 novembre 2026
 
 **54/54 groupes réussis**, TypeScript et build réussis. DM directs sans abonnement ; superviseur privé pris en charge dans la démo privée uniquement, protections privé/mineur/blocage conservées. État vide des stories et préparation explicite des exemples depuis l’Accueil, sans reset ni renouvellement silencieux. [Règles, fichiers et preuves](docs/CORRECTIF_STORIES_DM_SUPERVISEUR_2026_11_09.md). Les résultats suivants décrivent les versions précédentes.

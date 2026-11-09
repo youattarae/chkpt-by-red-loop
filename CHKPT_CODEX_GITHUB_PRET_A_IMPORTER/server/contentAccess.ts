@@ -1,3 +1,4 @@
+import {storyIsActive} from '../shared/storyLifetime';
 import {db,UserEntity,StoredPost,StoryEntity} from './db';
 import {privateDemoEnabled} from './demoConfig';
 export const blocked=(a:UserEntity,b:UserEntity)=>!!a.blockedUserIds?.includes(b.id)||!!b.blockedUserIds?.includes(a.id);
@@ -11,7 +12,7 @@ export function canReadPost(post:StoredPost,user?:UserEntity){
  return post.audience==='public'||post.audience==='followers'&&!!user&&db.isFollower(user.id,owner.id);
 }
 export function canReadStory(story:StoryEntity,user?:UserEntity){
- if(!user||story.isDemo&&!privateDemoEnabled||Date.parse(story.expiresAt)<=Date.now())return false;
+ if(!user||!storyIsActive(story,privateDemoEnabled))return false;
  if(story.authorId===user.id)return true;
  const owner=db.findUserById(story.authorId);
  return !!owner&&owner.age>=18&&owner.visibility==='public'&&!blocked(user,owner)&&(story.audience==='public'||story.audience==='followers'&&db.isFollower(user.id,owner.id));

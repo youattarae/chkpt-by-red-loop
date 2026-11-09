@@ -131,7 +131,7 @@ try {
     const route = '/api/profiles/usr_sarah';
     assert.equal((await request(demo.url, route)).status, 401);
     const profile = await (await request(demo.url, route, undefined, user.token)).json();
-    assert.equal(profile.profile.displayName, 'Ingrid N’Goan');
+    assert.equal(profile.profile.displayName, 'Bintou Essehi');
     for (const forbidden of ['passwordHash', 'salt', 'age', 'role', 'checkins', 'checkin_proofs', 'points_ledger', 'xpPoints']) assert.ok(!(forbidden in profile.profile));
     // Latest decision: only monthly XP are public via ranking; totals stay owner-only.
     assert.ok(Array.isArray(profile.profile.badges));
@@ -406,6 +406,8 @@ try {
     await check('9 novembre navigateur : carte, badges choisis, carrousel et réponses privées',()=>checkNov9Browser(demo.url,password));
     const {checkSupervisorSocial}=await import('./supervisor_stories_dm.test');
     await check('Superviseur : stories préparables, abonnement simple et DM directs sans suivi',()=>checkSupervisorSocial(start,stop,password));
+    const {checkPermanentDemoStories}=await import('./permanent_demo_stories.test');
+    await check('Stories fictives permanentes : migration, médias, données et noms conservés',()=>checkPermanentDemoStories(start,stop,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {chromium} from 'playwright';
 export async function checkMessages(url:string,password:string){
  const api=async(route:string,token='',body?:unknown)=>fetch(url+route,{method:body===undefined?'GET':'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body===undefined?{}:{body:JSON.stringify(body)})});
- const register=async(username:string,age=24)=>{const r=await api('/api/auth/register','',{username,password,age,displayName:username==='dm_alice'?'Ingrid N’Goan':username==='dm_bob'?'Yacoub Ouattara':username});assert.equal(r.status,201);return r.json();};
+ const register=async(username:string,age=24)=>{const r=await api('/api/auth/register','',{username,password,age,displayName:username==='dm_alice'?'Bintou Essehi':username==='dm_bob'?'Yacoub Ouattara':username});assert.equal(r.status,201);return r.json();};
  const admin=(await (await api('/api/auth/login','',{username:'redloop_admin',password})).json()).token;
  const a=await (await api('/api/auth/switch-demo',admin,{username:'usr_sarah'})).json(),b=await (await api('/api/auth/switch-demo',admin,{username:'usr_01'})).json(),c=await register('dm_charles'),minor=await register('dm_mineur',16);
  const me=await (await api('/api/auth/me',b.token)).json();const peer=me.user.id;
@@ -24,7 +24,7 @@ export async function checkMessages(url:string,password:string){
  await page.goto(url);await page.getByRole('tab',{name:'Pour toi',exact:true}).waitFor();
  await openMenu(page);
  const menu=page.getByRole('dialog',{name:'Mon menu'});await menu.waitFor();assert.equal(Math.round((await menu.boundingBox())!.x),0);await menu.locator('img').waitFor();await page.screenshot({path:'/tmp/chkpt-dm-menu.png'});
- assert.equal(await menu.getByRole('button',{name:'Messages privés',exact:true}).count(),0);await menu.getByRole('button',{name:'Fermer mon menu'}).click();await page.locator('nav').getByRole('button',{name:'Messages',exact:true}).click();await page.getByRole('button',{name:/Ingrid N’Goan/}).click();
+ assert.equal(await menu.getByRole('button',{name:'Messages privés',exact:true}).count(),0);await menu.getByRole('button',{name:'Fermer mon menu'}).click();await page.locator('nav').getByRole('button',{name:'Messages',exact:true}).click();await page.getByRole('button',{name:/Bintou Essehi/}).click();
  await page.locator('[aria-label="Conversation"]').getByText(body.text,{exact:true}).waitFor();await page.getByLabel('Votre message',{exact:true}).fill('Oui, à tout à l’heure !');await page.getByRole('button',{name:'Envoyer',exact:true}).click();await page.locator('[aria-label="Conversation"]').getByText('Oui, à tout à l’heure !',{exact:true}).waitFor();
  await page.screenshot({path:'/tmp/chkpt-dm-conversation.png'});
  await page.reload();await page.locator('[aria-label="Conversation"]').getByText('Oui, à tout à l’heure !',{exact:true}).waitFor();

@@ -1,3 +1,4 @@
+import {isPresentationStory} from '../shared/storyLifetime';
 import type {PlaceSource,PlaceProposal} from '../shared/placeSources';
 import {validRef} from '../shared/entities';
 import type {EntityRef,Activity,SavedContent} from '../shared/entities';
@@ -329,6 +330,7 @@ function fourthDemoProfile(users:UserEntity[]=[]):UserEntity{
  return {...profile,username,salt,passwordHash:hashSeedPassword(crypto.randomBytes(32).toString('hex'),salt),age:29,visibility:'public',role:'user',followersCount:0,followingCount:0,checkinsCount:0,xpPoints:0,level:1,createdAt:new Date().toISOString()};
 }
 function enrichDemoProfiles(users:UserEntity[]){
+ const previousIngrid=users.find(u=>u.id==='usr_sarah'&&u.displayName==='Ingrid N’Goan');if(previousIngrid)previousIngrid.displayName='Bintou Essehi';
  const legacy:{[id:string]:{username:string;name:string}}={usr_01:{username:'koffi_urbex',name:'Koffi Kouamé'},usr_sarah:{username:'sarah_dlo',name:'Sarah Diallo'},usr_02:{username:'amara_sound',name:'Amara Koné'}};
  for(const profile of DEMO_PROFILES){const previous=legacy[profile.id];if(!previous)continue;const user=users.find(user=>user.id===profile.id&&user.username===previous.username);if(user){let username=profile.username;let suffix=0;while(users.some(other=>other.id!==user.id&&other.username===username))username=profile.username+'_demo'+(++suffix);user.username=username;if(user.displayName===previous.name)user.displayName=profile.displayName;}}
  const oldAvatars=new Set(['/illustrations/koffi.svg','/illustrations/sarah.svg','/illustrations/admin.svg']);
@@ -381,7 +383,7 @@ class Database {
         {
           id: 'usr_sarah',
           username: 'ingrid_ngoan',
-          displayName: 'Ingrid N’Goan',
+          displayName: 'Bintou Essehi',
           passwordHash: hashSeedPassword(crypto.randomBytes(32).toString('hex'), 'chkpt_salt_sarah_demo'),
           salt: 'chkpt_salt_sarah_demo',
           age: 23,
@@ -400,7 +402,7 @@ class Database {
         {
           id: 'usr_admin',
           username: 'redloop_admin',
-          displayName: 'Superviseur RED LOOP',
+          displayName: 'Ingrid N’Goan',
           passwordHash: hashSeedPassword(privateDemoEnabled ? demoAdminPassword! : crypto.randomBytes(32).toString('hex'), 'chkpt_salt_admin_demo'),
           salt: 'chkpt_salt_admin_demo',
           age: 35,
@@ -471,7 +473,7 @@ class Database {
         },
       ],
       saved_content: [],
-      activity: privateDemoEnabled ? [{id:'demo_activity_like',recipientId:'usr_01',title:'J’aime · démonstration',body:'Ingrid aime votre découverte fictive.',targetType:'place',targetId:'plc_maquis_etoile',createdAt:new Date().toISOString(),isDemo:true},{id:'demo_activity_comment',recipientId:'usr_01',title:'Commentaire · démonstration',body:'Georges : une adresse à découvrir !',targetType:'place',targetId:'plc_cocody_lounge',createdAt:new Date().toISOString(),isDemo:true}] : [],
+      activity: privateDemoEnabled ? [{id:'demo_activity_like',recipientId:'usr_01',title:'J’aime · démonstration',body:'Bintou aime votre découverte fictive.',targetType:'place',targetId:'plc_maquis_etoile',createdAt:new Date().toISOString(),isDemo:true},{id:'demo_activity_comment',recipientId:'usr_01',title:'Commentaire · démonstration',body:'Georges : une adresse à découvrir !',targetType:'place',targetId:'plc_cocody_lounge',createdAt:new Date().toISOString(),isDemo:true}] : [],
       messages: [],
       stories: [],
       posts: seedPosts(),
@@ -530,6 +532,10 @@ class Database {
           const linked=asset.storyId||parsed.posts.some((post:StoredPost)=>post.mediaUrl===url||post.media?.some(item=>item.url===url))||parsed.users.some((user:UserEntity)=>user.avatarUrl===url);
           return linked?asset:{...asset,audience:'private'};
         });
+        const likeFixture=parsed.activity.find((a:any)=>a.id==='demo_activity_like'&&a.isDemo&&a.body==='Ingrid aime votre découverte fictive.');if(likeFixture)likeFixture.body='Bintou aime votre découverte fictive.';
+        const supervisor=parsed.users.find((u:UserEntity)=>u.id==='usr_admin');
+        if(supervisor&&supervisor.displayName==='Superviseur RED LOOP')supervisor.displayName='Ingrid N’Goan';
+        for(const post of parsed.posts){const author=parsed.users.find((u:UserEntity)=>u.id===post.authorId);if(author&&['usr_admin','usr_sarah'].includes(author.id))post.authorName=author.displayName;}
         // Migrate old snapshots: revoke seed sessions and replace predictable passwords.
         for (const user of parsed.users) {
           if (!seedUserIds.has(user.id)) continue;
@@ -574,28 +580,30 @@ class Database {
     }
   }
 
-  private addDemoStoryFixtures(data:DatabaseSchema,explicit=false){
-    if(!privateDemoEnabled||!explicit&&data.demoStorySeedVersion===1)return;
-    data.demoStorySeedVersion=1;const now=Date.now();
+  private addDemoStoryFixtures(data:DatabaseSchema){
+    if(!privateDemoEnabled)return false;
+    let changed=data.demoStorySeedVersion!==2;data.demoStorySeedVersion=2;const now=Date.now();
     const examples=[['usr_sarah','profil-sarah.webp','Une pause entre amis · story fictive de présentation'],['usr_02','profil-amara.webp','Un moment culturel à Abidjan · story fictive de présentation'],['usr_nadia','profil-nadia.webp','Prête pour une nouvelle découverte · story fictive de présentation']];
     for(const [authorId,file,text]of examples){
       const author=data.users.find(u=>u.id===authorId);if(!author||author.age<18||author.visibility!=='public')continue;
-      if(data.stories.filter(s=>s.authorId===authorId&&Date.parse(s.expiresAt)>now).length>=20)continue;
       const id='demo_story_'+authorId;const previous=data.stories.find(s=>s.id===id);
-      if(previous&&(!previous.isDemo||Date.parse(previous.expiresAt)>now))continue;
+      if(previous&&(!isPresentationStory(previous)||data.media.some(m=>'/api/media/'+m.assetId===previous.mediaUrl&&m.storyId===id&&m.ownerId===authorId)))continue;
+      if(data.stories.filter(s=>s.authorId===authorId&&Date.parse(s.expiresAt)>now).length>=20)continue;
       data.stories=data.stories.filter(s=>s.id!==id);data.media=data.media.filter(m=>m.storyId!==id);
       const bytes=fs.readFileSync(new URL('../public/illustrations/'+file,import.meta.url));if(data.media.reduce((n,m)=>n+m.sizeBytes,0)+bytes.length>50*1024*1024)continue;const assetId=crypto.randomBytes(20).toString('hex');
       data.stories.push({id,authorId,mediaUrl:'/api/media/'+assetId,mediaType:'image',text,audience:'public',createdAt:new Date(now).toISOString(),expiresAt:new Date(now+86400000).toISOString(),isDemo:true});
-      data.media.push({assetId,ownerId:authorId,ownerUsername:author.username,audience:'public',mimeType:'image/webp',sizeBytes:bytes.length,dataBase64:bytes.toString('base64'),createdAt:new Date(now).toISOString(),token:crypto.randomBytes(24).toString('hex'),storyId:id});
+      changed=true;data.media.push({assetId,ownerId:authorId,ownerUsername:author.username,audience:'public',mimeType:'image/webp',sizeBytes:bytes.length,dataBase64:bytes.toString('base64'),createdAt:new Date(now).toISOString(),token:crypto.randomBytes(24).toString('hex'),storyId:id});
     }
+    return changed;
   }
-  public prepareDemoStories(){this.addDemoStoryFixtures(this.data,true);this.save();return this.data.stories.filter(s=>s.isDemo&&Date.parse(s.expiresAt)>Date.now()).length;}
+  public ensureDemoStories(){if(this.addDemoStoryFixtures(this.data))this.save();}
+  public prepareDemoStories(){this.ensureDemoStories();return this.data.stories.filter(s=>isPresentationStory(s)).length;}
 
   private addUxDemoFixtures(data:DatabaseSchema){
     if(!privateDemoEnabled||data.demoUxVersion===1)return;
     data.demoUxVersion=1;
     const now=new Date().toISOString();
-    for(const [id,title,body,targetId] of [['demo_activity_like','J’aime · démonstration','Ingrid aime votre découverte fictive.','plc_maquis_etoile'],['demo_activity_comment','Commentaire · démonstration','Georges : une adresse à découvrir !','plc_cocody_lounge']])if(!data.activity.some(a=>a.id===id))data.activity.push({id,title,body,targetId,targetType:'place',recipientId:'usr_01',createdAt:now,isDemo:true});
+    for(const [id,title,body,targetId] of [['demo_activity_like','J’aime · démonstration','Bintou aime votre découverte fictive.','plc_maquis_etoile'],['demo_activity_comment','Commentaire · démonstration','Georges : une adresse à découvrir !','plc_cocody_lounge']])if(!data.activity.some(a=>a.id===id))data.activity.push({id,title,body,targetId,targetType:'place',recipientId:'usr_01',createdAt:now,isDemo:true});
     for(const [a,b] of [['usr_01','usr_sarah'],['usr_sarah','usr_01'],['usr_01','usr_02'],['usr_02','usr_01']])if(data.users.some(u=>u.id===a)&&data.users.some(u=>u.id===b)&&!data.follows.some(f=>f.followerId===a&&f.followedId===b))data.follows.push({id:'demo_ux_'+a+'_'+b,followerId:a,followedId:b,createdAt:now});
     for(const message of [{id:'demo_dm_georges_01',senderId:'usr_02',recipientId:'usr_01',text:'On découvre ce maquis à Cocody ? · échange fictif',entity:{type:'place' as const,id:'plc_maquis_etoile'},createdAt:now,isDemo:true},{id:'demo_dm_grace_02',senderId:'usr_nadia',recipientId:'usr_02',text:'Une sortie culturelle cette semaine ? · échange fictif',entity:{type:'event' as const,id:'evt_02'},createdAt:now,isDemo:true}])if(!data.messages.some(m=>m.id===message.id))data.messages.push(message);
   }

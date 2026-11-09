@@ -1,15 +1,17 @@
+import {storyIsActive,isPresentationStory} from '../shared/storyLifetime';
 import {privateDemoEnabled} from './demoConfig';
 import crypto from 'node:crypto';
 import type {Express} from 'express';
 import {db,StoryEntity,UserEntity} from './db';
 import {requireAuth} from './auth';
 export function pruneStories(){
-  const data=db.getRawData();const stories=data.stories.filter(story=>Date.parse(story.expiresAt)>Date.now());
+  db.ensureDemoStories();
+  const data=db.getRawData();const stories=data.stories.filter(story=>storyIsActive(story,privateDemoEnabled));
   const ids=new Set(stories.map(story=>story.id));const media=data.media.filter(asset=>!asset.storyId||ids.has(asset.storyId));
   if(stories.length!==data.stories.length||media.length!==data.media.length)db.updateSharedData({stories,media});
 }
 import {canReadStory as canRead,canMessage} from './contentAccess';
-function dto(story:StoryEntity,user?:UserEntity){const author=db.findUserById(story.authorId)!;return {...story,authorName:author.displayName,authorAvatar:author.avatarUrl,canReply:!!user&&canMessage(user,author)};}
+function dto(story:StoryEntity,user?:UserEntity){const author=db.findUserById(story.authorId)!;return {...story,persistentDemo:privateDemoEnabled&&isPresentationStory(story),authorName:author.displayName,authorAvatar:author.avatarUrl,canReply:!!user&&canMessage(user,author)};}
 export function installStoryRoutes(app:Express){
   const timer=setInterval(()=>{try{pruneStories();}catch{console.error('Nettoyage des stories différé.');}},60000);timer.unref();
   app.get('/api/stories',requireAuth,(req,res)=>{pruneStories();res.json({stories:db.getRawData().stories.filter(story=>canRead(story,req.user!)).map(story=>dto(story,req.user))});});
@@ -33,6 +35,7 @@ export function installStoryRoutes(app:Express){
   app.delete('/api/stories/:id',requireAuth,(req,res)=>{
     const data=db.getRawData();const story=data.stories.find(story=>story.id===req.params.id);
     if(!story||story.authorId!==req.user!.id){res.status(404).json({error:'story_unavailable'});return;}
+    if(privateDemoEnabled&&isPresentationStory(story)){res.status(409).json({message:'Cet exemple reste disponible pour la présentation. Vos stories personnelles peuvent être supprimées normalement.'});return;}
     db.updateSharedData({stories:data.stories.filter(item=>item.id!==story.id),media:data.media.filter(item=>item.storyId!==story.id)});res.json({success:true});
   });
 }

@@ -313,7 +313,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 />
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Ingrid N’Goan</span>
+                    <span className="text-sm font-bold text-ink">Bintou Essehi</span>
                     <span className="text-[10px] bg-soft text-body px-1.5 py-0.5 rounded border border-line-strong">
                       Abonnée confirmée
                     </span>
@@ -343,7 +343,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-bold text-ink">Superviseur RED LOOP</span>
+                    <span className="text-sm font-bold text-ink">Ingrid N’Goan</span>
                     <span className="text-[10px] bg-rose-950 text-rose-300 px-1.5 py-0.5 rounded border border-rose-800">
                       Rôle Opérateur / Admin
                     </span>

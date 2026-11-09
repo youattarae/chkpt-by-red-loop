@@ -214,7 +214,7 @@ const ORIGINAL_POSTS: Post[] = [
   {
     id: 'pst_01',
     authorId: 'usr_sarah',
-    authorName: 'Ingrid N’Goan',
+    authorName: 'Bintou Essehi',
     authorUsername: 'ingrid_ngoan',
     authorAvatar: '/illustrations/profil-sarah.webp',
     createdAt: 'Il y a 32 min',
@@ -354,7 +354,7 @@ export const INITIAL_PLACE_PROPOSALS: PlaceProposal[] = [
     landmark: 'En face du supermarché Cash & Carry',
     coordinates: { lat: 5.3621, lng: -3.9912 },
     contributorId: 'usr_sarah',
-    contributorName: 'Ingrid N’Goan',
+    contributorName: 'Bintou Essehi',
     submittedAt: '2026-10-25T11:20:00Z',
     status: 'pending'
   }

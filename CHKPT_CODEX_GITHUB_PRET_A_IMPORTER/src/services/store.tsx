@@ -761,7 +761,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       recipientId: currentUser.id,
       category: 'friends_checkin',
       title: 'Check-in d\'ami vérifié 📍',
-      body: 'Ingrid N’Goan vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
+      body: 'Bintou Essehi vient de valider sa présence au Lagon Bleu Rooftop (Cocody Danga) !',
       targetType: 'place',
       targetId: 'plc_cocody_lounge',
       avatarUrl: '/illustrations/profil-sarah.webp',

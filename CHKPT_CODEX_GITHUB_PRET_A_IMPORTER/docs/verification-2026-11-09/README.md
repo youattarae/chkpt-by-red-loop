@@ -2,6 +2,10 @@
 
 Branche locale `feat/audit-completion-2026-11-09`, base `b962dfb`. Aucune modification de main, aucun push, merge ou déploiement. Node 24.19, Chromium système `/usr/bin/chromium`, Linux. Données temporaires sous `/tmp/chkpt-*`, secrets de test aléatoires ; aucune base personnelle ouverte ou remise à zéro.
 
+## Actualisation suivante : stories permanentes et noms
+
+**55/55 groupes réussis** ; [recette complète](recette-55-stories-permanentes.txt), [TypeScript](lint-stories-permanentes.txt), [build](build-stories-permanentes.txt). Exemples après ancienne échéance et trois jours dans le navigateur, réparation automatique, migration des noms et conservation des identifiants/données. Les versions précédentes restent archivées ci-dessous.
+
 ## Actualisation Stories et DM
 
 **54/54 groupes réussis** après clarification utilisateur ; [recette-54-stories-dm.txt](recette-54-stories-dm.txt), [TypeScript](lint-stories-dm.txt), [build](build-stories-dm.txt). Le groupe supplémentaire vérifie le superviseur, la préparation des exemples expirés, le suivi simple et les DM directs. Les preuves de la livraison précédente sont conservées ci-dessous.
