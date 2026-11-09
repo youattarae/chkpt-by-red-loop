@@ -1,3 +1,7 @@
+## Correctif Stories et DM — 9 novembre 2026
+
+**54/54 groupes réussis**, TypeScript et build réussis. DM directs sans abonnement ; superviseur privé pris en charge dans la démo privée uniquement, protections privé/mineur/blocage conservées. État vide des stories et préparation explicite des exemples depuis l’Accueil, sans reset ni renouvellement silencieux. [Règles, fichiers et preuves](docs/CORRECTIF_STORIES_DM_SUPERVISEUR_2026_11_09.md). Les résultats suivants décrivent les versions précédentes.
+
 ## Audit et complétion — 9 novembre 2026
 
 Recette finale : **53/53 groupes réussis**, TypeScript et build réussis ; audit des dépendances d’exécution : 0 vulnérabilité signalée. Preuves et limites ci-dessous.

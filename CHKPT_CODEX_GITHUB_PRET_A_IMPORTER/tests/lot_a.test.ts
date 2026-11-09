@@ -404,6 +404,8 @@ try {
     await check('Menu exact, collection de badges privée et grand plus sans logo',()=>checkMenuBadgesPlus(demo.url,password));
     const {checkNov9Browser}=await import('./nov9_browser');
     await check('9 novembre navigateur : carte, badges choisis, carrousel et réponses privées',()=>checkNov9Browser(demo.url,password));
+    const {checkSupervisorSocial}=await import('./supervisor_stories_dm.test');
+    await check('Superviseur : stories préparables, abonnement simple et DM directs sans suivi',()=>checkSupervisorSocial(start,stop,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

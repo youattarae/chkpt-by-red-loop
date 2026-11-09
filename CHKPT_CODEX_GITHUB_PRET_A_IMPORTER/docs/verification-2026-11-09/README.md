@@ -2,7 +2,11 @@
 
 Branche locale `feat/audit-completion-2026-11-09`, base `b962dfb`. Aucune modification de main, aucun push, merge ou déploiement. Node 24.19, Chromium système `/usr/bin/chromium`, Linux. Données temporaires sous `/tmp/chkpt-*`, secrets de test aléatoires ; aucune base personnelle ouverte ou remise à zéro.
 
-## Résultat final exécuté
+## Actualisation Stories et DM
+
+**54/54 groupes réussis** après clarification utilisateur ; [recette-54-stories-dm.txt](recette-54-stories-dm.txt), [TypeScript](lint-stories-dm.txt), [build](build-stories-dm.txt). Le groupe supplémentaire vérifie le superviseur, la préparation des exemples expirés, le suivi simple et les DM directs. Les preuves de la livraison précédente sont conservées ci-dessous.
+
+## Résultat de la livraison précédente
 
 **53/53 groupes réussis**, commande `npm run test:browser` terminée avec code 0. TypeScript et build réussis. Audit des dépendances d’exécution : **0 vulnérabilité signalée**. Code et tests au commit local `ac5186f` ; la suite comprend le test de réouverture Compte, l’import/fusion par l’interface et la synchronisation des XP sans rechargement imposé. Le journal complet est [recette-53.txt](recette-53.txt).
 

@@ -1,7 +1,8 @@
 import {db,UserEntity,StoredPost,StoryEntity} from './db';
 import {privateDemoEnabled} from './demoConfig';
 export const blocked=(a:UserEntity,b:UserEntity)=>!!a.blockedUserIds?.includes(b.id)||!!b.blockedUserIds?.includes(a.id);
-export const dmEligible=(u:UserEntity)=>u.age>=18&&u.visibility==='public'&&['user','creator','pro'].includes(u.role);
+// Only the seeded supervisor in a private demo may converse while keeping its profile private.
+export const dmEligible=(u:UserEntity)=>u.age>=18&&(u.visibility==='public'&&['user','creator','pro'].includes(u.role)||privateDemoEnabled&&u.id==='usr_admin'&&['admin','superadmin'].includes(u.role));
 export const canMessage=(a:UserEntity,b:UserEntity)=>a.id!==b.id&&dmEligible(a)&&dmEligible(b)&&!blocked(a,b);
 export function canReadPost(post:StoredPost,user?:UserEntity){
  if(user?.id===post.authorId)return true;
