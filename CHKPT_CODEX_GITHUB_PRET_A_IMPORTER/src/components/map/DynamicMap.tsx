@@ -2,10 +2,6 @@ import { useEffect, useRef, useState, MutableRefObject } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Coordinates, Place } from '../../types';
-const districts = [
-  {name:'Cocody',lat:5.35,lng:-3.99}, {name:'Marcory',lat:5.30,lng:-3.99},
-  {name:'Plateau',lat:5.325,lng:-4.025}, {name:'Yopougon',lat:5.345,lng:-4.08}, {name:'Riviera',lat:5.365,lng:-3.96},
-];
 export function DynamicMap({ camera,places, position, ready, simulated, selectedId, onSelect, onFallback }: {camera:MutableRefObject<{lat:number;lng:number;zoom:number}>;places:Place[];position:Coordinates;ready:boolean;simulated:boolean;selectedId:string|null;onSelect:(id:string)=>void;onFallback:()=>void}) {
   const node=useRef<HTMLDivElement>(null);
   const map=useRef<L.Map|null>(null);
@@ -15,11 +11,12 @@ export function DynamicMap({ camera,places, position, ready, simulated, selected
     if(!node.current) return;
     const instance=L.map(node.current,{center:[camera.current.lat,camera.current.lng],zoom:camera.current.zoom,zoomControl:false,scrollWheelZoom:true});
     instance.on('moveend',()=>{const center=instance.getCenter();camera.current={lat:center.lat,lng:center.lng,zoom:instance.getZoom()};});L.control.zoom({position:'bottomright'}).addTo(instance);
+    const recenter=()=>instance.flyTo([position.lat,position.lng],16,{duration:.4});window.addEventListener('chkpt:radar',recenter);
     map.current=instance; layer.current=L.layerGroup().addTo(instance);
     const tiles=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>'}).addTo(instance);
     tiles.on('tileerror',()=>{setTileError(true);onFallback();});
     const observer=new ResizeObserver(()=>instance.invalidateSize());observer.observe(node.current);
-    return()=>{observer.disconnect();instance.remove();map.current=null;};
+    return()=>{window.removeEventListener('chkpt:radar',recenter);observer.disconnect();instance.remove();map.current=null;};
   },[]);
   useEffect(()=>{
     if(!map.current||!layer.current) return;
@@ -37,9 +34,8 @@ export function DynamicMap({ camera,places, position, ready, simulated, selected
     }
   },[places,position.lat,position.lng,ready,simulated,selectedId,onSelect]);
   return <section aria-label="Carte interactive d’Abidjan" className="absolute inset-0 flex flex-col">
-    <div className="absolute top-48 right-3 z-[2] flex flex-col gap-1 max-h-48 overflow-auto max-w-[42vw]">{districts.map(district=><button type="button" key={district.name} onClick={()=>map.current?.flyTo([district.lat,district.lng],13,{duration:.4})} className="rounded-lg bg-soft px-2 py-1.5 text-[10px] text-body cursor-pointer">Centrer {district.name}</button>)}<button type="button" disabled={!ready} onClick={()=>map.current?.flyTo([position.lat,position.lng],16,{duration:.4})} className="rounded-lg bg-blue-950 px-2 py-1.5 text-[10px] text-blue-400 disabled:opacity-50 cursor-pointer">Mon radar · 250 m</button></div>
     <div ref={node} aria-label="Fond OpenStreetMap, zoom et déplacement" className="absolute inset-0 z-0" />
-    <p className="absolute bottom-20 left-3 max-w-[60%] z-[1] rounded-xl bg-canvas/95 text-[10px] text-body p-2 border border-line pointer-events-none">{ready?`${simulated?'Position simulée':'Position GPS'} · cercle de 250 m, éligibilité finale vérifiée par le serveur.`:'GPS en attente : radar masqué.'}</p>
+
     {tileError&&<div role="status" className="absolute top-24 left-3 right-3 z-[2] rounded-xl bg-canvas border border-line p-3 text-xs text-body">Fond de carte indisponible. Les repères restent consultables.<button type="button" onClick={onFallback} className="block text-blue-400 font-bold mt-2 cursor-pointer">Utiliser la carte illustrée hors connexion</button></div>}
   </section>;
 }

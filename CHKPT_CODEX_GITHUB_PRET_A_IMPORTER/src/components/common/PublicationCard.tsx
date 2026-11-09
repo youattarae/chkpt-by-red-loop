@@ -1,8 +1,11 @@
+import {MediaCarousel} from './MediaCarousel';
+import {openShare} from '../experience/actions';
+import {useNavigation} from '../../navigation/Navigation';
 import {EntityCard} from '../experience/EntityCard';
 import {useExperience} from '../experience/Experience';
 import {StoryAvatar} from '../stories/Stories';
 import { useState } from 'react';
-import { Heart, MessageCircle, Bookmark, MapPin, Lock, CheckCircle2 } from 'lucide-react';
+import { Heart, MessageCircle, Bookmark, MapPin, Lock, CheckCircle2, Share2 } from 'lucide-react';
 import { Post } from '../../types';
 import { useStore } from '../../services/store';
 import { SafeImage } from './SafeImage';
@@ -10,6 +13,7 @@ import { SafeVideo } from './SafeVideo';
 import { publicationImage, isGeneratedPublicationImage } from '../../data/publicationMedia';
 
 export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectPlace: (id: string) => void }) {
+  const nav=useNavigation();
   const { likePost, addComment, savedPlaceIds, pendingSavedPlaceIds, toggleSavePlace, places } = useStore();
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [comment, setComment] = useState('');
@@ -29,8 +33,9 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       {post.audience !== 'public' && <span className="text-[10px] text-muted flex items-center gap-1 shrink-0"><Lock className="w-3 h-3" />{post.audience === 'private' ? 'Moi seul' : 'Abonnés'}</span>}
     </header>
     <p className="px-4 pb-3 text-sm text-body leading-relaxed whitespace-pre-line break-words">{post.text}</p>
-    {attachments.length>0 && <div className={`mx-3 grid gap-2 ${attachments.length>1?'grid-cols-2':''}`}>{attachments.map((item,index)=><div key={item.url} className="rounded-2xl overflow-hidden">{item.type==='video'?<SafeVideo src={item.url}/>:<SafeImage src={item.url} onError={()=>setMediaFallback(true)} alt={`${post.linkedPlaceName||'Souvenir de sortie'} · photo ${index+1}`} className="w-full aspect-[3/2] object-cover"/>}</div>)}</div>}
-    {attachments.some(item=>item.url.startsWith('/illustrations/'))&&<p className="media-disclosure">Illustration de démonstration · lieu fictif{!mediaFallback&&attachments.some(item=>isGeneratedPublicationImage(item.url))?' · image générée par IA':''}</p>}
+    {post.repostOf&&<section aria-label="Publication repartagée" className="m-3 p-3 rounded-2xl border border-line"><p className="text-xs text-muted mb-2">Repartage · publication originale</p>{post.original?<><button type="button" onClick={()=>nav.push({page:'post',id:post.original!.id,tab:nav.current.route.tab})} className="p-2 text-blue-500 underline text-sm">Voir la publication originale de {post.original.authorName}</button><PublicationCard post={post.original} onSelectPlace={onSelectPlace}/></>:<p>Publication originale indisponible ou privée.</p>}</section>}
+    {attachments.length>0&&<MediaCarousel media={attachments} label={post.linkedPlaceName||'Souvenir de sortie'} onImageError={()=>setMediaFallback(true)}/>}
+    {attachments.some(item=>item.url.startsWith('/illustrations/'))&&<p className="media-disclosure">{place?.isDemo===false?'Illustration de remplacement · photo non disponible':'Illustration de démonstration · lieu fictif'}{!mediaFallback&&attachments.some(item=>isGeneratedPublicationImage(item.url))?' · image générée par IA':''}</p>}
     {post.linkedPlaceId && <div className="mx-4 py-3 border-b border-line flex items-center gap-3">
       <button type="button" onClick={() => onSelectPlace(post.linkedPlaceId!)} className="flex-1 min-w-0 flex items-center gap-2.5 text-left cursor-pointer">
         {image ? <SafeImage src={image} alt="" className="w-11 h-11 rounded-xl object-cover shrink-0" /> : <MapPin className="w-5 h-5 text-blue-400 shrink-0" />}
@@ -46,6 +51,7 @@ export function PublicationCard({ post, onSelectPlace }: { post: Post; onSelectP
       </button>
       <button type="button" onClick={() => setCommentsOpen(!commentsOpen)} aria-label="Commentaires de cette publication" aria-expanded={commentsOpen}
         className="inline-flex items-center gap-2 py-1 hover:text-blue-400 cursor-pointer"><MessageCircle className="w-5 h-5" /><span>{post.commentsCount}</span></button>
+      <button type="button" aria-label="Partager cette publication" onClick={()=>openShare({type:'post',id:post.id})} className="p-2"><Share2 className="w-5 h-5"/></button>
       <button type="button" disabled={savePending} aria-busy={savePending} onClick={()=>void savePost()} aria-label="Enregistrer cette publication" aria-pressed={saved} className="ml-auto py-2"><Bookmark className={`w-5 h-5 ${saved?'text-blue-400 fill-current':''}`}/></button>
       {saveError&&<p role="alert" className="text-xs">{saveError}</p>}
     </div>

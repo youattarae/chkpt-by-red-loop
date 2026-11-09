@@ -45,7 +45,7 @@ export interface CheckinSubmissionParams {
 
 export interface CheckinProcessResult {
   success: boolean;
-  status: 'verified' | 'rejected';
+  status: 'verified' | 'pending_validation' | 'rejected';
   message: string;
   distanceMeters: number;
   awardedXp: number;
@@ -77,6 +77,8 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
       rejectionReason: 'place_not_found',
     };
   }
+
+  if(place.verificationDecision==='rejected')return {success:false,status:'rejected',message:'Ce lieu a été rejeté par l’équipe de vérification.',distanceMeters:0,awardedXp:0,rejectionReason:'place_rejected'};
 
   // 2. Compute true geodesic distance on server
   const reportedCoords: Coordinates = { lat: latitude, lng: longitude };
@@ -112,7 +114,7 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   const todayKey = new Date().toISOString().split('T')[0];
   const idempotencyKey = `chk_${user.id}_${place.id}_${todayKey}`;
 
-  const existingToday = db.findCheckinByIdempotency(idempotencyKey);
+  const existingToday = db.findCheckinByIdempotency(idempotencyKey)||db.getCheckins(user.id).find(c=>c.placeId===place.id&&c.timestamp.slice(0,10)===todayKey&&c.status!=='rejected');
   if (existingToday) {
     return {
       success: false,
@@ -129,7 +131,9 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
   const isFirstVisit = !userCheckins.some(c => c.placeId === place.id && c.status === 'verified');
 
   // XP Rule: Base 50 XP + 25 XP first discovery bonus
-  const awardedXp = isFirstVisit ? 75 : 50;
+  const pending=place.verificationStatus!=='verified';
+  const awardedXp = pending?0:isFirstVisit?75:50;
+  const event=params.eventId?eligibleEvent(params.eventId,place.id):null;
 
   const checkinId = `chk_${Date.now()}_${crypto.randomBytes(4).toString('hex')}`;
   const nowIso = new Date().toISOString();
@@ -144,7 +148,9 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
     placeName: place.name,
     placeCategory: place.category,
     timestamp: nowIso,
-    status: 'verified',
+    status: pending?'pending_validation':'verified',
+    eligibility:{version:1,placeCoordinates:{...place.coordinates},...(event?{event:{id:event.id,placeId:place.id,startsAt:event.utcDate,endsAt:event.endsAt}}:{})},
+    ...(pending&&accuracyMeters>CHECKIN_RADIUS_METERS?{manualReviewReason:'Précision GPS insuffisante : contrôle manuel requis.'}:{}),
     audience,
     awardedXp,
     idempotencyKey,
@@ -166,14 +172,15 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
     createdAt: nowIso,
   };
 
+  return db.transaction(()=>{
   db.createCheckin(newCheckin, newProof, awardedXp);
-  if(params.eventId) db.recordLedgerEvent(user.id,'EVENT_ATTENDED',params.eventId);
+  if(params.eventId&&!pending) db.recordLedgerEvent(user.id,'EVENT_ATTENDED',params.eventId);
   const gamification=evaluateBadges(user.id);
 
   return {
     success: true,
-    status: 'verified',
-    message: isSimulated
+    status: pending?'pending_validation':'verified',
+    message: pending?'Check enregistré — XP en attente de vérification du lieu.':isSimulated
       ? `Visite simulée à ${place.name} — données fictives (+${awardedXp} XP).`
       : isFirstVisit
       ? `Présence physique confirmée ! Première découverte de ${place.name} (+${awardedXp} XP).` 
@@ -184,4 +191,5 @@ export function processCheckinSubmission(params: CheckinSubmissionParams): Check
     badges:gamification.badges,
     newlyUnlocked:gamification.newlyUnlocked,
   };
+  });
 }

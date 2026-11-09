@@ -1,3 +1,4 @@
+import type {PlaceSource,PlaceProposal} from '../shared/placeSources';
 import {validRef} from '../shared/entities';
 import type {EntityRef,Activity,SavedContent} from '../shared/entities';
 import {DEMO_PROFILES} from '../src/data/demoProfiles';
@@ -35,6 +36,8 @@ export interface UserEntity {
   followersCount: number;
   followingCount: number;
   checkinsCount: number;
+  profileBadgeIds?:string[];
+  blockedUserIds?:string[];
   xpPoints: number;
   level: number;
   createdAt: string;
@@ -64,16 +67,24 @@ export interface PlaceEntity {
   coordinates: Coordinates;
   verificationStatus: 'verified' | 'unverified' | 'pending';
   claimStatus: 'unclaimed' | 'pending' | 'approved' | 'rejected';
-  exploitationStatus: 'open' | 'temporarily_closed' | 'permanently_closed';
-  priceLevel: '€' | '€€' | '€€€';
+  exploitationStatus: 'open' | 'temporarily_closed' | 'permanently_closed' | 'unknown';
+  priceLevel?: '€' | '€€' | '€€€';
   priceDescription: string;
   coverImage: string;
   tags: string[];
   isCertified: boolean;
+  markerKind?:string;
+  isSponsored?:boolean;
+  isDemo?:boolean;
+  mergedInto?:string;
+  localOverrides?:string[];
+  verificationDecision?:'rejected';
 }
 
 export interface CheckInEntity {
   isSimulated?: boolean;
+  manualReviewReason?:string;
+  eligibility?:{version:1;placeCoordinates:Coordinates;event?:{id:string;placeId:string;startsAt:string;endsAt:string}};
   id: string;
   userId: string;
   userName: string;
@@ -134,7 +145,7 @@ export interface ReportEntity {
 }
 
 export interface ReviewEntity {
-  id: string; placeId: string; userId: string; rating: number; comment: string; updatedAt: string;
+  id: string; placeId: string; userId: string; superseded?:boolean; originalPlaceId?:string; rating: number; comment: string; updatedAt: string;
 }
 export interface StoredPost extends Post { likedBy: string[]; baseLikesCount: number; baseCommentsCount: number }
 export interface StoryEntity { id:string;authorId:string;mediaUrl:string;mediaType:'image'|'video';text:string;audience:'public'|'followers'|'private';createdAt:string;expiresAt:string;isDemo?:boolean }
@@ -163,9 +174,18 @@ export interface DatabaseSchema {
   version: number;
   demoUxVersion?:number;
   demoStorySeedVersion?:number;
+  mapDemoVersion?:number;
+  place_sources?:PlaceSource[];
+  place_proposals?:PlaceProposal[];
+  placesRevision?:number;
 }
 
 function validateUxTables(value:Partial<DatabaseSchema>){
+ if(value.place_sources!==undefined&&(!Array.isArray(value.place_sources)||value.place_sources.some(s=>!s||typeof s.key!=='string'||typeof s.placeId!=='string'||!['OSM','fixture'].includes(s.provider)||!['node','way','relation'].includes(s.objectType)||typeof s.license!=='string'||!Number.isFinite(Date.parse(s.importedAt))||!s.lastValues||!Number.isFinite(s.lastValues.coordinates?.lat)||!Number.isFinite(s.lastValues.coordinates?.lng))))throw new Error('Invalid place sources');
+ if(value.place_proposals!==undefined&&(!Array.isArray(value.place_proposals)||value.place_proposals.some(p=>!p||typeof p.id!=='string'||typeof p.userId!=='string'||!Array.isArray(p.candidates)||!['pending','approved','rejected'].includes(p.status))))throw new Error('Invalid place proposals');
+ if(value.placesRevision!==undefined&&(!Number.isSafeInteger(value.placesRevision)||value.placesRevision<0))throw new Error('Invalid places revision');
+ if(value.places&&(!Array.isArray(value.places)||value.places.some(p=>!p||typeof p.id!=='string'||typeof p.name!=='string'||!p.coordinates||!Number.isFinite(p.coordinates.lat)||!Number.isFinite(p.coordinates.lng)||Math.abs(p.coordinates.lat)>90||Math.abs(p.coordinates.lng)>180)))throw new Error('Invalid places');
+ if(value.users?.some(u=>u.profileBadgeIds!==undefined&&(!Array.isArray(u.profileBadgeIds)||u.profileBadgeIds.length>3||u.profileBadgeIds.some(id=>typeof id!=='string'))||u.blockedUserIds!==undefined&&(!Array.isArray(u.blockedUserIds)||u.blockedUserIds.some(id=>typeof id!=='string'))))throw new Error('Invalid user preferences');
  if(value.messages!==undefined&&(!Array.isArray(value.messages)||value.messages.some(m=>!m||typeof m.id!=='string'||typeof m.senderId!=='string'||typeof m.recipientId!=='string'||typeof m.text!=='string'||m.text.length>2000||!Number.isFinite(Date.parse(m.createdAt))||m.entity!==undefined&&!validRef(m.entity))))throw new Error('Invalid messages');
  if(value.saved_content!==undefined&&(!Array.isArray(value.saved_content)||value.saved_content.some(item=>!item||typeof item.userId!=='string'||typeof item.id!=='string'||!['post','event'].includes(item.type))))throw new Error('Invalid saved content');
  if(value.activity!==undefined&&(!Array.isArray(value.activity)||value.activity.some(item=>!item||typeof item.id!=='string'||typeof item.recipientId!=='string'||typeof item.title!=='string'||typeof item.body!=='string'||!Number.isFinite(Date.parse(item.createdAt))||!['post','event','place','user','badge'].includes(item.targetType))))throw new Error('Invalid activity');
@@ -319,6 +339,12 @@ function enrichDemoProfiles(users:UserEntity[]){
 
 class Database {
   private data: DatabaseSchema;
+  private transactionDepth=0;
+  public transaction<T>(action:()=>T):T{
+    const before=structuredClone(this.data),outer=this.transactionDepth===0;this.transactionDepth++;
+    try{const result=action();this.transactionDepth--;if(outer)this.save();return result;}catch(error){this.transactionDepth=outer?0:Math.max(0,this.transactionDepth-1);this.data=before;throw error;}
+  }
+  public touchPlaces(){this.data.placesRevision=(this.data.placesRevision||0)+1;this.save();}
 
   constructor() {
     this.data = this.load();
@@ -393,7 +419,7 @@ class Database {
         creatorDemoProfile(),fourthDemoProfile(),
       ]),
       sessions: [],
-      places: CANONICAL_PLACES,
+      places: structuredClone(CANONICAL_PLACES),
       checkins: [
         {
           id: 'chk_demo_initial',
@@ -472,6 +498,7 @@ class Database {
         parsed.saved_content ??= [];
         parsed.activity ??= [];
         parsed.messages ??= [];
+        parsed.place_sources ??= [];parsed.place_proposals ??= [];
         validateUxTables(parsed);
         parsed.stories ??= [];
         parsed.posts ??= seedPosts();
@@ -482,7 +509,10 @@ class Database {
         });
         parsed.saved_places ??= [{userId:'usr_01',placeId:'plc_cocody_lounge'}];
         parsed.media ??= [];
-        parsed.places = CANONICAL_PLACES;
+        if(new Set(parsed.places.map((p:PlaceEntity)=>p.id)).size!==parsed.places.length)throw new Error('Duplicate place IDs');
+        // Preserve canonical IDs, imported places and validated local corrections on restart.
+        const stored=new Map<string,PlaceEntity>(parsed.places.map((p:PlaceEntity)=>[p.id,p]));
+        parsed.places=[...CANONICAL_PLACES.map(seed=>({...seed,...stored.get(seed.id)})),...parsed.places.filter((p:PlaceEntity)=>!CANONICAL_PLACES.some(seed=>seed.id===p.id))];
         if (!parsed.users.some((user: UserEntity) => user.id === 'usr_02' || user.username === 'georges_armand')) parsed.users.push(creatorDemoProfile());
         if(!parsed.users.some((user:UserEntity)=>user.id==='usr_nadia'))parsed.users.push(fourthDemoProfile(parsed.users));
         enrichDemoProfiles(parsed.users);
@@ -511,6 +541,7 @@ class Database {
         parsed.sessions = parsed.sessions.filter((session: SessionEntity) => !seedUserIds.has(session.userId));
         this.addUxDemoFixtures(parsed);
         this.addDemoStoryFixtures(parsed);
+        this.addNov9DemoPlaces(parsed);
         this.save(parsed);
         return parsed;
       } catch (e) {
@@ -521,6 +552,7 @@ class Database {
     const initialDb = this.getFreshSeedState();
     this.addUxDemoFixtures(initialDb);
     this.addDemoStoryFixtures(initialDb);
+    this.addNov9DemoPlaces(initialDb);
     this.save(initialDb);
     return initialDb;
   }
@@ -529,8 +561,17 @@ class Database {
     this.data = this.getFreshSeedState();
     this.addUxDemoFixtures(this.data);
     this.addDemoStoryFixtures(this.data);
+    this.addNov9DemoPlaces(this.data);
     this.save();
     return this.data;
+  }
+
+  private addNov9DemoPlaces(data:DatabaseSchema){
+    if(!privateDemoEnabled||data.mapDemoVersion===1)return;data.mapDemoVersion=1;
+    const base=CANONICAL_PLACES[0];
+    for(const [id,name,kind,lat,lng,sponsored] of [['plc_demo_hotel','Hôtel Horizon Cocody · fictif','hotel',5.356,-4.004,true],['plc_demo_event','Maison des Rencontres · fictive','event',5.351,-3.991,false]] as const){
+      if(!data.places.some(p=>p.id===id))data.places.push({...base,id,name,category:'autre',categoryLabel:kind==='hotel'?'Hôtel · démonstration':'Lieu d’événements · démonstration',description:'Exemple fictif pour essayer les repères. Aucun partenariat réel.',coordinates:{lat,lng},markerKind:kind,verificationStatus:'unverified',isCertified:false,isSponsored:sponsored,isDemo:true});
+    }
   }
 
   private addDemoStoryFixtures(data:DatabaseSchema,explicit=false){
@@ -560,6 +601,7 @@ class Database {
   }
 
   private save(dataToSave?: DatabaseSchema) {
+    if(this.transactionDepth>0)return;
     this.ensureDirectory();
     const data = dataToSave || this.data;
     const tempFile = `${DB_FILE}.tmp`;
@@ -620,11 +662,11 @@ class Database {
   }
 
   public getPlaces(): PlaceEntity[] {
-    return this.data.places;
+    return this.data.places.filter(p=>!p.mergedInto);
   }
 
   public findPlaceById(id: string): PlaceEntity | undefined {
-    return this.data.places.find(p => p.id === id);
+    const seen=new Set<string>();let place=this.data.places.find(p=>p.id===id);while(place?.mergedInto&&!seen.has(place.id)){seen.add(place.id);place=this.data.places.find(p=>p.id===place!.mergedInto);}return place&&!seen.has(place.id)?place:undefined;
   }
 
   public getCheckins(userId?: string): CheckInEntity[] {
@@ -646,26 +688,17 @@ class Database {
     this.data.checkins.unshift(checkin);
     this.data.checkin_proofs.push(proof);
 
-    if (awardedXp > 0) {
-      const user = this.findUserById(checkin.userId);
-      if (user) {
-        user.xpPoints += awardedXp;
-        user.checkinsCount += 1;
-        user.level = Math.floor(user.xpPoints / 300) + 1;
-      }
-
-      this.data.points_ledger.push({
-        id: `pts_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-        userId: checkin.userId,
-        amount: awardedXp,
-        sourceAction: 'CHECKIN_VERIFIED',
-        referenceId: checkin.id,
-        timestamp: new Date().toISOString(),
-      });
-    }
+    if(awardedXp>0)this.creditCheckin(checkin.id,awardedXp);
 
     this.save();
     return checkin;
+  }
+
+  public creditCheckin(id:string,amount:number):number{
+    const check=this.findCheckinById(id),user=check&&this.findUserById(check.userId);
+    if(!check||!user||![50,75].includes(amount)||this.data.points_ledger.some(p=>p.sourceAction==='CHECKIN_VERIFIED'&&p.referenceId===id))return 0;
+    check.status='verified';check.awardedXp=amount;user.xpPoints+=amount;user.checkinsCount++;user.level=Math.floor(user.xpPoints/300)+1;
+    this.data.points_ledger.push({id:crypto.randomUUID(),userId:user.id,amount,sourceAction:'CHECKIN_VERIFIED',referenceId:id,timestamp:new Date().toISOString()});this.save();return amount;
   }
 
   public getFollowers(userId: string): string[] {
@@ -736,17 +769,18 @@ class Database {
     catch(error){this.save(previous);this.data=previous;throw error;}
   }
 
-  public updateSharedData(next: Partial<Pick<DatabaseSchema,'saved_content'|'activity'|'messages'|'stories'|'posts'|'saved_places'|'media'>>):void {
+  public updateSharedData(next: Partial<Pick<DatabaseSchema,'saved_content'|'activity'|'messages'|'stories'|'posts'|'saved_places'|'media'|'places'|'place_sources'|'place_proposals'>>):void {
     const updated={...this.data,...next};
+    validateUxTables(updated);
     this.save(updated);
     this.data=updated;
   }
 
   public getReviews(placeId: string): ReviewEntity[] {
-    return this.data.reviews.filter(review => review.placeId === placeId).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+    return this.data.reviews.filter(review => review.placeId === placeId&&!review.superseded).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
   }
   public saveReview(userId: string, placeId: string, rating: number, comment: string): ReviewEntity {
-    const existing = this.data.reviews.find(review => review.userId === userId && review.placeId === placeId);
+    const existing = this.data.reviews.find(review => review.userId === userId && review.placeId === placeId&&!review.superseded);
     const review = { id: existing?.id || crypto.randomUUID(), userId, placeId, rating, comment, updatedAt: new Date().toISOString() };
     if (existing) Object.assign(existing, review);
     else this.data.reviews.push(review);

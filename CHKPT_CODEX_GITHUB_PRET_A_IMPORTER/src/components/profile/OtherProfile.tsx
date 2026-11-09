@@ -1,3 +1,5 @@
+import {ProfileBadgeSymbols} from './ProfileBadgeSymbols';
+import type {Badge} from '../../types';
 import {useNavigation} from '../../navigation/Navigation';
 import {StoryAvatar} from '../stories/Stories';
 import { useEffect, useRef, useState } from 'react';
@@ -7,14 +9,14 @@ import { UserProfile } from '../../types';
 import { SafeImage } from '../common/SafeImage';
 import { PublicationCard } from '../common/PublicationCard';
 
-type PublicBadge={id:string;name:string;family:string;tier:string};
-type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount'>> & {badges?:PublicBadge[]};
+type PublicBadge=Pick<Badge,'id'|'name'|'family'|'tier'>;
+type Profile = Pick<UserProfile, 'id' | 'displayName' | 'username' | 'avatarUrl' | 'visibility'> & Partial<Pick<UserProfile, 'bio' | 'homeZone' | 'followersCount' | 'followingCount'>> & {badges?:PublicBadge[];canMessage?:boolean;blockedByMe?:boolean};
 export function OtherProfile({ id, onClose, onSelectPlace, isVisible=true }: { isVisible?:boolean;id: string; onClose: () => void; onSelectPlace: (id: string) => void }) {
   const { currentUser, authSessionToken, posts, followingIds, setFollowingIds, setCurrentUser } = useStore();
   const nav=useNavigation();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [error, setError] = useState('');
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState(false);const [revision,setRevision]=useState(0);
   const active = useRef(true);
   const following = followingIds.includes(id);
   useEffect(() => {active.current=true;return()=>{active.current=false;};},[]);
@@ -27,7 +29,7 @@ export function OtherProfile({ id, onClose, onSelectPlace, isVisible=true }: { i
       .then(data => {if(!controller.signal.aborted){setProfile(data.profile);setError('');}})
       .catch(error => { if (!controller.signal.aborted) setError(error.message); });
     return () => { controller.abort(); };
-  }, [id, authSessionToken,isVisible]);
+  }, [id, authSessionToken,isVisible,revision]);
   async function toggleFollow() {
     setPending(true); setError('');
     try {
@@ -51,11 +53,10 @@ export function OtherProfile({ id, onClose, onSelectPlace, isVisible=true }: { i
         <div className="flex gap-4 items-center"><StoryAvatar id={profile.id} name={profile.displayName} src={profile.avatarUrl} className="w-20 h-20"/><div className="min-w-0"><h1 className="text-xl font-extrabold break-words">{profile.displayName}</h1><p className="text-xs text-muted">@{profile.username}</p></div></div>
         {profile.avatarUrl.startsWith('/illustrations/profil-')&&<p className="text-[10px] text-muted">Portrait fictif généré par IA · illustration de démonstration.</p>}
         {profile.visibility === 'private' ? <p className="flex items-center gap-2 bg-soft rounded-2xl p-4 text-sm"><Lock className="w-5 h-5 shrink-0" />Profil privé. Ses publications ne sont pas accessibles dans cette démo.</p> : <>
-          <p className="text-sm text-body">{profile.bio}</p><p className="text-xs text-muted">{profile.homeZone} · compteurs de démonstration</p>
-          <section aria-label="Badges publics" className="space-y-2"><h2 className="font-bold text-sm">Badges</h2>{profile.badges?.length?<div className="flex flex-wrap gap-2">{profile.badges.map(badge=><span key={badge.id} className="rounded-xl bg-soft px-3 py-2 text-xs"><strong className="block">{badge.name}</strong><span className="text-muted">{badge.family} · {({bronze:'Bronze',silver:'Argent',gold:'Or',platinum:'Platine',diamond:'Diamant'} as Record<string,string>)[badge.tier]||badge.tier}</span></span>)}</div>:<p className="text-xs text-muted">Aucun badge public débloqué.</p>}</section>
+          <p className="text-sm text-body">{profile.bio}</p><div className="flex items-center gap-2"><span className="text-xs text-muted">{profile.homeZone?.includes('Abidjan')?profile.homeZone:profile.homeZone+', Abidjan'}</span><ProfileBadgeSymbols badges={profile.badges||[]}/></div>
           <div className="grid grid-cols-2 gap-3"><button type="button" onClick={()=>nav.push({page:'followers',id,tab:nav.current.route.tab})} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followersCount}</strong>Abonnés</button><button type="button" onClick={()=>nav.push({page:'following',id,tab:nav.current.route.tab})} className="p-3 rounded-2xl bg-soft text-sm"><strong className="block">{profile.followingCount}</strong>Abonnements</button></div>
           <button type="button" disabled={pending} aria-pressed={following} onClick={toggleFollow} className="w-full p-3 rounded-xl bg-blue-600 text-white font-bold text-sm disabled:opacity-50 cursor-pointer">{pending ? 'En cours…' : following ? 'Ne plus suivre' : 'Suivre'}</button>
-          <button type="button" onClick={()=>nav.push({page:'conversation',id,tab:nav.current.route.tab})} className="w-full p-3 rounded-xl border border-line font-bold">Message</button><h2 className="text-sm font-bold">Publications</h2><div className="space-y-3">{visiblePosts.length ? visiblePosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />) : <p className="text-sm text-muted">Aucune publication accessible pour le moment.</p>}</div>
+          {profile.canMessage&&<button type="button" onClick={()=>nav.push({page:'conversation',id,tab:nav.current.route.tab})} className="w-full p-3 rounded-xl border border-line font-bold">Message</button>}<button type="button" disabled={pending} onClick={async()=>{setPending(true);try{const r=await fetch('/api/account/blocked-users',{method:'POST',headers:{Authorization:`Bearer ${authSessionToken}`,'Content-Type':'application/json'},body:JSON.stringify({targetId:id,blocked:!profile.blockedByMe})});if(!r.ok)throw Error('Action non confirmée.');window.dispatchEvent(new Event('focus'));setRevision(n=>n+1);}catch(e){setError(e instanceof Error?e.message:'Action non confirmée.');}finally{setPending(false);}}} className="p-2 text-xs text-muted">{profile.blockedByMe?'Débloquer cet utilisateur':'Bloquer cet utilisateur'}</button><h2 className="text-sm font-bold">Publications</h2><div className="space-y-3">{visiblePosts.length ? visiblePosts.map(post => <PublicationCard key={post.id} post={post} onSelectPlace={onSelectPlace} />) : <p className="text-sm text-muted">Aucune publication accessible pour le moment.</p>}</div>
         </>}
       </>}
     </div>

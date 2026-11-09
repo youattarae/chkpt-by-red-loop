@@ -336,6 +336,12 @@ try {
   await check('Recherche publique, relations protégées et classement mensuel réciproque',()=>checkDiscovery(start,stop,password));
   const {checkUxContracts}=await import('./ux_contracts_test');
   await check('Contrats UX : événements partagés, activités, enregistrés séparés, tiers et mineurs protégés',()=>checkUxContracts(demo.url,password));
+  const {checkNov9Social}=await import('./nov9_social.test');
+  await check('9 novembre social : sources privées/expirées, repartage, blocages et badges persistants',()=>checkNov9Social(start,stop,password));
+  const {checkNov9Places}=await import('./nov9_places.test');
+  await check('9 novembre lieux : import, provenance, corrections et fusions sans perte',()=>checkNov9Places(start,stop,password));
+  const {checkNov9Retro}=await import('./nov9_retro.test');
+  await check('9 novembre checks : attente, crédits rétroactifs uniques et contrôles manuels',()=>checkNov9Retro(start,stop,password));
   const {checkStories}=await import('./stories_test');
   await check('Stories : expiration serveur, confidentialité, suppression et stockage',()=>checkStories(start,stop,password));
   const {checkSharedState}=await import('./shared_state_test');
@@ -396,6 +402,8 @@ try {
     await check('Addendum stories : ordre, défilement naturel et commandes sans stories épinglées',()=>checkStoriesScroll(demo.url,password));
     const {checkMenuBadgesPlus}=await import('./menu_badges_plus_browser');
     await check('Menu exact, collection de badges privée et grand plus sans logo',()=>checkMenuBadgesPlus(demo.url,password));
+    const {checkNov9Browser}=await import('./nov9_browser');
+    await check('9 novembre navigateur : carte, badges choisis, carrousel et réponses privées',()=>checkNov9Browser(demo.url,password));
     const { checkSupport } = await import('./support_browser');
     await check('Support de secours autonome, quatre captures lisibles sans connexion', checkSupport);
   }

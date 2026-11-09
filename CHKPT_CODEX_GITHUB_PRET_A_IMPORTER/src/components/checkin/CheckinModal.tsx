@@ -18,7 +18,8 @@ import { calculateDistanceMeters, DEFAULT_CHECKIN_RADIUS_METERS } from '../../se
 import { 
   X, 
   Crosshair, 
-  CheckCircle2, 
+  CheckCircle2,
+  Clock, 
   AlertCircle, 
   Lock, 
   Users, 
@@ -121,11 +122,11 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
     }
   };
 
-  const handleProposeNewPlace = (e: React.FormEvent) => {
+  const handleProposeNewPlace = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newPlaceName.trim()) return;
 
-    submitPlaceProposal({
+    const saved=await submitPlaceProposal({
       name: newPlaceName.trim(),
       category: newPlaceCategory,
       commune: newPlaceCommune,
@@ -134,7 +135,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
       coordinates: userCurrentCoordinates
     });
 
-    setProposalSent(true);
+    setProposalSent(saved);
   };
 
   return (
@@ -152,7 +153,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
               <h2 className="text-base font-bold text-ink tracking-tight">
                 {step === 'select_place' && 'Valider votre présence'}
                 {step === 'verifying' && 'Contrôle serveur en cours...'}
-                {step === 'result' && (verificationResult?.success ? 'Check-in confirmé !' : 'Vérification refusée')}
+                {step === 'result' && (verificationResult?.success ? verificationResult.checkIn?.status==='pending_validation'?'Check enregistré · XP en attente':'Check-in confirmé !' : 'Vérification refusée')}
                 {step === 'propose_place' && 'Proposer un lieu manquant'}
               </h2>
               <span className="text-[11px] text-muted">
@@ -343,11 +344,11 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
             {verificationResult.success ? (
               <div className="space-y-4">
                 <div className="w-16 h-16 rounded-full bg-emerald-950/80 border-2 border-emerald-500/80 text-emerald-400 flex items-center justify-center mx-auto shadow-lg shadow-emerald-950/60">
-                  <CheckCircle2 className="w-8 h-8" />
+                  {verificationResult.checkIn?.status==='pending_validation'?<Clock className="w-8 h-8 text-amber-400"/>:<CheckCircle2 className="w-8 h-8"/>}
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-ink tracking-tight">
-                    {verificationResult.recovered?'Visite déjà enregistrée':verificationResult.checkIn?.isSimulated ? 'Visite simulée enregistrée !' : 'Visite vérifiée avec succès !'}
+                    {verificationResult.checkIn?.status==='pending_validation'?'Check enregistré — XP en attente':verificationResult.recovered?'Visite déjà enregistrée':verificationResult.checkIn?.isSimulated ? 'Visite simulée enregistrée !' : 'Visite vérifiée avec succès !'}
                   </h3>
                   <p className="text-xs text-emerald-300 font-medium mt-1">
                     {verificationResult.message}
@@ -356,7 +357,7 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
                     <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-rose-950/70 border border-rose-800/80 rounded-lg text-rose-200 text-xs font-bold">
                       <Sparkles className="w-3.5 h-3.5 text-rose-400" />
-                      <span>{verificationResult.recovered?'Aucun nouveau point : visite déjà comptabilisée':`+${verificationResult.earnedXp} XP crédités au profil`}</span>
+                      <span>{verificationResult.checkIn?.status==='pending_validation'?'0 XP immédiat · vérification du lieu en attente':verificationResult.recovered?'Aucun nouveau point : visite déjà comptabilisée':`+${verificationResult.earnedXp} XP crédités au profil`}</span>
                     </div>
 
                     {verificationResult.unlockedBadgeName && (
@@ -369,9 +370,9 @@ export const CheckinModal: React.FC<CheckinModalProps> = ({
                   </div>
                 </div>
 
-                {verificationResult.checkIn?.placeId === 'plc_maquis_etoile' && <p className="text-xs text-blue-400">Récompense fictive débloquée : retrouve-la dans Profil.</p>}
+                {verificationResult.checkIn?.status==='verified'&&verificationResult.checkIn?.placeId === 'plc_maquis_etoile' && <p className="text-xs text-blue-400">Récompense fictive débloquée : retrouve-la dans Profil.</p>}
                 <div className="p-3 bg-canvas/80 border border-line rounded-xl text-left text-xs text-body space-y-1">
-                  <p className="font-semibold text-ink">{activeLocationMode === 'simulation' ? 'Démonstration — visite fictive comptabilisée.' : 'Votre visite est comptabilisée.'}</p>
+                  <p className="font-semibold text-ink">{verificationResult.checkIn?.status==='pending_validation'?'Check conservé dans votre activité privée ; crédit après vérification et contrôle d’admissibilité.':activeLocationMode === 'simulation' ? 'Démonstration — visite fictive comptabilisée.' : 'Votre visite est comptabilisée.'}</p>
                   <p className="text-[11px] text-muted">
                     Aucune publication automatique n'est imposée. Souhaitez-vous partager une photo ou votre avis avec vos abonnés ?
                   </p>

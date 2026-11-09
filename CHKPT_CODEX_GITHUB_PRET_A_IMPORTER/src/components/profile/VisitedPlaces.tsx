@@ -8,6 +8,7 @@ export function VisitedPlaces({ onSelectPlace, initialOpen=false }: { onSelectPl
   const { currentUser, checkins, places } = useStore();
   const [open, setOpen] = useState(initialOpen);
   const id = useId();
+  const pending=checkins.filter(c=>c.userId===currentUser.id&&c.status==='pending_validation');
   const visits = checkins.filter(visit => visit.userId === currentUser.id && visit.status === 'verified')
     .sort((a, b) => Date.parse(b.timestamp) - Date.parse(a.timestamp));
   const placeIds = [...new Set(visits.map(visit => visit.placeId))];
@@ -18,6 +19,7 @@ export function VisitedPlaces({ onSelectPlace, initialOpen=false }: { onSelectPl
       <ChevronDown className={`w-4 h-4 shrink-0 ${open ? 'rotate-180' : ''}`} />
     </button>
     {open && <section id={id} aria-label="Historique des lieux visités" className="p-3 space-y-3">
+      {pending.length>0&&<section aria-label="Checks en attente de vérification" className="p-3 rounded-xl bg-soft space-y-2"><h3 className="font-bold text-sm">Checks enregistrés — XP en attente</h3>{pending.map(c=><button type="button" key={c.id} onClick={()=>onSelectPlace(c.placeId)} className="block w-full p-2 text-left text-xs"><strong>{c.placeName}</strong><span className="block">0 XP immédiat · {c.manualReviewReason||'En attente de vérification du lieu'}</span></button>)}</section>}
       <p className="text-xs text-muted">Visible uniquement par vous, du plus récent au plus ancien. Les checks refusés n’y figurent pas. Visites enregistrées sur le serveur de démonstration.</p>
       {placeIds.length === 0 && <p className="text-sm text-body py-3">Aucun lieu visité pour le moment. Vos checks validés apparaîtront ici.</p>}
       {placeIds.map(placeId => {

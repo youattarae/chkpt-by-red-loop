@@ -40,7 +40,7 @@ import {SideMenu} from './components/navigation/SideMenu';
 import {PersonalPage} from './components/navigation/PersonalPage';
 import {PageLayout} from './components/navigation/PageLayout';
 function AppContent(){
- const {isOperatorView,setIsOperatorView,places,posts,currentUser,authSessionToken,isServerAuthenticated,sharedStateReady,syncError,refreshSharedData,dismissToastNotification}=useStore();const nav=useNavigation();const route=nav.current.route;const activeTab=route.tab;
+ const {isOperatorView,setIsOperatorView,placeAliases,places,posts,currentUser,authSessionToken,isServerAuthenticated,sharedStateReady,syncError,refreshSharedData,dismissToastNotification}=useStore();const nav=useNavigation();const route=nav.current.route;const activeTab=route.tab;
  const operatorVisible=isOperatorView&&isServerAuthenticated&&['admin','superadmin','moderator'].includes(currentUser.role);
  const [restoreNotice]=useState(()=>{const notice=sessionStorage.getItem('chkpt_restore_notice')||'';sessionStorage.removeItem('chkpt_restore_notice');return notice;});
  const [checkin,setCheckin]=useState(false),[auth,setAuth]=useState(false),[notifications,setNotifications]=useState(false),[settings,setSettings]=useState(false),[menu,setMenu]=useState(false);
@@ -61,7 +61,7 @@ function AppContent(){
  function secondary(page:Route,isVisible:boolean){
   switch(page.page){
    case 'main':return null;
-   case 'place':{const found=places.find(place=>place.id===page.id);return found?<PlaceDetailModal place={found} onClose={nav.back}/>:<PageLayout title="Lieu indisponible" onBack={nav.back}><p>Ce lieu n’est pas disponible dans la démonstration.</p></PageLayout>;}
+   case 'place':{const found=places.find(place=>place.id===(placeAliases[page.id]||page.id));return found?<PlaceDetailModal place={found} onClose={nav.back}/>:<PageLayout title="Lieu indisponible" onBack={nav.back}><p>Ce lieu n’est pas disponible dans la démonstration.</p></PageLayout>;}
    case 'event':return <EventDialog id={page.id} onClose={nav.back}/>;
    case 'profile':if(page.id===currentUser.id)return <section className="max-w-2xl mx-auto"><ProfileView onOpenBadges={()=>nav.push({page:'progress',tab:activeTab})} onSelectPlace={place} onOpenAuth={openAccount} onOpenSettings={openSettings}/></section>;return <OtherProfile isVisible={isVisible} id={page.id} onClose={nav.back} onSelectPlace={place}/>;
    case 'followers':case 'following':return <ConnectionsDialog isVisible={isVisible} id={page.id} kind={page.page} onClose={nav.back}/>;

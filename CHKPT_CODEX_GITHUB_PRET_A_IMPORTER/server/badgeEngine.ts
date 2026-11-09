@@ -1,3 +1,4 @@
+import {displayBadges} from '../shared/profileBadges';
 import crypto from 'node:crypto';
 import { BADGE_CATALOG, DEMO_PROGRESS } from '../shared/badgeCatalog';
 import { db } from './db';
@@ -50,5 +51,5 @@ export function awardPublishedPhoto(userId:string,checkinId:string,mediaUrl:stri
 export function publicBadgeSummaries(userId:string){
   const ids=new Set(db.getRawData().points_ledger.filter(entry=>entry.userId===userId&&entry.sourceAction==='BADGE_UNLOCKED').map(entry=>entry.referenceId));
   const demo=privateDemoEnabled&&userId==='usr_01';
-  return BADGE_CATALOG.filter(badge=>ids.has(badge.id)||demo&&DEMO_PROGRESS[badge.family]>=badge.requiredCount).slice(0,6).map(({id,name,family,tier,iconName})=>({id,name,family,tier,iconName}));
+  return displayBadges(BADGE_CATALOG.filter(badge=>ids.has(badge.id)||demo&&DEMO_PROGRESS[badge.family]>=badge.requiredCount),db.findUserById(userId)?.profileBadgeIds).map(({id,name,family,tier,iconName})=>({id,name,family,tier,iconName}));
 }

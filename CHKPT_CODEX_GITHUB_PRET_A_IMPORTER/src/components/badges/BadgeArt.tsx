@@ -3,8 +3,9 @@ import type {Badge} from '../../types';
 const icons={Explorateur:Compass,Foodie:Utensils,'Maquis Master':Flame,'Culture Hunter':Palette,'Event Hunter':CalendarCheck,Pionnier:Sparkles,Photographe:Camera,'Multi-Explorer':Map};
 const colors={bronze:['#da975b','#8a4929'],silver:['#dce7f7','#68849f'],gold:['#ffe49a','#c88822'],platinum:['#a9fbef','#278eaa'],diamond:['#b9d8ff','#7252c5']};
 /** Original vector medals, keyed to the existing family/grade. Locked medals reveal neither grade nor name. */
-export function BadgeArt({badge,locked=false}:{badge?:Pick<Badge,'family'|'tier'|'name'>;locked?:boolean}){
+export function BadgeArt({badge,locked=false,compact=false}:{badge?:Pick<Badge,'family'|'tier'|'name'>;locked?:boolean;compact?:boolean}){
  const [light,dark]=!locked&&badge?colors[badge.tier]:['#d7dce3','#727d8b'];const Icon=!locked&&badge?icons[badge.family]:Lock;
+ if(compact)return <span role="img" aria-label={badge?.name||'Badge verrouillé'} style={{color:light,backgroundColor:dark,borderColor:light}} className="w-5 h-5 inline-flex rounded-full border items-center justify-center shrink-0"><Icon aria-hidden="true" className="w-3.5 h-3.5"/></span>;
  return <div role="img" aria-label={locked?'Badge verrouillé':`Illustration de ${badge?.name}`} className="relative w-full aspect-square max-w-52 mx-auto">
  <svg aria-hidden="true" viewBox="0 0 200 200" className="absolute inset-0 w-full h-full" fill="none">
  <circle cx="100" cy="98" r="87" fill={dark} opacity=".07"/><path d="M64 125 53 184 96 164 106 182 136 126" fill={locked?'#8993a0':'#80002f'} opacity=".9"/>

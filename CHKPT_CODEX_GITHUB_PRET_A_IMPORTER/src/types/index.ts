@@ -29,6 +29,7 @@ export interface UserProfile {
   followingCount: number;
   checkinsCount: number;
   badgesCount?: number;
+  profileBadgeIds?:string[];
   createdAt?: string;
 }
 
@@ -54,8 +55,8 @@ export interface Place {
   coordinates: Coordinates;
   verificationStatus: 'verified' | 'unverified' | 'pending';
   claimStatus: 'unclaimed' | 'pending' | 'approved' | 'rejected';
-  exploitationStatus: 'open' | 'temporarily_closed' | 'permanently_closed';
-  priceLevel: '€' | '€€' | '€€€';
+  exploitationStatus: 'open' | 'temporarily_closed' | 'permanently_closed' | 'unknown';
+  priceLevel?: '€' | '€€' | '€€€';
   priceDescription: string;
   openingHours?: string;
   isCurrentlyOpen: boolean;
@@ -67,6 +68,11 @@ export interface Place {
   reviewCount: number;
   distance?: number;
   isCertified?: boolean;
+  markerKind?:string;
+  isSponsored?:boolean;
+  isDemo?:boolean;
+  mergedInto?:string;
+  verificationDecision?:'rejected';
 }
 
 export type CheckInStatus = 'verified' | 'pending_validation' | 'rejected';
@@ -90,6 +96,8 @@ export interface CheckIn {
   gpsAccuracyMeters: number;
   verifiedAt?: string;
   isFirstVisitForUser?: boolean;
+  manualReviewReason?:string;
+  awardedXp?:number;
   notes?: string;
   mediaUrl?: string;
 }
@@ -106,6 +114,9 @@ export interface PostComment {
 export interface PostMedia { url: string; type: 'image' | 'video'; }
 
 export interface Post {
+  repostOf?:string;
+  original?:Post|null;
+  visitStatus?:CheckInStatus;
   media?: PostMedia[];
   isSimulated?: boolean;
   id: string;

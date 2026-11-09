@@ -54,6 +54,7 @@ interface StoreContextType {
   appEnvironment: 'demo' | 'production';
   setAppEnvironment: (env: 'demo' | 'production') => void;
   places: Place[];
+  placeAliases:Record<string,string>;
   savedPlaceIds: string[];
   pendingSavedPlaceIds: string[];
   checkins: CheckIn[];
@@ -106,7 +107,7 @@ interface StoreContextType {
   addComment: (postId: string, text: string) => Promise<boolean>;
   toggleSavePlace: (placeId: string) => void;
   toggleEventIntent: (eventId: string, intent: 'interested' | 'going') => void;
-  submitPlaceProposal: (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => void;
+  submitPlaceProposal: (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => Promise<boolean>;
   resetDemoPitchState: (start?: boolean) => Promise<void>;
   // Notifications
   notifications: AppNotification[];
@@ -171,30 +172,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return INITIAL_PLACES;
   });
 
-  useEffect(() => {
-    fetch('/api/places')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && Array.isArray(data.places) && data.places.length > 0) {
-          setPlaces((prev) => {
-            return data.places.map((serverPlace: any) => {
-              const localMatch = prev.find((p) => p.id === serverPlace.id);
-              return {
-                ...serverPlace,
-                coverImage: serverPlace.id === 'plc_maquis_etoile' ? '/illustrations/maquis-demo.png' : serverPlace.coverImage,
-                rating: localMatch?.rating || 4.7,
-                reviewCount: localMatch?.reviewCount || 20,
-                totalCheckins: localMatch?.totalCheckins || serverPlace.totalCheckins || 50,
-                galleryImages: localMatch?.galleryImages || [serverPlace.coverImage],
-                isCurrentlyOpen: true,
-                priceLevel: serverPlace.priceLevel || '€€',
-              };
-            });
-          });
-        }
-      })
-      .catch((err) => console.warn('Could not sync places from /api/places:', err));
-  }, []);
+  const [placeAliases,setPlaceAliases]=useState<Record<string,string>>({});const placeRevision=useRef<number|undefined>(undefined);const refreshPlacesRef=useRef<()=>void>(()=>{});
+  useEffect(()=>{const controller=new AbortController();const sync=()=>fetch('/api/places',{signal:controller.signal,cache:'no-store'}).then(r=>r.json()).then(data=>{if(controller.signal.aborted||!data.success||!Array.isArray(data.places))return;setPlaceAliases(data.aliases||{});setPlaces(prev=>data.places.map((p:any)=>{const old=prev.find(x=>x.id===p.id),real=p.isDemo===false;return {...p,coverImage:p.id==='plc_maquis_etoile'?'/illustrations/maquis-demo.png':p.coverImage,rating:real?undefined:old?.rating||4.7,reviewCount:real?0:old?.reviewCount||20,totalCheckins:real?0:old?.totalCheckins||p.totalCheckins||50,galleryImages:old?.galleryImages||[p.coverImage],isCurrentlyOpen:!real,priceLevel:real?undefined:p.priceLevel||'€€'};}));}).catch(()=>{});refreshPlacesRef.current=()=>void sync();void sync();window.addEventListener('chkpt:places',refreshPlacesRef.current);return()=>{controller.abort();window.removeEventListener('chkpt:places',refreshPlacesRef.current);};},[]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -225,6 +204,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             checkinsCount: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.checkinsCount : data.user.checkinsCount,
             level: requestedStatsRevision !== statsRevision.current && prev.id === data.user.id ? prev.level : data.user.level,
             homeZone: data.user.homeZone,
+            profileBadgeIds:requestedStatsRevision!==statsRevision.current&&prev.id===data.user.id?prev.profileBadgeIds:data.user.profileBadgeIds,
             avatarUrl: data.user.avatarUrl,
             bio: data.user.bio,
             followersCount: data.user.followersCount,
@@ -360,9 +340,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if(token){
         const legacyKey=`chkpt_legacy_backup_${data.userId}`;
         try{if(legacyCache.user?.id===data.userId&&!readStorage(legacyKey))writeStorage(legacyKey,JSON.stringify({userId:data.userId,posts:legacyCache.posts.filter((post:Post)=>post&&post.authorId===data.userId),checkins:legacyCache.checkins.filter((visit:CheckIn)=>visit&&visit.userId===data.userId),savedPlaceIds:legacyCache.savedPlaceIds}));}catch{/* A full browser cache must not block the server state. */}
+        if(placeRevision.current!==data.placesRevision){placeRevision.current=data.placesRevision;refreshPlacesRef.current();}
         setIsServerAuthenticated(true);statsRevision.current++;followingRevision.current++;
         setSavedPlaceIds(data.savedPlaceIds);setCheckins(data.checkins);setPointsLedger(data.pointsLedger);setBadges(data.badges);setFollowingIdsState(data.followingIds);
-        setCurrentUser(user=>({...user,...data.user}));
+        setCurrentUser(user=>({...user,...data.user,profileBadgeIds:data.user.profileBadgeIds}));
       }
       setPosts(data.posts);setSharedHydratedToken(token);
     }catch(error){if(revision===sharedRevision.current&&(readStorage('chkpt_session_token')||'')===token)setSyncError(error instanceof Error?error.message:'Synchronisation indisponible.');}
@@ -479,7 +460,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if(!response.ok)throw Error('History unavailable');const data=await response.json();
       if(readStorage('chkpt_session_token')!==token)throw Error('Session changed');
       const today=new Date().toISOString().slice(0,10);
-      const visit=(data.checkins as CheckIn[]).find(item=>item.placeId===placeId&&item.status==='verified'&&item.timestamp.slice(0,10)===today);
+      const visit=(data.checkins as CheckIn[]).find(item=>item.placeId===placeId&&['verified','pending_validation'].includes(item.status)&&item.timestamp.slice(0,10)===today);
       if(visit){void refreshSharedState(token);return {success:true,checkIn:visit,message:'Visite déjà enregistrée. Vous pouvez reprendre la publication ; aucun nouveau point n’est ajouté.',distanceMeters:0,earnedXp:0,recovered:true};}
       return {success:false,message:'Aucune visite enregistrée aujourd’hui pour ce lieu. Vous pouvez réessayer la validation.',distanceMeters:0,uncertain:true};
     }catch{return {success:false,message:'Résultat encore inconnu : vérifiez l’enregistrement avant de recommencer.',distanceMeters:0,uncertain:true};}
@@ -561,7 +542,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
       // Verified check-in confirmed by server!
       const serverCheckin = serverData.checkIn;
-      const earnedXp = serverData.awardedXp || 50;
+      const earnedXp = serverData.awardedXp ?? 0;
 
       // An older profile response must not roll back this confirmed server award.
       statsRevision.current += 1;
@@ -575,7 +556,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         placeName: place.name,
         placeCategory: place.category,
         timestamp: serverCheckin.timestamp,
-        status: 'verified',
+        status: serverCheckin.status,
         audience,
         idempotencyKey: serverCheckin.idempotencyKey,
         distanceMeters: serverData.distanceMeters,
@@ -596,7 +577,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setCurrentUser(prev => ({
         ...prev,
         xpPoints: prev.xpPoints + earnedXp,
-        checkinsCount: prev.checkinsCount + 1,
+        checkinsCount: prev.checkinsCount + (earnedXp>0?1:0),
         level: Math.floor((prev.xpPoints + earnedXp) / 300) + 1,
       }));
 
@@ -609,7 +590,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         referenceId: newCheckIn.id,
         label: `Check-in vérifié au ${place.name} (+${earnedXp} XP)`,
       };
-      setPointsLedger(prev => [ledgerEntry, ...prev]);
+      if(earnedXp>0)setPointsLedger(prev => [ledgerEntry, ...prev]);
 
       for(const badge of newlyUnlocked) dispatchNotification({recipientId:currentUser.id,category:'progression',title:'Badge débloqué ! 🏆',body:`${badge.name} · ${badge.family} — palier validé par le serveur.`,targetType:'badge'},true);
 
@@ -701,67 +682,21 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     }));
   };
 
-  const submitPlaceProposal = (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>) => {
-    const newProposal: PlaceProposal = {
-      ...data,
-      id: `prp_${Date.now()}`,
-      contributorId: currentUser.id,
-      contributorName: currentUser.displayName,
-      submittedAt: new Date().toISOString(),
-      status: 'pending'
-    };
-
-    setPlaceProposals(prev => [newProposal, ...prev]);
+  const proposalNonce=useRef<{key:string;id:string}|null>(null);
+  const submitPlaceProposal = async (data: Omit<PlaceProposal, 'id' | 'contributorId' | 'contributorName' | 'submittedAt' | 'status'>):Promise<boolean> => {
+    const key=JSON.stringify(data);if(proposalNonce.current?.key!==key)proposalNonce.current={key,id:requestId()};
+    try{const result=await sendShared('/api/places/proposals',{...data,clientRequestId:proposalNonce.current.id});setPlaceProposals(prev=>[{...data,id:result.proposal.id,contributorId:currentUser.id,contributorName:currentUser.displayName,submittedAt:result.proposal.createdAt,status:'pending'},...prev.filter(p=>p.id!==result.proposal.id)]);proposalNonce.current=null;return true;}catch(e){setSyncError(e instanceof Error?e.message:'Proposition non enregistrée.');return false;}
   };
 
-  const approveProposal = (proposalId: string) => {
-    const proposal = placeProposals.find(p => p.id === proposalId);
-    if (!proposal) return;
-
-    const newPlace: Place = {
-      id: `plc_${Date.now()}`,
-      name: proposal.name,
-      category: proposal.category,
-      categoryLabel: proposal.category === 'maquis' ? 'Maquis & Grillades' : 'Restaurant & Café',
-      description: `Lieu proposé par la communauté (${proposal.landmark}).`,
-      commune: proposal.commune,
-      neighborhood: 'Quartier vérifié',
-      address: proposal.address,
-      coordinates: proposal.coordinates,
-      verificationStatus: 'verified',
-      claimStatus: 'unclaimed',
-      exploitationStatus: 'open',
-      priceLevel: '€€',
-      priceDescription: '3 000 – 8 000 FCFA',
-      openingHours: 'Tous les jours : 10h00 - 23h00',
-      isCurrentlyOpen: true,
-      tags: ['Nouveau', 'Validé RED LOOP'],
-      coverImage: '/illustrations/maquis.svg',
-      galleryImages: [],
-      totalCheckins: 0,
-      reviewCount: 0
-    };
-
-    setPlaces(prev => [newPlace, ...prev]);
-    setPlaceProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status: 'accepted' } : p));
-  };
-
-  const rejectProposal = (proposalId: string, reason: string) => {
-    setPlaceProposals(prev => prev.map(p => p.id === proposalId ? { ...p, status: 'rejected', rejectionReason: reason } : p));
-  };
+  const approveProposal = async (proposalId:string) => {try{await sendShared('/api/operator/places/proposals/'+encodeURIComponent(proposalId)+'/review',{decision:'approve'});refreshPlacesRef.current();}catch(e){setSyncError(e instanceof Error?e.message:'Proposition non approuvée.');}};
+  const rejectProposal = async (proposalId:string,reason:string) => {try{await sendShared('/api/operator/places/proposals/'+encodeURIComponent(proposalId)+'/review',{decision:'reject',reason});}catch(e){setSyncError(e instanceof Error?e.message:'Rejet non confirmé.');}};
 
   const resolveModerationCase = (caseId: string, action: 'resolved' | 'dismissed') => {
     setModerationCases(prev => prev.map(c => c.id === caseId ? { ...c, status: action } : c));
   };
 
-  const togglePlaceVerification = (placeId: string) => {
-    setPlaces(prev => prev.map(p => {
-      if (p.id === placeId) {
-        const nextStatus = p.verificationStatus === 'verified' ? 'unverified' : 'verified';
-        return { ...p, verificationStatus: nextStatus };
-      }
-      return p;
-    }));
+  const togglePlaceVerification = async (placeId:string) => {
+    const p=places.find(p=>p.id===placeId);if(!p)return;try{await sendShared('/api/operator/places/'+encodeURIComponent(placeId)+'/verification',{status:p.verificationStatus==='verified'?'unverified':'verified'});refreshPlacesRef.current();void refreshSharedState();}catch(e){setSyncError(e instanceof Error?e.message:'Vérification non confirmée.');}
   };
 
   // Notification Methods
@@ -862,6 +797,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       appEnvironment,
       setAppEnvironment,
       places,
+      placeAliases,
       savedPlaceIds,
       pendingSavedPlaceIds,
       checkins,

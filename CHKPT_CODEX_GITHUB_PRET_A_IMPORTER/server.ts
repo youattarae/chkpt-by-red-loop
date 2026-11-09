@@ -1,3 +1,5 @@
+import {installPlaceRoutes} from './server/placeRoutes';
+import {canMessage,canReadPost,canReadStory,blocked} from './server/contentAccess';
 import {installExperienceRoutes} from './server/experience';
 import {installMessageRoutes} from './server/messages';
 import {fileURLToPath} from 'node:url';
@@ -87,6 +89,7 @@ const mediaRegistry = {
   set: (_id:string,record:ServerMediaRecord) => db.updateSharedData({media:[...db.getRawData().media.filter(asset=>asset.assetId!==record.assetId),record]}),
 };
 installSocialRoutes(app);
+installPlaceRoutes(app);
 installMessageRoutes(app);
 installExperienceRoutes(app);
 installDiscoveryRoutes(app);
@@ -299,7 +302,7 @@ app.get('/api/profiles/:id', requireAuth, (req: Request, res: Response) => {
   const profile = { id: user.id, displayName: user.displayName, username: user.username,
     avatarUrl: user.avatarUrl, visibility: hidden ? 'private' : 'public',
     ...(!hidden || req.user!.id === user.id ? { bio: user.bio, homeZone: user.homeZone, badges:publicBadgeSummaries(user.id), followersCount: user.followersCount, followingCount: user.followingCount } : {}) };
-  res.json({ profile:{...profile,...(req.user!.id===user.id?{xpPoints:user.xpPoints}:{})}, following: db.isFollower(req.user!.id, user.id) });
+  res.json({ profile:{...profile,canMessage:canMessage(req.user!,user),blockedByMe:!!req.user!.blockedUserIds?.includes(user.id),...(req.user!.id===user.id?{xpPoints:user.xpPoints}:{})}, following: db.isFollower(req.user!.id, user.id) });
 });
 app.post('/api/profiles/:id/follow', requireAuth, (req: Request, res: Response) => {
   const id = req.params.id as string;
@@ -351,10 +354,20 @@ app.post('/api/badges/photo',requireAuth,(req,res)=>{
   if(!result){res.status(403).json({error:'published_photo_proof_required'});return;}
   res.json(result);
 });
+app.post('/api/account/profile-badges',requireAuth,(req,res)=>{
+  const ids=req.body.badgeIds;const earned=evaluateBadges(req.user!.id).badges.filter(b=>b.isUnlocked);
+  if(ids!==null&&(!Array.isArray(ids)||ids.length>3||ids.some(id=>typeof id!=='string'||!earned.some(b=>b.id===id))||new Set(ids).size!==ids.length)){res.status(400).json({message:'Choisissez jusqu’à trois badges déjà obtenus.'});return;}
+  req.user!.profileBadgeIds=ids===null?undefined:ids;db.updateSharedData({});res.json({badgeIds:req.user!.profileBadgeIds,badges:publicBadgeSummaries(req.user!.id)});
+});
+app.post('/api/account/blocked-users',requireAuth,(req,res)=>{
+ const {targetId,blocked:shouldBlock}=req.body;if(typeof targetId!=='string'||targetId===req.user!.id||!db.findUserById(targetId)||typeof shouldBlock!=='boolean'){res.status(400).json({message:'Utilisateur invalide.'});return;}
+ req.user!.blockedUserIds=(req.user!.blockedUserIds||[]).filter(id=>id!==targetId);if(shouldBlock)req.user!.blockedUserIds.push(targetId);db.updateSharedData({});res.json({ok:true});
+});
 app.get('/api/places', (_req: Request, res: Response) => {
   res.json({
     success: true,
     places: db.getPlaces(),
+    aliases:Object.fromEntries(db.getRawData().places.filter(p=>p.mergedInto).map(p=>[p.id,db.findPlaceById(p.id)?.id])),
   });
 });
 
@@ -559,7 +572,11 @@ app.get('/api/media/:assetId', (req: Request, res: Response) => {
 
   if(asset.storyId&&!req.user){res.status(401).json({error:'auth_required'});return;}
   if(asset.storyId&&!db.getRawData().stories.some(story=>story.id===asset.storyId&&Date.parse(story.expiresAt)>Date.now()&&(!story.isDemo||privateDemoEnabled))){res.status(404).json({error:'story_expired'});return;}
+  const attachedPosts=db.getRawData().posts.filter(post=>post.mediaUrl==='/api/media/'+asset.assetId||post.media?.some(item=>item.url==='/api/media/'+asset.assetId));
+  if(!asset.storyId&&attachedPosts.length&&!attachedPosts.some(post=>canReadPost(post,req.user))){res.status(403).json({error:'private_resource'});return;}
+  if(asset.storyId){const story=db.getRawData().stories.find(s=>s.id===asset.storyId);if(!story||!canReadStory(story,req.user)){res.status(403).json({error:'restricted_story'});return;}}
   const owner=db.findUserById(asset.ownerId);
+  if(owner&&req.user&&owner.id!==req.user.id&&blocked(owner,req.user)){res.status(403).json({error:'blocked_resource'});return;}
   if(!owner||((owner.visibility==='private'||owner.age<18)&&requesterId!==owner.id)){res.status(403).json({error:'private_resource'});return;}
   // Scenario A: Audience is "private" (Moi uniquement)
   if (asset.audience === 'private') {

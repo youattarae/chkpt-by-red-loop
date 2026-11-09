@@ -1,3 +1,4 @@
+import {ProfileBadgePicker} from './ProfileBadgePicker';
 import {BADGE_CATALOG} from '../../../shared/badgeCatalog';
 import type {Badge,BadgeFamily} from '../../types';
 import {useStore} from '../../services/store';
@@ -11,7 +12,7 @@ function currentBadge(badges:Badge[]){return badges.filter(b=>b.isUnlocked).at(-
 const notice='Collection calculée par le serveur · barème et noms provisoires. Les personnages de présentation peuvent avoir des acquis fictifs préparés.';
 export function BadgesView({onBack,embedded=false}:{onBack:()=>void;embedded?:boolean}){
  const {badges}=useStore(),nav=useNavigation();const items=collection(badges);
- const content=<><p className="text-sm text-muted">Votre collection. Huit univers à découvrir.</p><div aria-label="Collection des huit familles" className="grid grid-cols-2 gap-3 sm:gap-5">{BADGE_FAMILIES.map(family=>{const badge=currentBadge(items.filter(b=>b.family===family.name));return <button key={family.id} type="button" aria-label={family.name} onClick={()=>nav.push({page:'badge-family',id:family.id,tab:nav.current.route.tab})} className="p-3 rounded-3xl bg-gradient-to-br from-surface to-soft border border-line shadow-sm hover:shadow-lg focus-visible:outline-2 focus-visible:outline-blue-500"><BadgeArt badge={badge} locked={!badge}/><span className="block text-sm sm:text-base font-extrabold text-ink pb-2">{family.name}</span></button>;})}</div><p className="text-xs text-muted leading-relaxed">{notice}</p></>;
+ const content=<><p className="text-sm text-muted">Votre collection. Huit univers à découvrir.</p><div aria-label="Collection des huit familles" className="grid grid-cols-2 gap-3 sm:gap-5">{BADGE_FAMILIES.map(family=>{const badge=currentBadge(items.filter(b=>b.family===family.name));return <button key={family.id} type="button" aria-label={family.name} onClick={()=>nav.push({page:'badge-family',id:family.id,tab:nav.current.route.tab})} className="p-3 rounded-3xl bg-gradient-to-br from-surface to-soft border border-line shadow-sm hover:shadow-lg focus-visible:outline-2 focus-visible:outline-blue-500"><BadgeArt badge={badge} locked={!badge}/><span className="block text-sm sm:text-base font-extrabold text-ink pb-2">{family.name}</span></button>;})}</div><ProfileBadgePicker/><p className="text-xs text-muted leading-relaxed">{notice}</p></>;
  return embedded?content:<PageLayout title="Badges et progression" onBack={onBack}>{content}</PageLayout>;
 }
 export function BadgeFamilyPage({id,onBack,onAccount}:{id:string;onBack:()=>void;onAccount:()=>void}){

@@ -1,3 +1,4 @@
+import {useNavigation} from '../../navigation/Navigation';
 import {createContext,useContext,useEffect,useRef,useState,ReactNode} from 'react';
 import {Plus,X,ChevronLeft,ChevronRight,Trash2} from 'lucide-react';
 import {useStore} from '../../services/store';
@@ -5,7 +6,7 @@ import {SafeImage} from '../common/SafeImage';
 import {SafeVideo} from '../common/SafeVideo';
 import {PostMediaUploader} from '../common/PostMediaUploader';
 import type {PostMedia} from '../../types';
-interface Story {id:string;authorId:string;authorName:string;authorAvatar:string;mediaUrl:string;mediaType:'image'|'video';text:string;audience:string;createdAt:string;expiresAt:string;isDemo?:boolean}
+interface Story {id:string;authorId:string;authorName:string;authorAvatar:string;mediaUrl:string;mediaType:'image'|'video';text:string;audience:string;createdAt:string;expiresAt:string;isDemo?:boolean;canReply?:boolean}
 const StoriesContext=createContext<{stories:Story[];open:(id:string)=>void;create:()=>void}>({stories:[],open:()=>{},create:()=>{}});
 function StoryDialog({children,label,onClose}:{children:ReactNode;label:string;onClose:()=>void}){
   const dialog=useRef<HTMLDialogElement>(null);
@@ -13,9 +14,12 @@ function StoryDialog({children,label,onClose}:{children:ReactNode;label:string;o
   return <dialog ref={dialog} aria-label={label} onCancel={event=>{event.preventDefault();onClose();}} className="fixed inset-0 m-auto w-full max-w-none h-[100dvh] max-h-none sm:max-w-lg sm:h-[90dvh] p-0 rounded-none sm:rounded-3xl bg-canvas text-ink border border-line backdrop:bg-black/80"><div className="relative h-full overflow-y-auto p-4 pb-8"><button autoFocus type="button" onClick={onClose} aria-label="Fermer les stories" className="absolute right-3 top-3 z-10 p-2 rounded-full bg-surface/90"><X className="w-5 h-5"/></button>{children}</div></dialog>;
 }
 export function StoriesProvider({children}:{children:ReactNode}){
+  const nav=useNavigation();
   const {authSessionToken:token,isServerAuthenticated,currentUser}=useStore();
   const [snapshot,setSnapshot]=useState<{token:string;stories:Story[]}>({token:'',stories:[]});
+  const [reply,setReply]=useState(''),[replyBusy,setReplyBusy]=useState(false);const replyNonce=useRef<{key:string;id:string}|null>(null);
   const [view,setView]=useState<{token:string;id:string}|null>(null);
+  const viewRef=useRef(view);viewRef.current=view;
   const [compose,setCompose]=useState<string|null>(null);
   const [error,setError]=useState(''),[busy,setBusy]=useState(false),[mediaBusy,setMediaBusy]=useState(false);
   const [media,setMedia]=useState<PostMedia[]>([]),[text,setText]=useState(''),[audience,setAudience]=useState('public');
@@ -31,6 +35,9 @@ export function StoriesProvider({children}:{children:ReactNode}){
   const stories=snapshot.token===token&&isServerAuthenticated?snapshot.stories.filter(story=>Date.parse(story.expiresAt)>now):[];
   const story=view?.token===token?stories.find(story=>story.id===view.id):undefined;
   const group=story?stories.filter(item=>item.authorId===story.authorId):[];const index=group.findIndex(item=>item.id===story?.id);
+  useEffect(()=>{setReply('');setError('');replyNonce.current=null;},[story?.id,token]);
+  useEffect(()=>{const open=async(e:Event)=>{const id=(e as CustomEvent).detail;if(typeof id!=='string')return;try{const r=await fetch('/api/stories/'+encodeURIComponent(id),{headers:{Authorization:`Bearer ${token}`},cache:'no-store'});const data=await r.json();if(!r.ok)throw Error(data.message||'Story indisponible.');if(localStorage.getItem('chkpt_session_token')!==token)return;setSnapshot(p=>({token,stories:[...(p.token===token?p.stories:[]).filter(s=>s.id!==id),data.story]}));setView({token,id});}catch(e){setError(e instanceof Error?e.message:'Story indisponible.');}};window.addEventListener('chkpt:story',open);return()=>window.removeEventListener('chkpt:story',open);},[token]);
+  async function replyToStory(){if(!story||replyBusy||!reply.trim())return;const id=story.id,author=story.authorId;const key=token+':'+id+':'+reply.trim();if(replyNonce.current?.key!==key)replyNonce.current={key,id:crypto.randomUUID()};setReplyBusy(true);setError('');try{const r=await fetch('/api/messages/'+encodeURIComponent(author),{method:'POST',headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json'},body:JSON.stringify({text:reply.trim(),entity:{type:'story',id},clientRequestId:replyNonce.current.id})});const data=await r.json();if(!r.ok)throw Error(data.message||'Réponse non confirmée.');if(localStorage.getItem('chkpt_session_token')!==token)return;window.dispatchEvent(new Event('chkpt:experience'));if(viewRef.current?.id===id){setReply('');setView(null);nav.push({page:'conversation',id:author,tab:nav.current.route.tab});}}catch(e){if(viewRef.current?.id===id)setError(e instanceof Error?e.message:'Réponse non confirmée. Réessayez.');}finally{setReplyBusy(false);}}
   function create(){setError('');setMedia([]);setText('');setAudience(currentUser.visibility==='private'?'private':'public');nonce.current=Array.from(crypto.getRandomValues(new Uint8Array(16)),byte=>byte.toString(16).padStart(2,'0')).join('');setCompose(token);}
   async function publish(){
     if(!media.length||mediaBusy||busy)return;setBusy(true);setError('');
@@ -39,6 +46,7 @@ export function StoriesProvider({children}:{children:ReactNode}){
   }
   async function remove(){if(!story||busy)return;setBusy(true);setError('');try{const response=await fetch('/api/stories/'+encodeURIComponent(story.id),{method:'DELETE',headers:{Authorization:`Bearer ${token}`}});if(!response.ok)throw Error('Suppression non confirmée.');revision.current++;setSnapshot(previous=>({...previous,stories:previous.stories.filter(item=>item.id!==story.id)}));setView(null);}catch(error){setError(error instanceof Error?error.message:'Suppression impossible.');}finally{setBusy(false);}}
   return <StoriesContext.Provider value={{stories,open:id=>{setError('');setView({token,id});},create}}>{children}
+    {error&&!story&&!compose&&<p role="status" className="fixed bottom-24 left-3 right-3 z-50 p-3 bg-canvas border border-line rounded-xl">{error}</p>}
     {compose===token&&compose!==null&&<StoryDialog label="Ajouter une story" onClose={()=>{if(!busy&&!mediaBusy)setCompose(null);}}>
       <h2 className="font-extrabold text-xl pr-10">Votre story</h2><p className="text-xs text-muted my-3">Une image ou une vidéo · visible pendant 24 h · démonstration.</p>
       {!token||!isServerAuthenticated?<p role="status">Connectez-vous dans Gérer mon compte pour ajouter une story.</p>:<><PostMediaUploader disabled={busy} key={nonce.current} value={media} onChange={setMedia} onBusy={setMediaBusy} maxCount={1} privateUpload/>
@@ -52,6 +60,7 @@ export function StoriesProvider({children}:{children:ReactNode}){
       <div className="my-4 rounded-2xl overflow-hidden">{story.mediaType==='video'?<SafeVideo key={story.id} src={story.mediaUrl}/>:<SafeImage src={story.mediaUrl} alt="Image de la story" className="w-full max-h-[65dvh] object-contain bg-black"/>}</div>
       <p className="whitespace-pre-wrap break-words text-sm">{story.text}</p><p className="text-[10px] text-muted mt-3">{story.isDemo?'Story fictive de présentation ·':'Story de démonstration ·'} aucune preuve de visite ni XP.</p>
       <div className="flex justify-between mt-4"><button type="button" aria-label="Story précédente" disabled={index<=0} onClick={()=>setView({token,id:group[index-1].id})} className="p-3 disabled:opacity-30"><ChevronLeft/></button><button type="button" aria-label="Story suivante" disabled={index>=group.length-1} onClick={()=>setView({token,id:group[index+1].id})} className="p-3 disabled:opacity-30"><ChevronRight/></button></div>
+      {story.canReply&&<form onSubmit={e=>{e.preventDefault();void replyToStory();}} className="space-y-2 mt-4"><label className="block text-sm">Répondre à la Story…<textarea aria-label="Répondre à la Story…" value={reply} onChange={e=>setReply(e.target.value)} maxLength={2000} disabled={replyBusy} rows={2} className="block mt-2 w-full bg-soft border border-line p-3 rounded-xl"/></label><button type="submit" disabled={replyBusy||!reply.trim()} className="p-3 rounded-xl bg-blue-600 text-white">{replyBusy?'Envoi…':'Envoyer en message privé'}</button><p className="text-xs text-muted">Votre réponse est privée et rejoint la conversation avec l’auteur.</p></form>}
       {story.authorId===currentUser.id&&<button type="button" disabled={busy} onClick={remove} className="flex gap-2 items-center text-rose-500 text-sm p-3"><Trash2 className="w-4 h-4"/>Supprimer cette story</button>}
       {error&&<p role="alert">{error}</p>}
     </StoryDialog>}

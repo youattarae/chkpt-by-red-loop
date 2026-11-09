@@ -1,3 +1,5 @@
+import {MarkerSymbol} from './MarkerSymbol';
+import {MARKER_KINDS} from '../../../shared/mapMarkers';
 import {LocationControls} from '../common/LocationControls';
 import {SearchBar} from '../search/SearchExperience';
 import {defaultFilters} from '../../navigation/Navigation';
@@ -23,7 +25,7 @@ import {
   Filter 
 } from 'lucide-react';
 
-const DynamicMap = React.lazy(()=>import('./DynamicMap').then(module=>({default:module.DynamicMap})));
+const DynamicMap = React.lazy(()=>import('./VectorMap').then(module=>({default:module.VectorMap})));
 
 interface MapViewProps {
   onSelectPlace: (placeId: string) => void;
@@ -32,6 +34,7 @@ interface MapViewProps {
 export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   const { places, userCurrentCoordinates, locationReady, activeLocationMode } = useStore();
   const camera=React.useRef<{lat:number;lng:number;zoom:number}>({lat:5.348,lng:-4.015,zoom:12});
+  const [markerKind,setMarkerKind]=useState('all');
   const [mapUnavailable, setMapUnavailable] = useState(false);
   const [interactive, setInteractive] = useState(true);
 
@@ -57,7 +60,7 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   // Reset to display all places
   const handleResetFilters = () => {
     setSelectedCategories([]);
-    setRadius('all');setCategory('all');setSort('relevance');
+    setRadius('all');setCategory('all');setSort('relevance');setMarkerKind('all');
   };
 
   React.useEffect(()=>{const apply=(e:Event)=>{const f=(e as CustomEvent).detail;setCategory(f.category);setRadius(f.radius);setSort(f.sort);setSelectedCategories(f.categories||[]);};window.addEventListener('chkpt:mapfilters',apply);return()=>window.removeEventListener('chkpt:mapfilters',apply);},[]);
@@ -65,8 +68,8 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   React.useEffect(()=>{const outside=(e:PointerEvent)=>{const node=document.querySelector<HTMLDetailsElement>('details[data-map-tools][open]');if(node&&!node.contains(e.target as Node))node.open=false;};document.addEventListener('pointerdown',outside);return()=>document.removeEventListener('pointerdown',outside);},[]);
   // Filtered places according to active category chips
   const filteredPlaces = useMemo(() => {
-    return places.filter(place => (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && (category==='all'||(category==='clubs'?/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):category==='bars'?place.category==='bars_lounges'&&!/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):place.category===category)) && (radius==='all'||locationReady&&calculateDistanceMeters(userCurrentCoordinates,place.coordinates)<=Number(radius))).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'fr'):0);
-  }, [places, selectedCategories, category, radius, sort, locationReady, userCurrentCoordinates]);
+    return places.filter(place => (markerKind==='all'||(place.markerKind||place.category)===markerKind) && (selectedCategories.length === 0 || selectedCategories.includes(place.category as PlaceCategory)) && (category==='all'||(category==='clubs'?/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):category==='bars'?place.category==='bars_lounges'&&!/club|discoth[eè]que/i.test(place.categoryLabel+' '+place.tags.join(' ')):place.category===category)) && (radius==='all'||locationReady&&calculateDistanceMeters(userCurrentCoordinates,place.coordinates)<=Number(radius))).sort((a,b)=>sort==='name'?a.name.localeCompare(b.name,'fr'):0);
+  }, [places, selectedCategories, category, radius, sort, locationReady, userCurrentCoordinates,markerKind]);
 
   // Selected place for bottom card preview
   const activePlace = useMemo(() => {
@@ -87,8 +90,8 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
   return (
     <div className="map-screen relative w-full h-[calc(100dvh-28px)] min-h-[480px] bg-canvas overflow-hidden">
       
-      <span className="absolute bottom-28 left-4 z-10 text-[10px] text-muted bg-canvas/80 rounded-lg px-2 py-1">{interactive ? 'Repères de lieux fictifs' : 'Carte illustrée · positions de démonstration'}</span>
-      <details data-map-tools className="absolute top-40 right-3 z-30 text-xs"><summary className="p-2 rounded-full bg-canvas shadow cursor-pointer">Outils carte</summary><div className="mt-2 p-3 w-64 max-h-[55dvh] overflow-auto bg-canvas border border-line rounded-2xl space-y-3"><LocationControls onSelect={()=>{const d=document.querySelector<HTMLDetailsElement>('details[data-map-tools]');if(d)d.open=false;}}/><SmartPlaceSearch/><button type="button" aria-pressed={interactive} onClick={e=>{setInteractive(true);e.currentTarget.closest('details')?.removeAttribute('open');}} className="p-2 bg-soft rounded-xl">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={e=>{setInteractive(false);e.currentTarget.closest('details')?.removeAttribute('open');}} className="p-2 bg-soft rounded-xl">Carte illustrée</button></div></details>
+
+      <details data-map-tools className="absolute top-40 right-3 z-30 text-xs"><summary className="p-2 rounded-full bg-canvas shadow cursor-pointer">Outils carte</summary><div className="mt-2 p-3 w-64 max-h-[55dvh] overflow-auto bg-canvas border border-line rounded-2xl space-y-3"><LocationControls onSelect={()=>{const d=document.querySelector<HTMLDetailsElement>('details[data-map-tools]');if(d)d.open=false;}}/><SmartPlaceSearch/><button type="button" disabled={!locationReady} onClick={()=>{window.dispatchEvent(new Event('chkpt:radar'));document.querySelector('details[data-map-tools]')?.removeAttribute('open');}} className="p-3 bg-blue-600 text-white rounded-xl disabled:opacity-50">Mon radar · 250 m</button>{interactive&&<button type="button" onClick={()=>{window.dispatchEvent(new Event('chkpt:map-fit'));document.querySelector('details[data-map-tools]')?.removeAttribute('open');}} className="p-3 bg-soft rounded-xl">Voir les lieux affichés</button>}<label className="block">Pictogrammes<select aria-label="Pictogrammes de lieux" value={markerKind} onChange={e=>setMarkerKind(e.target.value)} className="block bg-soft p-2 w-full"><option value="all">Tous</option>{MARKER_KINDS.map(k=><option key={k.id} value={k.id}>{k.glyph} {k.label}</option>)}</select></label><details><summary className="p-2 cursor-pointer">Liste des lieux affichés</summary>{filteredPlaces.map(p=><button type="button" key={p.id} onClick={()=>{setSelectedPlaceId(p.id);document.querySelector('details[data-map-tools]')?.removeAttribute('open');}} className="block text-left p-3 w-full">{p.name}</button>)}</details><p>✓ Vérifié · ? Non vérifié · halo rouge : sponsorisé, indépendamment de la vérification.</p><p className="text-[10px] text-muted">Le simulateur est identifié dans les commandes de position. Le serveur contrôle chaque check. Le secours illustré est schématique.</p><button type="button" aria-pressed={interactive} onClick={e=>{setInteractive(true);e.currentTarget.closest('details')?.removeAttribute('open');}} className="p-2 bg-soft rounded-xl">Carte interactive</button><button type="button" aria-pressed={!interactive} onClick={e=>{setInteractive(false);e.currentTarget.closest('details')?.removeAttribute('open');}} className="p-2 bg-soft rounded-xl">Carte illustrée</button></div></details>
       {mapUnavailable&&!interactive&&<p role="status" className="absolute bottom-24 left-3 right-3 text-[10px] z-10">Fond de carte indisponible : carte illustrée de secours active.</p>}
       <p role="status" className="sr-only">{filteredPlaces.length} lieu{filteredPlaces.length>1?'x':''} trouvé{filteredPlaces.length>1?'s':''} · données fictives</p>
       {/* Floating Chip-Based Category Filter Bar */}
@@ -193,8 +196,8 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
           {filteredPlaces.map((place,index) => {
             // Schematic fallback: a spaced layout keeps every touch target reachable.
             // Real coordinates and radar remain canonical; only the illustration is schematic.
-            const topPct=32+(index%3)*18;
-            const leftPct=25+Math.floor(index/3)*48;
+            const topPct=30+Math.floor(index/3)*15;
+            const leftPct=18+(index%3)*32;
 
             const isSelected = activePlace?.id === place.id;
             const isVerified = place.verificationStatus === 'verified';
@@ -208,23 +211,13 @@ export const MapView: React.FC<MapViewProps> = ({ onSelectPlace }) => {
                 <button
                   onClick={() => setSelectedPlaceId(place.id)}
                   aria-label={`Choisir ${place.name}`}
-                  className={`relative flex flex-col items-center group cursor-pointer transition-transform ${
-                    isSelected ? 'scale-125 z-30' : 'hover:scale-110 z-10'
+                  className={`relative p-2 flex flex-col items-center group cursor-pointer transition-transform ${
+                    isSelected ? 'scale-110 z-30' : 'hover:scale-110 z-10'
                   }`}
                 >
-                  <div
-                    className={`w-8 h-8 rounded-full border-2 flex items-center justify-center shadow-lg transition-colors ${
-                      isSelected
-                        ? `${isVerified?'bg-emerald-700':'bg-gray-600'} border-white text-white ring-4 ring-blue-500/40`
-                        : isVerified
-                        ? 'bg-emerald-950 border-emerald-500 text-emerald-300'
-                        : 'bg-surface border-line-strong text-muted'
-                    }`}
-                  >
-                    <MapPin className="w-4 h-4 fill-current" />
-                  </div>
+                  <MarkerSymbol place={place} selected={isSelected}/>
 
-                  <span className={`mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap max-w-28 truncate shadow-md backdrop-blur-md border ${
+                  <span className={`mt-1 px-2 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap max-w-20 truncate shadow-md backdrop-blur-md border ${
                     isSelected
                       ? 'bg-rose-950 text-ink border-rose-500'
                       : 'bg-surface/90 text-body border-line'

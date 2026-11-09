@@ -1,3 +1,4 @@
+import {PlaceProvenance} from './PlaceProvenance';
 import {openCheck} from '../experience/actions';
 import { ReviewSection } from './ReviewSection';
 import { PlaceShare } from './PlaceShare';
@@ -39,7 +40,7 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
           <h1 id={titleId} className="text-xl sm:text-3xl font-extrabold tracking-tight leading-tight">{place.name}</h1>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 text-muted"><MapPin className="w-3.5 h-3.5 text-rose-400" />{place.commune} · {place.neighborhood}</span>
-            <span className="bg-blue-950 text-blue-400 rounded-lg px-2 py-1 text-[10px] font-semibold">Lieu fictif de démonstration</span>
+            <span className="bg-blue-950 text-blue-400 rounded-lg px-2 py-1 text-[10px] font-semibold">{place.isDemo===false?'Fiche CHKPT · informations à confirmer':'Lieu fictif de démonstration'}</span>
           </div>
           <div className="flex flex-wrap items-center gap-2 text-xs">
             {typeof place.rating === 'number' && Number.isFinite(place.rating) && <span className="inline-flex items-center gap-1 text-body"><Star className="w-4 h-4 text-amber-400 fill-current" /><strong>{place.rating.toFixed(1).replace('.', ',')}</strong><span className="text-muted">({place.reviewCount} avis fictifs)</span></span>}
@@ -58,8 +59,9 @@ export function PlaceDetailModal({ place, onClose }: PlaceDetailModalProps) {
           <div className="flex gap-2 overflow-x-auto pb-2">{images.map((source, index) => <button key={source} type="button" aria-label={`Voir l’illustration ${index + 1}`} aria-pressed={activeImage === index} onClick={() => { setActiveImage(index); setFallback(false); }} className={`shrink-0 w-24 h-20 overflow-hidden rounded-xl border-2 cursor-pointer ${activeImage === index ? 'border-blue-400' : 'border-transparent'}`}><SafeImage src={source} alt="" className="w-full h-full object-cover" /></button>)}</div>
         </section>}
         <button type="button" onClick={()=>openCheck(place.id)} className="w-full bg-blue-600 text-white font-bold rounded-2xl p-4">Faire un check</button>
+        <PlaceProvenance id={place.id}/>
         <ReviewSection key={`${place.id}:${currentUser.id}`} placeId={place.id} />
-        <div className="border-t border-line pt-4 flex flex-wrap justify-between gap-2 text-xs text-muted"><span>{place.totalCheckins} visites · données fictives</span><span>{!fallback && isGeneratedPublicationImage(image) ? 'Illustration générée par IA' : 'Illustration de présentation'}</span></div>
+        <div className="border-t border-line pt-4 flex flex-wrap justify-between gap-2 text-xs text-muted"><span>{place.isDemo===false?'Compteurs publics non publiés':`${place.totalCheckins} visites · données fictives`}</span><span>{!fallback && isGeneratedPublicationImage(image) ? 'Illustration générée par IA' : 'Illustration de présentation'}</span></div>
       </div>
     </section>
   </div>;

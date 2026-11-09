@@ -1,3 +1,4 @@
+import {PlaceAdminTools} from './PlaceAdminTools';
 import { SafeImage } from '../common/SafeImage';
 /**
  * @license
@@ -158,53 +159,7 @@ export const OperatorConsole: React.FC = () => {
       )}
 
       {/* Tab 2: Proposals */}
-      {activeTab === 'proposals' && (
-        <div className="space-y-3">
-          {placeProposals.map((prp) => (
-            <div
-              key={prp.id}
-              className="p-4 bg-surface border border-line rounded-3xl space-y-2 text-xs"
-            >
-              <div className="flex items-center justify-between">
-                <h4 className="font-bold text-ink text-sm">{prp.name}</h4>
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                  prp.status === 'accepted' ? 'bg-emerald-950 text-emerald-300' :
-                  prp.status === 'rejected' ? 'bg-rose-950 text-rose-300' :
-                  'bg-amber-950 text-amber-300'
-                }`}>
-                  {prp.status}
-                </span>
-              </div>
-
-              <div className="text-muted space-y-0.5">
-                <p>Commune : {prp.commune} · Catégorie : {prp.category}</p>
-                <p>Adresse : {prp.address}</p>
-                <p>Repère : {prp.landmark}</p>
-                <p className="text-[10px]">Contributeur : {prp.contributorName}</p>
-              </div>
-
-              {prp.status === 'pending' && (
-                <div className="flex gap-2 pt-2 border-t border-line">
-                  <button
-                    onClick={() => approveProposal(prp.id)}
-                    className="flex-1 py-1.5 bg-emerald-700 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Approuver & Créer le lieu</span>
-                  </button>
-                  <button
-                    onClick={() => rejectProposal(prp.id, 'Informations insuffisantes')}
-                    className="flex-1 py-1.5 bg-soft hover:bg-rose-950 text-body hover:text-rose-300 font-bold rounded-xl flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                    <span>Rejeter</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          ))}
-        </div>
-      )}
+      {activeTab === 'proposals' && <PlaceAdminTools/>}
 
       {/* Tab 3: Moderation */}
       {activeTab === 'moderation' && (
@@ -244,35 +199,7 @@ export const OperatorConsole: React.FC = () => {
       )}
 
       {/* Tab 4: Certified Places */}
-      {activeTab === 'places' && (
-        <div className="space-y-2">
-          {places.map((place) => (
-            <div
-              key={place.id}
-              className="p-3 bg-surface border border-line rounded-2xl flex items-center justify-between text-xs"
-            >
-              <div className="flex items-center gap-3">
-                <SafeImage src={place.coverImage} alt="" className="w-10 h-10 rounded-xl object-cover" />
-                <div>
-                  <h4 className="font-bold text-ink">{place.name}</h4>
-                  <span className="text-[10px] text-muted">{place.commune} · {place.totalCheckins} check-ins</span>
-                </div>
-              </div>
-
-              <button
-                onClick={() => togglePlaceVerification(place.id)}
-                className={`px-2.5 py-1 rounded-xl text-[10px] font-bold border transition-colors cursor-pointer ${
-                  place.verificationStatus === 'verified'
-                    ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
-                    : 'bg-canvas text-muted border-line'
-                }`}
-              >
-                {place.verificationStatus === 'verified' ? 'Certifié ✓' : 'Non certifié'}
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+      {activeTab === 'places' && <PlaceAdminTools/>}
 
     </div>
   );

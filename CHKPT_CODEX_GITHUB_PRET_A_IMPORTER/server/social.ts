@@ -8,15 +8,13 @@ import { evaluateBadges, awardPublishedPhoto } from './badgeEngine';
 import { requireAuth } from './auth';
 import type { Post } from '../src/types';
 
-export function canReadPost(post:StoredPost,user?:UserEntity):boolean {
-  if(user?.id===post.authorId)return true;
-  const owner=db.findUserById(post.authorId);
-  if(!owner||owner.visibility==='private'||owner.age<18)return false;
-  return post.audience==='public'||(post.audience==='followers'&&!!user&&db.isFollower(user.id,owner.id));
-}
-function postDTO(post:StoredPost,user?:UserEntity):Post {
+export {canReadPost} from './contentAccess';
+import {canReadPost} from './contentAccess';
+export function postDTO(post:StoredPost,user?:UserEntity):Post {
   const {likedBy,baseLikesCount,baseCommentsCount,...content}=post;
-  return {...content,likesCount:baseLikesCount+likedBy.length,isLikedByCurrentUser:!!user&&likedBy.includes(user.id),commentsCount:baseCommentsCount+post.comments.length};
+  const source=post.repostOf?db.getRawData().posts.find(p=>p.id===post.repostOf&&!p.repostOf&&canReadPost(p,user)):undefined;
+  const check=post.linkedCheckinId?db.findCheckinById(post.linkedCheckinId):undefined;
+  return {...content,...(post.repostOf?{media:[],mediaUrl:undefined,original:source?postDTO(source,user):null}:{}),...(check?{isVerifiedVisit:check.status==='verified',visitStatus:check.status}:{}),likesCount:baseLikesCount+likedBy.length,isLikedByCurrentUser:!!user&&likedBy.includes(user.id),commentsCount:baseCommentsCount+post.comments.length};
 }
 export function readablePosts(user?:UserEntity):Post[]{return db.getRawData().posts.filter(post=>canReadPost(post,user)).map(post=>postDTO(post,user));}
 export function installSocialRoutes(app:Express){
@@ -24,15 +22,15 @@ export function installSocialRoutes(app:Express){
   app.get('/api/account/state',requireAuth,(req,res)=>{
     res.setHeader('Cache-Control','private, no-store');
     const user=req.user!;
-    res.json({userId:user.id,user:{id:user.id,displayName:user.displayName,username:user.username,avatarUrl:user.avatarUrl,bio:user.bio,homeZone:user.homeZone,role:user.role,visibility:user.visibility,age:user.age,xpPoints:user.xpPoints,level:user.level,checkinsCount:user.checkinsCount,followersCount:user.followersCount,followingCount:user.followingCount},badges:evaluateBadges(user.id).badges,followingIds:db.getFollowing(user.id),posts:readablePosts(user),savedPlaceIds:db.getRawData().saved_places.filter(item=>item.userId===user.id).map(item=>item.placeId),checkins:db.getCheckins(user.id),pointsLedger:db.getRawData().points_ledger.filter(entry=>entry.userId===user.id).map(entry=>({id:entry.id,userId:entry.userId,sourceAction:entry.sourceAction,deltaXp:entry.amount,referenceId:entry.referenceId,timestamp:entry.timestamp,label:entry.sourceAction==='BADGE_UNLOCKED'?'Palier de badge validé':entry.sourceAction==='CHECKIN_VERIFIED'?`Visite validée à ${db.findCheckinById(entry.referenceId)?.placeName||'un lieu'} (+${entry.amount} XP)`:'Preuve de progression'})).reverse()});
+    res.json({placesRevision:db.getRawData().placesRevision||0,userId:user.id,user:{id:user.id,displayName:user.displayName,username:user.username,avatarUrl:user.avatarUrl,bio:user.bio,homeZone:user.homeZone,profileBadgeIds:user.profileBadgeIds,role:user.role,visibility:user.visibility,age:user.age,xpPoints:user.xpPoints,level:user.level,checkinsCount:user.checkinsCount,followersCount:user.followersCount,followingCount:user.followingCount},badges:evaluateBadges(user.id).badges,followingIds:db.getFollowing(user.id),posts:readablePosts(user),savedPlaceIds:db.getRawData().saved_places.filter(item=>item.userId===user.id).map(item=>item.placeId),checkins:db.getCheckins(user.id),pointsLedger:db.getRawData().points_ledger.filter(entry=>entry.userId===user.id).map(entry=>({id:entry.id,userId:entry.userId,sourceAction:entry.sourceAction,deltaXp:entry.amount,referenceId:entry.referenceId,timestamp:entry.timestamp,label:entry.sourceAction==='BADGE_UNLOCKED'?'Palier de badge validé':entry.sourceAction==='CHECKIN_VERIFIED'?`Visite validée à ${db.findCheckinById(entry.referenceId)?.placeName||'un lieu'} (+${entry.amount} XP)`:'Preuve de progression'})).reverse()});
   });
   app.post('/api/posts',requireAuth,(req,res)=>{
     const user=req.user!;const data=req.body;
-    if(data.entity!==undefined&&(!validRef(data.entity)||entityCard(data.entity).unavailable)){res.status(400).json({error:'invalid_entity'});return;}
+    if(data.entity!==undefined&&(!validRef(data.entity)||!['place','event'].includes(data.entity.type)||entityCard(data.entity,user).unavailable)){res.status(400).json({error:'invalid_entity'});return;}
     if(typeof data.text!=='string'||!data.text.trim()||data.text.trim().length>3000){res.status(400).json({error:'invalid_post',message:'Le texte doit contenir de 1 à 3 000 caractères.'});return;}
     const place=data.linkedPlaceId?db.findPlaceById(data.linkedPlaceId):undefined;
     const check=data.linkedCheckinId?db.findCheckinById(data.linkedCheckinId):undefined;
-    if((data.linkedPlaceId&&!place)||(data.linkedCheckinId&&(!check||check.userId!==user.id||check.status!=='verified'||check.placeId!==place?.id))){res.status(400).json({error:'invalid_visit_link'});return;}
+    if((data.linkedPlaceId&&!place)||(data.linkedCheckinId&&(!check||check.userId!==user.id||!['verified','pending_validation'].includes(check.status)||check.placeId!==place?.id))){res.status(400).json({error:'invalid_visit_link'});return;}
     const audience=user.visibility==='private'||user.age<18?'private':(data.audience===undefined?(check?.audience||'public'):data.audience);
     if(!['public','followers','private'].includes(audience)){res.status(400).json({error:'invalid_audience'});return;}
     const requested=data.media===undefined?(data.mediaUrl?[{url:data.mediaUrl}]:[]):data.media;
@@ -60,10 +58,27 @@ export function installSocialRoutes(app:Express){
     const id='post_'+crypto.createHash('sha256').update(user.id+':'+nonce).digest('hex').slice(0,32);
     const existing=db.getRawData().posts.find(item=>item.id===id);
     if(existing){const awards=existing.linkedCheckinId&&existing.mediaUrl?awardPublishedPhoto(user.id,existing.linkedCheckinId,existing.mediaUrl):null;res.json({post:postDTO(existing,user),awards});return;}
-    const post:StoredPost={entity:data.entity,id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),media:attachments,mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:!!check,isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
+    const post:StoredPost={entity:data.entity,id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:data.text.trim(),media:attachments,mediaUrl,mediaType:'image',linkedPlaceId:place?.id,linkedPlaceName:place?.name,linkedCheckinId:check?.id,isVerifiedVisit:check?.status==='verified',isSimulated:check?.isSimulated,audience,likesCount:0,isLikedByCurrentUser:false,commentsCount:0,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
     db.updateSharedData({posts:[post,...db.getRawData().posts],media});
     const awards=check&&mediaUrl?awardPublishedPhoto(user.id,check.id,mediaUrl):null;
     res.status(201).json({post:postDTO(post,user),awards});
+  });
+  app.post('/api/posts/:id/repost',requireAuth,(req,res)=>{
+    const user=req.user!;const first=db.getRawData().posts.find(p=>p.id===req.params.id&&canReadPost(p,user));
+    const source=first?.repostOf?db.getRawData().posts.find(p=>p.id===first.repostOf&&canReadPost(p,user)):first;
+    const {clientRequestId,text='',audience='public'}=req.body;
+    if(!source||source.repostOf){res.status(404).json({message:'Publication source indisponible.'});return;}
+    if(typeof text!=='string'||text.length>3000||!['public','followers','private'].includes(audience)||typeof clientRequestId!=='string'||!/^[a-zA-Z0-9_-]{8,100}$/.test(clientRequestId)){res.status(400).json({message:'Repartage invalide.'});return;}
+    const id='repost_'+crypto.createHash('sha256').update(user.id+':'+clientRequestId).digest('hex').slice(0,32);
+    const old=db.getRawData().posts.find(p=>p.id===id);if(old){res.json({post:postDTO(old,user)});return;}
+    const post:StoredPost={id,repostOf:source.id,authorId:user.id,authorName:user.displayName,authorUsername:user.username,authorAvatar:user.avatarUrl,createdAt:new Date().toISOString(),text:text.trim(),audience:user.age<18||user.visibility==='private'||source.audience==='private'?'private':audience,isVerifiedVisit:false,likesCount:0,commentsCount:0,isLikedByCurrentUser:false,comments:[],likedBy:[],baseLikesCount:0,baseCommentsCount:0};
+    db.updateSharedData({posts:[post,...db.getRawData().posts]});res.status(201).json({post:postDTO(post,user)});
+  });
+  app.delete('/api/posts/:id',requireAuth,(req,res)=>{const post=db.getRawData().posts.find(p=>p.id===req.params.id&&p.authorId===req.user!.id);if(!post){res.status(404).json({message:'Publication indisponible.'});return;}db.updateSharedData({posts:db.getRawData().posts.filter(p=>p.id!==post.id)});res.json({ok:true});});
+  app.patch('/api/posts/:id',requireAuth,(req,res)=>{const post=db.getRawData().posts.find(p=>p.id===req.params.id&&p.authorId===req.user!.id);const audience=req.body.audience;
+    if(!post){res.status(404).json({message:'Publication indisponible.'});return;}
+    if(!['private','followers','public'].includes(audience)){res.status(400).json({message:'Visibilité invalide.'});return;}
+    const next={...post,audience:req.user!.age<18||req.user!.visibility==='private'?'private':audience};db.updateSharedData({posts:db.getRawData().posts.map(p=>p.id===post.id?next:p)});res.json({post:postDTO(next,req.user)});
   });
   function findPost(req:Request){return db.getRawData().posts.find(post=>post.id===req.params.id&&canReadPost(post,req.user));}
   app.post('/api/posts/:id/like',requireAuth,(req,res)=>{

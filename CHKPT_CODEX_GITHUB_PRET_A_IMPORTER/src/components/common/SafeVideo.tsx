@@ -13,5 +13,5 @@ export function SafeVideo({src}:{src:string}){
     return()=>{controller.abort();if(url)URL.revokeObjectURL(url);};
   },[src,authSessionToken]);
   if(failed)return <p role="status" className="p-3 text-sm">Vidéo indisponible.</p>;
-  return media?.src===src&&media.token===authSessionToken?<video src={media.url} controls playsInline preload="metadata" className="w-full aspect-[3/2] object-contain bg-black" aria-label="Vidéo de la publication"/>:<p className="p-3 text-sm">Chargement de la vidéo…</p>;
+  return media?.src===src&&media.token===authSessionToken?<video muted src={media.url} controls playsInline preload="metadata" className="w-full aspect-[3/2] object-contain bg-black" aria-label="Vidéo de la publication"/>:<p className="p-3 text-sm">Chargement de la vidéo…</p>;
 }

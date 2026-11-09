@@ -12,7 +12,9 @@
     "test": "tsx tests/lot_a.test.ts",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
-    "test:browser": "tsx tests/lot_a.test.ts --browser"
+    "test:browser": "tsx tests/lot_a.test.ts --browser",
+    "places:import": "tsx scripts/import-osm.mts",
+    "test:nov9": "tsx tests/run-isolated.mts"
   },
   "dependencies": {
     "@fontsource/plus-jakarta-sans": "^5.3.0",
@@ -23,6 +25,7 @@
     "express": "^4.21.2",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.546.0",
+    "maplibre-gl": "^6.17.0",
     "motion": "^12.23.24",
     "react": "^19.0.1",
     "react-dom": "^19.0.1",
