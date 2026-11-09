@@ -1,0 +1,29 @@
+
+> react-example@0.0.0 test:nov9
+> tsx tests/run-isolated.mts authrace
+
+START authrace
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Une ancienne fermeture différée ne doit pas fermer le compte rouvert
+
+false !== true
+
+    at Module.checkAuthModalTimer (/workspace/chkpt-by-red-loop/CHKPT_CODEX_GITHUB_PRET_A_IMPORTER/tests/auth_modal_race.ts:7:1059)
+    at async <anonymous> (/workspace/chkpt-by-red-loop/CHKPT_CODEX_GITHUB_PRET_A_IMPORTER/tests/run-isolated.mts:13:404) {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.19.0
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

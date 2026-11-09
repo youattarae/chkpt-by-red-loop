@@ -1,0 +1,20 @@
+
+> react-example@0.0.0 test:nov9
+> tsx tests/run-isolated.mts authrace browser
+
+START authrace
+PASS authrace
+START browser
+9 novembre 320px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 320px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 390px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 390px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 1280px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 1280px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre social : carrousels 1/2/4, toucher/clavier, vidéo muette, Story→DM, partage post et repost référencé OK
+PASS browser
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

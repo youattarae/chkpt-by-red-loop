@@ -1,3 +1,16 @@
+## Audit et complétion — 9 novembre 2026
+
+Recette finale : **53/53 groupes réussis**, TypeScript et build réussis ; audit des dépendances d’exécution : 0 vulnérabilité signalée. Preuves et limites ci-dessous.
+
+La version locale complète la Carte MapLibre avec secours, le référentiel de lieux et sa provenance, les checks en attente avec crédit unique après vérification, les réponses Story dans Messages, les reposts référencés, les badges choisis et le carrousel commun. Navigation et protections existantes conservées. Aucun push ou merge autorisé.
+
+- [Matrice complète avant/après et limites](docs/AUDIT_COMPLETION_2026_11_09.md)
+- [Résultats réellement exécutés](docs/verification-2026-11-09/README.md)
+- [Guide d’essai des nouveautés](docs/ESSAI_NOUVELLES_FONCTIONS_2026_11_09.md)
+- [Import, vérification et règles techniques](docs/IMPORT_LIEUX_ET_VERIFICATION_2026_11_09.md)
+
+Le fournisseur en ligne et l’import d’établissements réels restent partiels : accès externe bloqué HTTP 403 ici. Les captures de carte et extraits d’import de test sont synthétiques. Les guides PDF/PPTX du 5 novembre restent historiques ; le complément du 9 novembre décrit les changements. Les anciens résultats ci-dessous ne remplacent pas la recette datée récente.
+
 ## Addendum menu, badges et grand ＋ — 5 novembre 2026
 
 Recette **49/49 groupes réussis**, TypeScript et build réussis. Menu ordonné, huit familles illustrées, pages de collection sans conditions futures et grand plus central. Moteur/catalogue inchangés ; guides PDF/PPTX 49 pages/diapositives. [Bilan et limites](docs/ADDENDUM_MENU_BADGES_PLUS_BILAN.md). Les résultats ci-dessous restent historiques.

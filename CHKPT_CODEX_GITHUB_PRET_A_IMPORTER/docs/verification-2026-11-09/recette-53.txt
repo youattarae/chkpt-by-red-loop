@@ -1,0 +1,127 @@
+
+> react-example@0.0.0 test:browser
+> tsx tests/lot_a.test.ts --browser
+
+✓ 1. Outils démo fermés par défaut, même avec un mode envoyé par le client
+✓ 2. Démo privée : refus anonyme et refus du compte ordinaire pour bascule et reset
+✓ 3. Anciens mots de passe et jetons de seed inutilisables dans les deux modes
+✓ 4. Simulation refusée par le serveur par défaut malgré environment=demo
+✓ 5. Démo : bon lieu, simulation explicite, XP et refus du doublon
+✓ 6. Historique privé masqué pour un tiers et visible pour son auteur
+✓ 7. Profils publics et suivi authentifié, idempotent ; profils privés et mineurs protégés
+✓ 8. Accès distant : protection de toutes les routes, cookie sécurisé, déconnexion et limitation
+✓ 9. Accès distant incomplet : refus de démarrer
+✓ 10. Avis : note et texte validés, auteur imposé, modification et confidentialité
+✓ 11. Badges serveur : 40 paliers, preuves événement/photo et absence de doublons
+✓ 12. Catalogue complet : les 40 paliers sont atteignables et journalisés une seule fois
+✓ 13. Coordonnées invalides : aucun XP ni validation
+✓ 14. Mineur inscrit : profil et médias privés imposés
+✓ 15. Opérateur autorisé : personas, refus de cible arbitraire et reset
+
+======================================================
+CHKPT by RED LOOP — Suite de Tests de Sécurité & Métier
+Cible : http://127.0.0.1:34081
+======================================================
+
+  ✓ 1. Création de compte avec validation d'âge et mot de passe
+  ✓ 2. Connexion avec vérification de mot de passe (scrypt) & génération de session
+  ✓ 3. Refus d'un check-in trop éloigné (> 250m) : statut 422, rejected et 0 XP
+  ✓ 4. Validation d'un check-in dans le rayon (< 250m) : statut 201, verified et attribution d'XP
+  ✓ 5. Protection anti-duplication : deuxième tentative au même lieu le même jour -> 0 XP
+  ✓ 6. Téléversement média avec déduction stricte du propriétaire depuis la session
+  ✓ 7. Absence d'accès aux médias privés d'autrui : retour HTTP 403 Forbidden
+  ✓ 8. Refus d'accès à la console opérateur RED LOOP pour utilisateur normal : 403 Forbidden
+  ✓ 9. Accès opérateur autorisé pour le superviseur RED LOOP (usr_admin) : 200 OK
+  ✓ 10. Persistance serveur des points XP et des visites vérifiées après reconnexion
+  ✓ 11. Réinitialisation instantanée du scénario pitch via POST /api/demo/reset
+
+======================================================
+RÉSULTAT GLOBAL : 11/11 tests réussis (0 échecs)
+======================================================
+
+✓ 16. Suite historique : 11 tests, reset désormais authentifié
+✓ 17. Migration : anciens accès supprimés, utilisateur et données conservés
+✓ 18. Migration en démo privée : nouveau secret appliqué et anciennes sessions révoquées
+✓ 19. Démo privée sans secret : démarrage refusé
+✓ 20. Base endommagée : refus de démarrer sans modifier les données existantes
+✓ 21. Quatre profils : vingt publications et migration sans perte ni doublon
+✓ 22. Version compilée : sources et cartes de débogage bloquées, jetons hors URL
+✓ 23. Recherche publique, relations protégées et classement mensuel réciproque
+✓ 24. Contrats UX : événements partagés, activités, enregistrés séparés, tiers et mineurs protégés
+✓ 25. 9 novembre social : sources privées/expirées, repartage, blocages et badges persistants
+✓ 26. 9 novembre lieux : import, provenance, corrections et fusions sans perte
+✓ 27. 9 novembre checks : attente, crédits rétroactifs uniques et contrôles manuels
+✓ 28. Stories : expiration serveur, confidentialité, suppression et stockage
+✓ 29. Données partagées, médias persistants, confidentialité et sauvegarde chiffrée restaurable
+✓ 30. Lancement présentation : assets compilés sans Vite, accès démo toujours fermés par défaut
+  Navigateur 390px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+  Navigateur 1280px : bon lieu envoyé, simulation, refus hors rayon et réouverture OK
+✓ 31. Navigateur mobile : carte → fiche → check-in, fermeture et autre lieu
+  Présentation 390px : connexion opérateur, badge, publication, XP, événement, rechargement et répétition OK
+  Présentation 1280px : connexion opérateur, badge, publication, XP, événement, rechargement et répétition OK
+✓ 32. Présentation complète et répétition après reset autorisé
+✓ 33. Petit écran, ancienne réponse de connexion, filtre Amis et GPS en attente
+  Direction visuelle 320px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+  Direction visuelle 390px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+  Direction visuelle 1280px : clair par défaut, sombre mémorisé, symbole, navigation et images locales OK
+✓ 34. Direction visuelle claire et sombre, symbole et navigation de 320 à 1280px
+  Mode dev : check-in et badge lisibles sans rechargement, publication possible ; HMR source conservé
+✓ 35. Mode dev : confirmation persistante, aucune recharge pour les données et HMR source conservé
+  Profil 320px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+  Profil 390px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+  Profil 1280px : menu, thèmes, réaction, commentaire, lieu enregistré, activité, compte et rechargement OK
+✓ 36. Profil compact : menu personnel, interactions, historique et gestion du compte
+  Accueil 390px : deux onglets, filtres, nouveaux visuels sur cache ancien, publication et réaction partagée ; Confirmer le check explicite
+  Accueil 1280px : deux onglets, filtres, nouveaux visuels sur cache ancien, publication et réaction partagée ; Confirmer le check explicite
+✓ 37. Accueil social : deux onglets, visuels locaux, filtres et confirmation du check
+  Fiche 320px : GPS avec commune, positions au choix, grand format, favoris, retour et deux thèmes OK
+  Fiche 390px : GPS avec commune, positions au choix, grand format, favoris, retour et deux thèmes OK
+  Fiche 1280px : GPS avec commune, positions au choix, grand format, favoris, retour et deux thèmes OK
+✓ 38. GPS avec commune et fiches lieu grand format, galerie et favoris
+✓ 39. Partage natif ou copie, lien direct et historique personnel des lieux visités
+  Nouvelles fonctions 320px : bienvenue, recherche, avis, récompense, aperçu et suivi persistants OK
+  Nouvelles fonctions 390px : bienvenue, recherche, avis, récompense, aperçu et suivi persistants OK
+  Nouvelles fonctions 1280px : bienvenue, recherche, avis, récompense, aperçu et suivi persistants OK
+✓ 40. Bienvenue, recherche, récompense, aperçu établissement et profils suivis
+✓ 41. Carte interactive, radar de 250 m, catégories et secours hors connexion
+✓ 42. Deux navigateurs : publications, favoris, visites et photo privée, reprise sans doublon
+✓ 43. Publication : quatre photos/vidéos, import, lecture et rechargement mobile
+✓ 44. Stories mobiles : ajout, profil, avatar, deux appareils et suppression
+✓ 45. Accueil général, Sortir éditorial, relations et classement mensuel
+✓ 46. Profils générés : cinq publications chacun, badges sans XP et publicité par cinq
+  Cas limites : cache, comptes, audiences, reprise du check, filtres, favoris, erreurs, clavier et reset protégé OK
+✓ 47. Cas limites : confidentialité par compte, reprise réseau, cache et actions cohérentes
+✓ 48. Messagerie : accès privés, refus mineurs, anti-doublon, menu à gauche et échange persistant
+UX intégrée 320 px : navigation, recherche, carte, partage, messages, brouillon et article OK
+UX intégrée 390 px : navigation, recherche, carte, partage, messages, brouillon et article OK
+UX intégrée 1280 px : navigation, recherche, carte, partage, messages, brouillon et article OK
+✓ 49. UX 5 novembre : navigation flottante, entités partagées, brouillons et conservation
+Stories 320px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 320px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 390px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 390px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 1280px light : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+Stories 1280px dark : ordre, lecture, horizontal, sortie au scroll, retour des commandes seul et position conservée OK
+✓ 50. Addendum stories : ordre, défilement naturel et commandes sans stories épinglées
+Menu/badges/plus 320px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 320px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 390px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 390px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 1280px light : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+Menu/badges/plus 1280px dark : ordre, actions distinctes, catalogue, noms acquis et verrous OK
+✓ 51. Menu exact, collection de badges privée et grand plus sans logo
+9 novembre 320px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 320px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 390px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 390px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 1280px light : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre 1280px dark : profil/badges, choix persistants et carte vectorielle synthétique OK
+9 novembre social : carrousels 1/2/4, toucher/clavier, vidéo muette, Story→DM, partage post et repost référencé OK
+✓ 52. 9 novembre navigateur : carte, badges choisis, carrousel et réponses privées
+✓ 53. Support de secours autonome, quatre captures lisibles sans connexion
+Prototype CHKPT : 53/53 groupes réussis (suite historique de 11 tests comprise).
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice
