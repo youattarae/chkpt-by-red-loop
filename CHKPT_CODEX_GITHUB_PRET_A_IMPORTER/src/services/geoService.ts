@@ -69,7 +69,9 @@ export const ABIDJAN_TEST_LOCATIONS: SimulatedSpot[] = [
     coordinates: { lat: 5.2912, lng: -3.9841 },
     targetPlaceId: 'plc_chez_ambroise',
     description: 'Rue Paul Langevin, Zone 4C, Marcory.'
-  }
+  },
+  {id:'loc_demo_hotel',name:'Cocody (Hôtel Horizon · fictif)',commune:'Cocody',coordinates:{lat:5.356,lng:-4.004},targetPlaceId:'plc_demo_hotel',description:'Position fictive pour essayer un check en attente et le repère sponsorisé.'},
+  {id:'loc_demo_event',name:'Cocody (Maison des Rencontres · fictive)',commune:'Cocody',coordinates:{lat:5.351,lng:-3.991},targetPlaceId:'plc_demo_event',description:'Position fictive pour essayer le repère de lieu d’événements.'}
 ];
 
 /**
